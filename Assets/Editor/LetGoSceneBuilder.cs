@@ -10,7 +10,7 @@ using UnityEngine.UI;
 [InitializeOnLoad]
 public static class LetGoSceneBuilder
 {
-    private const string BuildVersion = "3.8.0";
+    private const string BuildVersion = "3.9.0";
     private const string MarkerPath = "ProjectSettings/LetGoSceneBuild.version";
     private const string SpritePath = "Assets/Art/Placeholders/BlockSprite.asset";
     private static Sprite blockSprite;
@@ -260,9 +260,9 @@ public static class LetGoSceneBuilder
         var doubtRoot = new GameObject("Doubt Notes").transform;
         var doubts = new[]
         {
-            CreateBlock("Doubt A", new Vector2(17f, 1.4f), new Vector2(2.2f, 0.45f), new Color(0.2f, 0.24f, 0.34f, 0.5f), false, 2).GetComponent<SpriteRenderer>(),
-            CreateBlock("Doubt B", new Vector2(20f, 2.1f), new Vector2(2.5f, 0.45f), new Color(0.2f, 0.24f, 0.34f, 0.5f), false, 2).GetComponent<SpriteRenderer>(),
-            CreateBlock("Doubt C", new Vector2(23f, 1.2f), new Vector2(2f, 0.45f), new Color(0.2f, 0.24f, 0.34f, 0.5f), false, 2).GetComponent<SpriteRenderer>()
+            CreateBlock("Doubt A", new Vector2(17f, 1.4f), new Vector2(0.9f, 1.8f), new Color(0.2f, 0.24f, 0.34f, 0.5f), false, 2).GetComponent<SpriteRenderer>(),
+            CreateBlock("Doubt B", new Vector2(20f, 1.7f), new Vector2(1.1f, 2.2f), new Color(0.2f, 0.24f, 0.34f, 0.5f), false, 2).GetComponent<SpriteRenderer>(),
+            CreateBlock("Doubt C", new Vector2(23f, 1.2f), new Vector2(0.85f, 1.7f), new Color(0.2f, 0.24f, 0.34f, 0.5f), false, 2).GetComponent<SpriteRenderer>()
         };
         foreach (var doubt in doubts)
         {

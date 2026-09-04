@@ -27,6 +27,14 @@ public static class LetGoSpriteAssetIntegrator
         var handSprites = hasHandAnimation ? LoadSprites(HandSheet) : new Sprite[0];
         if (idleSprites.Length != 4 || walkSprites.Length != 6) return null;
 
+        var existingController = AssetDatabase.LoadAssetAtPath<AnimatorController>(ControllerPath);
+        if (existingController != null &&
+            AssetDatabase.LoadAssetAtPath<AnimationClip>(GeneratedRoot + "/char_child_idle.anim") != null &&
+            AssetDatabase.LoadAssetAtPath<AnimationClip>(GeneratedRoot + "/char_child_walk.anim") != null &&
+            AssetDatabase.LoadAssetAtPath<AnimationClip>(GeneratedRoot + "/char_child_hold_parent.anim") != null &&
+            AssetDatabase.LoadAssetAtPath<AnimationClip>(GeneratedRoot + "/char_child_release_parent.anim") != null)
+            return existingController;
+
         DeleteGeneratedAsset("char_child_idle.anim");
         DeleteGeneratedAsset("char_child_walk.anim");
         DeleteGeneratedAsset("char_child_hold_parent.anim");

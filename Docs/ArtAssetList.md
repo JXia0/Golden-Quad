@@ -67,7 +67,7 @@
 
 ## 当前 `Assets/Sprites` 接入状态
 
-- 已接入四张主背景、幼儿园回忆背景、左右舞台幕布、观众眼睛、两张门、研究桌、报告、玩具、问题卡与照片证据。
+- 已接入四张主背景、幼儿园回忆背景、左右舞台幕布、观众眼睛、两张门、命名椅、研究桌、报告、玩具、问题卡、两种证据、结论卡与阴影人物。
 - 儿童 Idle 4 帧、Walk 6 帧和牵手/放手 4 帧会自动重新切片，并生成 `Assets/Art/Generated/char_child_controller.controller`。
 - `char_child_递玩具 3.png` 暂不绑定。当前核心玩法已经改为牵住哭泣的孩子并带到老师身边，使用递玩具动画会与玩家动作不一致。
 - `prop_stage_curtain_left/right.png` 与 `prop_stage_curtain_l/r.png` 内容重复；场景使用较短文件名的 `l/r` 版本。
