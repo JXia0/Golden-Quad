@@ -86,8 +86,7 @@ public static class LetGoArtBinder
     }
 
     private static bool IsBackdrop(string slotId)
-        => slotId.StartsWith("bg_", System.StringComparison.OrdinalIgnoreCase) ||
-           slotId.StartsWith("memory_", System.StringComparison.OrdinalIgnoreCase);
+        => slotId.StartsWith("bg_", System.StringComparison.OrdinalIgnoreCase);
 
     private static Vector3 GetTargetBounds(ArtSlot slot, SpriteRenderer renderer)
     {
@@ -99,21 +98,23 @@ public static class LetGoArtBinder
 
     private static void FitRendererToBounds(SpriteRenderer renderer, Vector3 targetBounds)
     {
+        renderer.transform.localScale = Vector3.one;
         var currentBounds = renderer.bounds.size;
         if (currentBounds.x <= 0.0001f || currentBounds.y <= 0.0001f) return;
-        var scale = renderer.transform.localScale;
-        scale.x *= targetBounds.x / currentBounds.x;
-        scale.y *= targetBounds.y / currentBounds.y;
-        renderer.transform.localScale = scale;
+        renderer.transform.localScale = new Vector3(
+            targetBounds.x / currentBounds.x,
+            targetBounds.y / currentBounds.y,
+            1f);
         EditorUtility.SetDirty(renderer.transform);
     }
 
     private static void FitRendererInsideBounds(SpriteRenderer renderer, Vector3 targetBounds)
     {
+        renderer.transform.localScale = Vector3.one;
         var currentBounds = renderer.bounds.size;
         if (currentBounds.x <= 0.0001f || currentBounds.y <= 0.0001f) return;
         var factor = Mathf.Min(targetBounds.x / currentBounds.x, targetBounds.y / currentBounds.y);
-        renderer.transform.localScale *= factor;
+        renderer.transform.localScale = new Vector3(factor, factor, 1f);
         EditorUtility.SetDirty(renderer.transform);
     }
 
@@ -137,6 +138,16 @@ public static class LetGoArtBinder
 
     private static Sprite FindSpriteFile(string fileName, string[] roots)
     {
+        var extensions = new[] { ".png", ".jpg", ".jpeg", ".psd" };
+        foreach (var root in roots)
+        foreach (var extension in extensions)
+        {
+            var directPath = $"{root}/{fileName}{extension}";
+            if (!File.Exists(directPath)) continue;
+            var directSprite = FindLargestSpriteAtPath(directPath);
+            if (directSprite != null) return directSprite;
+        }
+
         foreach (var guid in AssetDatabase.FindAssets($"{fileName} t:Sprite", roots))
         {
             var path = AssetDatabase.GUIDToAssetPath(guid);

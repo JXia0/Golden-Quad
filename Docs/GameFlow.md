@@ -60,5 +60,5 @@
 - 每个主要场景都有可独立理解的物理目标、视觉反馈和声音反馈。
 - 关闭旁白后，牵手距离、环境不稳定、站位、资料插槽和门仍能指引流程。
 - Build Settings 顺序为：`00_Prologue` → `01_Kindergarten` → `03_Stage` → `05_Research` → `06_FinalWalk`。
-- 美术放入 `Assets/Art/Final`，音频放入 `Assets/Audio/Final`，然后执行 `Tools > Let Go > Apply Final Art By Filename`。
+- 制作中的美术放入 `Assets/Sprites`，定稿美术放入 `Assets/Art/Final`，音频放入 `Assets/Audio/Final`，然后执行 `Tools > Let Go > Apply Final Art By Filename`。
 - 不制作战斗、背包、对话树、复杂绳索物理、敌人 AI 或分支结局。

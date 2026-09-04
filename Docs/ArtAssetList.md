@@ -4,7 +4,7 @@
 
 1. 透明资产交付 PNG，背景可交付 PNG 或高质量 JPG。
 2. 文件名必须与下表完全一致；不要把文字、角色或交互道具画进背景。
-3. 放入 `Assets/Art/Final` 后执行 `Tools > Let Go > Apply Final Art By Filename`。
+3. 当前制作中的素材可直接放入 `Assets/Sprites`；定稿素材放入 `Assets/Art/Final`，并会覆盖同名的 Sprites 素材。之后执行 `Tools > Let Go > Apply Final Art By Filename`。
 4. 工具会自动写入五个正式场景。背景按占位区域铺满，角色和道具保持宽高比并缩放到灰盒范围内。
 5. 三位主角的 Animator Controller 可命名为 `char_child_controller.controller`、`char_teen_controller.controller`、`char_adult_controller.controller`。参数至少提供 `Speed`（Float）。
 6. 背景精确画布见 `Docs/BackgroundCanvasSpecs.md`。
@@ -43,8 +43,12 @@
 | `prop_kindergarten_door` | 放手门槛与教室出口 |
 | `prop_named_chair` | 放大的幼儿园椅子 |
 | `deco_blocks` | 放大的积木障碍 |
-| `prop_stage_curtain` | 后台幕布与下台出口 |
+| `prop_stage_curtain_l` | 左侧舞台翼幕，交付 3:1 透明画布 |
+| `prop_stage_curtain_r` | 右侧舞台翼幕，交付 3:1 透明画布；下台交互区位于其前方 |
 | `prop_stage_marker` | 呼吸点与两条站位路线，可由 Unity 颜色区分 |
+| `prop_toy` | 幼儿园地面环境叙事道具 |
+| `prop_research_desk` | 研究空间工作桌 |
+| `prop_research_report` | 序章中成人主角抱着的研究报告 |
 | `node_question` | 可抓取的问题卡与长廊回声 |
 | `node_evidence_photo` | 照片记录证据，轮廓必须与数据证据明显不同 |
 | `node_evidence_data` | 数据图表证据 |
@@ -59,7 +63,14 @@
 | `fx_shadow_blob` | 幼儿园陌生影子与研究怀疑影子 |
 | `fx_stage_spotlight` | 三束舞台光与长廊回声，透明渐变 |
 
-牵手光线、胸口光、淡入淡出和物件插槽已由 Unity 生成，不需要额外美术。P0 共 28 个命名资产，其中 7 个角色、7 张背景/长廊图、11 个道具和 3 个特效。
+牵手光线、胸口光、淡入淡出和物件插槽已由 Unity 生成，不需要额外美术。
+
+## 当前 `Assets/Sprites` 接入状态
+
+- 已接入四张主背景、幼儿园回忆背景、左右舞台幕布、观众眼睛、两张门、研究桌、报告、玩具、问题卡与照片证据。
+- 儿童 Idle 4 帧、Walk 6 帧和牵手/放手 4 帧会自动重新切片，并生成 `Assets/Art/Generated/char_child_controller.controller`。
+- `char_child_递玩具 3.png` 暂不绑定。当前核心玩法已经改为牵住哭泣的孩子并带到老师身边，使用递玩具动画会与玩家动作不一致。
+- `prop_stage_curtain_left/right.png` 与 `prop_stage_curtain_l/r.png` 内容重复；场景使用较短文件名的 `l/r` 版本。
 
 ## P1：有时间再加
 
