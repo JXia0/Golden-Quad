@@ -39,10 +39,10 @@ public static class LetGoSpriteAssetIntegrator
 
         var existingController = AssetDatabase.LoadAssetAtPath<AnimatorController>(ControllerPath);
         if (existingController != null &&
-            AssetDatabase.LoadAssetAtPath<AnimationClip>(GeneratedRoot + "/char_child_idle.anim") != null &&
-            AssetDatabase.LoadAssetAtPath<AnimationClip>(GeneratedRoot + "/char_child_walk.anim") != null &&
-            AssetDatabase.LoadAssetAtPath<AnimationClip>(GeneratedRoot + "/char_child_hold_parent.anim") != null &&
-            AssetDatabase.LoadAssetAtPath<AnimationClip>(GeneratedRoot + "/char_child_release_parent.anim") != null)
+            UsesCharacterVisual(AssetDatabase.LoadAssetAtPath<AnimationClip>(GeneratedRoot + "/char_child_idle.anim")) &&
+            UsesCharacterVisual(AssetDatabase.LoadAssetAtPath<AnimationClip>(GeneratedRoot + "/char_child_walk.anim")) &&
+            UsesCharacterVisual(AssetDatabase.LoadAssetAtPath<AnimationClip>(GeneratedRoot + "/char_child_hold_parent.anim")) &&
+            UsesCharacterVisual(AssetDatabase.LoadAssetAtPath<AnimationClip>(GeneratedRoot + "/char_child_release_parent.anim")))
             return existingController;
 
         DeleteGeneratedAsset("char_child_idle.anim");
@@ -104,9 +104,9 @@ public static class LetGoSpriteAssetIntegrator
 
         var existingController = AssetDatabase.LoadAssetAtPath<AnimatorController>(TeenControllerPath);
         if (existingController != null &&
-            AssetDatabase.LoadAssetAtPath<AnimationClip>(GeneratedRoot + "/char_teen_idle.anim") != null &&
-            AssetDatabase.LoadAssetAtPath<AnimationClip>(GeneratedRoot + "/char_teen_walk.anim") != null &&
-            AssetDatabase.LoadAssetAtPath<AnimationClip>(GeneratedRoot + "/char_teen_breath.anim") != null)
+            UsesCharacterVisual(AssetDatabase.LoadAssetAtPath<AnimationClip>(GeneratedRoot + "/char_teen_idle.anim")) &&
+            UsesCharacterVisual(AssetDatabase.LoadAssetAtPath<AnimationClip>(GeneratedRoot + "/char_teen_walk.anim")) &&
+            UsesCharacterVisual(AssetDatabase.LoadAssetAtPath<AnimationClip>(GeneratedRoot + "/char_teen_breath.anim")))
             return existingController;
 
         DeleteGeneratedAsset("char_teen_idle.anim");
@@ -202,7 +202,7 @@ public static class LetGoSpriteAssetIntegrator
         var binding = new EditorCurveBinding
         {
             type = typeof(SpriteRenderer),
-            path = string.Empty,
+            path = "Character Visual",
             propertyName = "m_Sprite"
         };
         AnimationUtility.SetObjectReferenceCurve(clip, binding, keys);
@@ -225,4 +225,8 @@ public static class LetGoSpriteAssetIntegrator
 
     private static void DeleteGeneratedAsset(string fileName)
         => AssetDatabase.DeleteAsset(GeneratedRoot + "/" + fileName);
+
+    private static bool UsesCharacterVisual(AnimationClip clip)
+        => clip != null && AnimationUtility.GetObjectReferenceCurveBindings(clip)
+            .Any(binding => binding.path == "Character Visual" && binding.propertyName == "m_Sprite");
 }

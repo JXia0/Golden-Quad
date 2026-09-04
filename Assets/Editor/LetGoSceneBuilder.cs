@@ -10,7 +10,7 @@ using UnityEngine.UI;
 [InitializeOnLoad]
 public static class LetGoSceneBuilder
 {
-    private const string BuildVersion = "4.0.0";
+    private const string BuildVersion = "4.1.0";
     private const string MarkerPath = "ProjectSettings/LetGoSceneBuild.version";
     private const string SpritePath = "Assets/Art/Placeholders/BlockSprite.asset";
     private static Sprite blockSprite;
@@ -104,8 +104,9 @@ public static class LetGoSceneBuilder
 
         var chair = CreateBlock("Oversized Chair", new Vector2(3f, -2.05f), new Vector2(1.3f, 1.4f), new Color(0.35f, 0.32f, 0.48f), true, 1);
         AddArtSlot(chair, "prop_named_chair");
-        var blocks = CreateBlock("Oversized Blocks", new Vector2(6.3f, -2.25f), new Vector2(1.8f, 1f), new Color(0.38f, 0.55f, 0.55f), true, 1);
+        var blocks = CreateBlock("Oversized Blocks", new Vector2(6.3f, -2.42f), new Vector2(1.6f, 0.65f), new Color(0.38f, 0.55f, 0.55f), true, 1);
         AddArtSlot(blocks, "deco_blocks");
+        CreateLabel("Space / W / ↑ 跳过积木", new Vector2(6.3f, -1.25f), 0.24f, new Color(0.72f, 0.88f, 0.9f));
         var toy = CreateBlock("Dropped Toy", new Vector2(8.3f, -2.35f), new Vector2(0.72f, 0.78f), Color.white, false, 2);
         AddArtSlot(toy, "prop_toy");
 
@@ -390,15 +391,18 @@ public static class LetGoSceneBuilder
 
     private static GameObject CreatePlayer(Vector2 position)
     {
-        var player = new GameObject("Player", typeof(SpriteRenderer), typeof(Rigidbody2D), typeof(CapsuleCollider2D),
+        var player = new GameObject("Player", typeof(Rigidbody2D), typeof(CapsuleCollider2D),
             typeof(PlayerController2D), typeof(CourageSystem), typeof(CarryInventory), typeof(Animator),
             typeof(CharacterAnimationDriver));
         player.transform.position = position;
         player.transform.localScale = Vector3.one;
-        var renderer = player.GetComponent<SpriteRenderer>();
+        var visual = new GameObject("Character Visual", typeof(SpriteRenderer));
+        visual.transform.SetParent(player.transform, false);
+        var renderer = visual.GetComponent<SpriteRenderer>();
         renderer.sprite = blockSprite;
         renderer.color = new Color(0.7f, 0.78f, 1f);
         renderer.sortingOrder = 3;
+        player.GetComponent<PlayerController2D>().ConfigureCharacterVisual(visual.transform);
         var body = player.GetComponent<Rigidbody2D>();
         body.gravityScale = 2.3f;
         body.collisionDetectionMode = CollisionDetectionMode2D.Continuous;
@@ -421,7 +425,8 @@ public static class LetGoSceneBuilder
 
     private static void SetPlayerArtSlot(GameObject player, string slotId)
     {
-        AddArtSlot(player, slotId, player.GetComponent<Animator>());
+        var renderer = player.transform.Find("Character Visual").GetComponent<SpriteRenderer>();
+        AddArtSlot(player, slotId, player.GetComponent<Animator>(), renderer);
     }
 
     private static HandConnection AddHandConnection(GameObject player, bool selfAnchorEnabled)
@@ -552,11 +557,11 @@ public static class LetGoSceneBuilder
         return go.AddComponent<T>();
     }
 
-    private static void AddArtSlot(GameObject target, string slotId, Animator animator = null)
+    private static void AddArtSlot(GameObject target, string slotId, Animator animator = null, SpriteRenderer renderer = null)
     {
         var slot = target.GetComponent<ArtSlot>();
         if (slot == null) slot = target.AddComponent<ArtSlot>();
-        slot.Configure(slotId, target.GetComponent<SpriteRenderer>(), animator);
+        slot.Configure(slotId, renderer != null ? renderer : target.GetComponent<SpriteRenderer>(), animator);
     }
 
     private static StoryZone CreateZone(string name, Vector2 position, string line, bool beginDrain, bool stopDrain, bool checkpoint)

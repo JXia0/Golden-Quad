@@ -91,7 +91,7 @@ public static class LetGoArtBinder
     private static Vector3 GetTargetBounds(ArtSlot slot, SpriteRenderer renderer)
     {
         if (slot.SlotId.StartsWith("char_", System.StringComparison.OrdinalIgnoreCase) &&
-            renderer.TryGetComponent<CapsuleCollider2D>(out var capsule))
+            slot.TryGetComponent<CapsuleCollider2D>(out var capsule))
             return capsule.bounds.size;
         return renderer.bounds.size;
     }
