@@ -10,7 +10,7 @@ using UnityEngine.UI;
 [InitializeOnLoad]
 public static class LetGoSceneBuilder
 {
-    private const string BuildVersion = "4.6.0";
+    private const string BuildVersion = "4.7.0";
     private const string MarkerPath = "ProjectSettings/LetGoSceneBuild.version";
     private const string SpritePath = "Assets/Art/Placeholders/BlockSprite.asset";
     private const string GlowSpritePath = "Assets/Art/Placeholders/CourageGlow.asset";
@@ -64,7 +64,7 @@ public static class LetGoSceneBuilder
 
     private static void BuildPrologue()
     {
-        var setup = CreateBase("01_Kindergarten", new Vector2(-5f, -2.1f), 0, 24f, new Color(0.08f, 0.09f, 0.14f));
+        var setup = CreateBase("01_Kindergarten", new Vector2(-5f, -2.1f), 0, 24f, new Color(0.08f, 0.09f, 0.14f), true, false);
         SetPlayerArtSlot(setup.Player, "char_adult");
         var report = CreateBlock("Carried Research Report", Vector2.zero, new Vector2(0.42f, 0.68f), Color.white, false, 4);
         report.transform.SetParent(setup.Player.transform, false);
@@ -366,7 +366,8 @@ public static class LetGoSceneBuilder
         public StorySceneDirector Director;
     }
 
-    private static BaseSetup CreateBase(string nextScene, Vector2 spawn, int objectives, float groundWidth, Color background, bool playerEnabled = true)
+    private static BaseSetup CreateBase(string nextScene, Vector2 spawn, int objectives, float groundWidth, Color background,
+        bool playerEnabled = true, bool showGround = true)
     {
         EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
         var cameraObject = new GameObject("Main Camera", typeof(Camera), typeof(AudioListener), typeof(CameraFollow2D));
@@ -387,7 +388,12 @@ public static class LetGoSceneBuilder
             var checkpointObject = new GameObject("Initial Checkpoint");
             checkpointObject.transform.position = spawn;
             checkpoint = checkpointObject.transform;
-            CreateBlock("Ground", new Vector2(spawn.x + groundWidth * 0.5f - 3f, -3.25f), new Vector2(groundWidth, 1f), new Color(0.12f, 0.14f, 0.2f), true, -1);
+            var groundPosition = new Vector2(spawn.x + groundWidth * 0.5f - 3f, -3.25f);
+            var groundSize = new Vector2(groundWidth, 1f);
+            if (showGround)
+                CreateBlock("Ground", groundPosition, groundSize, new Color(0.12f, 0.14f, 0.2f), true, -1);
+            else
+                CreateInvisibleGround(groundPosition, groundSize);
         }
 
         var ui = CreateStoryUI();
@@ -632,6 +638,13 @@ public static class LetGoSceneBuilder
         renderer.sortingOrder = order;
         if (solid) go.AddComponent<BoxCollider2D>();
         return go;
+    }
+
+    private static void CreateInvisibleGround(Vector2 position, Vector2 size)
+    {
+        var ground = new GameObject("Ground", typeof(BoxCollider2D));
+        ground.transform.position = position;
+        ground.transform.localScale = new Vector3(size.x, size.y, 1f);
     }
 
     private static void CreateLabel(string value, Vector2 position, float size, Color color)
