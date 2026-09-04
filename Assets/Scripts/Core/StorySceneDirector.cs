@@ -80,6 +80,7 @@ namespace LetGo
         public void CompleteObjective(string completionLine = null)
         {
             completedObjectives = Mathf.Min(requiredObjectives, completedObjectives + 1);
+            SceneAudio.Instance?.PlayObjective();
             UpdateObjectiveText();
             if (!string.IsNullOrWhiteSpace(completionLine)) Say(completionLine);
         }
@@ -164,8 +165,9 @@ namespace LetGo
         {
             transitioning = true;
             if (player != null) player.GetComponent<PlayerController2D>().ControlsEnabled = false;
-            Say("小时候，我以为长大只发生一次。\n后来才发现，每一次站在无人能替我迈过的门前，我都会重新长大一点。", 6f);
-            yield return new WaitForSeconds(5.5f);
+            SceneAudio.Instance?.PlayFinal();
+            Say("我会在这里。", 2.5f);
+            yield return new WaitForSeconds(2.2f);
             yield return FadeToBlack(1.2f);
             if (endingTitle != null)
             {
@@ -177,7 +179,9 @@ namespace LetGo
         private void UpdateObjectiveText()
         {
             if (objectiveText == null) return;
-            objectiveText.text = requiredObjectives > 0 ? $"记忆之光  {completedObjectives} / {requiredObjectives}" : string.Empty;
+            objectiveText.text = requiredObjectives > 0
+                ? new string('●', completedObjectives) + new string('○', requiredObjectives - completedObjectives)
+                : string.Empty;
         }
     }
 }

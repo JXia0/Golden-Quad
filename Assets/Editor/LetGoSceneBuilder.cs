@@ -10,7 +10,7 @@ using UnityEngine.UI;
 [InitializeOnLoad]
 public static class LetGoSceneBuilder
 {
-    private const string BuildVersion = "2.2.0";
+    private const string BuildVersion = "3.2.0";
     private const string MarkerPath = "ProjectSettings/LetGoSceneBuild.version";
     private const string SpritePath = "Assets/Art/Placeholders/BlockSprite.asset";
     private static Sprite blockSprite;
@@ -27,9 +27,7 @@ public static class LetGoSceneBuilder
         blockSprite = EnsureBlockSprite();
         BuildPrologue();
         BuildKindergarten();
-        BuildInterludeOne();
         BuildStage();
-        BuildInterludeTwo();
         BuildResearch();
         BuildFinalWalk();
 
@@ -37,9 +35,7 @@ public static class LetGoSceneBuilder
         {
             "Assets/Scenes/00_Prologue.unity",
             "Assets/Scenes/01_Kindergarten.unity",
-            "Assets/Scenes/02_Interlude_Firsts.unity",
             "Assets/Scenes/03_Stage.unity",
-            "Assets/Scenes/04_Interlude_Growing.unity",
             "Assets/Scenes/05_Research.unity",
             "Assets/Scenes/06_FinalWalk.unity"
         };
@@ -48,7 +44,7 @@ public static class LetGoSceneBuilder
         AssetDatabase.SaveAssets();
         AssetDatabase.Refresh();
         EditorSceneManager.OpenScene(paths[0]);
-        Debug.Log("[LetGo] Built the complete seven-scene playable flow.");
+        Debug.Log("[LetGo] Built the five-scene hold-and-release playable flow.");
     }
 
     private static void BuildWhenReady()
@@ -68,7 +64,7 @@ public static class LetGoSceneBuilder
         SetPlayerArtSlot(setup.Player, "char_adult");
         new GameObject("Reset Journey Choices", typeof(JourneyStartReset));
         CreateLabel("成年后的第一次独立研究汇报", new Vector2(1.5f, 2.8f), 0.4f, new Color(0.7f, 0.76f, 0.9f));
-        var officeBackground = CreateBlock("MeetingRoom", new Vector2(5f, -0.3f), new Vector2(2.2f, 5f), new Color(0.2f, 0.24f, 0.34f));
+        var officeBackground = CreateBlock("MeetingRoom", new Vector2(0f, -0.2f), new Vector2(15f, 5.5f), new Color(0.2f, 0.24f, 0.34f), false, -4);
         AddArtSlot(officeBackground, "bg_office_hallway");
         CreateLabel("会议室", new Vector2(5f, 1.5f), 0.35f, Color.white);
         var door = CreateInteractable<StoryDoor>("Meeting Door", new Vector2(4.4f, -1.3f), new Vector2(1.2f, 2.7f), new Color(0.4f, 0.45f, 0.58f));
@@ -80,44 +76,53 @@ public static class LetGoSceneBuilder
 
     private static void BuildKindergarten()
     {
-        var setup = CreateBase("02_Interlude_Firsts", new Vector2(-8f, -2.1f), 3, 48f, new Color(0.11f, 0.09f, 0.16f));
+        var setup = CreateBase("03_Stage", new Vector2(-8f, -2.1f), 2, 50f, new Color(0.11f, 0.09f, 0.16f));
         SetPlayerArtSlot(setup.Player, "char_child");
-        setup.Player.GetComponent<CourageSystem>().Configure(20f, 0.5f);
-        var guardian = CreatePerson("Parent", new Vector2(-9f, -1.7f), new Vector2(1f, 2.2f), new Color(1f, 0.65f, 0.32f));
-        AddArtSlot(guardian, "char_parent");
+        var hand = AddHandConnection(setup.Player, false);
+        var guardian = CreateCoreHoldTarget("Parent", new Vector2(-9f, -1.7f), new Vector2(1f, 2.2f),
+            new Color(1f, 0.65f, 0.32f), "char_parent", "parent", HoldTargetMode.Companion,
+            "按住 E 牵住父母的手", 2.1f, 2.3f, 0, 1.15f, 3.6f, -4.2f);
         CreateBlock("Warm Light", new Vector2(-9f, -0.8f), new Vector2(5f, 5f), new Color(1f, 0.55f, 0.2f, 0.12f), false, -5);
-        CreateLabel("幼儿园", new Vector2(5f, 3f), 0.55f, new Color(0.95f, 0.78f, 0.46f));
+        CreateLabel("按住 E 维持牵手 · 松开 E 放手", new Vector2(-8f, 2.5f), 0.28f, new Color(0.95f, 0.78f, 0.46f));
         var kindergartenBackground = CreateBlock("Classroom Wall", new Vector2(9f, -0.3f), new Vector2(25f, 5.2f), new Color(0.15f, 0.17f, 0.25f), false, -4);
         AddArtSlot(kindergartenBackground, "bg_kindergarten_hall");
 
-        var bondObject = new GameObject("Hand Light");
-        var line = bondObject.AddComponent<LineRenderer>();
-        line.material = new Material(Shader.Find("Sprites/Default"));
-        line.startColor = line.endColor = new Color(1f, 0.7f, 0.35f);
-        line.startWidth = line.endWidth = 0.12f;
-        line.sortingOrder = 5;
-        var bond = bondObject.AddComponent<GuardianBond>();
-        bond.Configure(setup.Player.transform, guardian.transform);
+        var classroomGate = CreateBlock("Classroom Hand Gate", new Vector2(-2.8f, -0.5f), new Vector2(0.45f, 5.5f), new Color(0.95f, 0.72f, 0.35f, 0.3f), false, 2);
+        AddArtSlot(classroomGate, "prop_kindergarten_door");
+        var releaseGate = new GameObject("Release Parent At Door", typeof(ReleaseGate)).GetComponent<ReleaseGate>();
+        releaseGate.Configure(hand, guardian.TargetId, -1.8f, string.Empty);
 
-        var release = CreateInteractable<HandReleasePoint>("Classroom Threshold", new Vector2(-3f, -1f), new Vector2(0.7f, 2.5f), new Color(0.8f, 0.65f, 0.35f, 0.4f));
-        release.Configure(bond);
-        var comfort = new GameObject("Return To Parent", typeof(BoxCollider2D), typeof(ComfortZone));
-        comfort.transform.position = new Vector3(-8f, -1f, 0f);
-        comfort.GetComponent<BoxCollider2D>().size = new Vector2(3f, 4f);
-        comfort.GetComponent<BoxCollider2D>().isTrigger = true;
-        CreateCarryItem("书包", "backpack", new Vector2(0f, -1.6f), "按 E 拿起书包", "它比平时重了一点。", "prop_child_backpack", new Color(0.3f, 0.55f, 0.75f));
-        CreateDelivery("书包柜", "backpack", new Vector2(3f, -1.3f), "按 E 放进柜子", "书包有了自己的位置。", "先找到自己的书包。", "kindergarten", "我选择先安顿好自己。", "prop_cubby", new Color(0.34f, 0.55f, 0.72f));
-        CreateCarryItem("名字卡", "name-card", new Vector2(6f, -1.6f), "按 E 拿起名字卡", "上面写着我的名字。", "prop_name_card", new Color(0.52f, 0.42f, 0.7f));
-        CreateDelivery("名字座位", "name-card", new Vector2(9f, -1.3f), "按 E 放到座位上", "这里是属于我的位置。", "先找到自己的名字卡。", "kindergarten", "我选择先找到属于自己的位置。", "prop_named_chair", new Color(0.52f, 0.42f, 0.7f));
-        CreateCarryItem("玩具", "toy", new Vector2(12f, -1.6f), "按 E 拿起玩具", "也许它能让那孩子安心一点。", "prop_toy", new Color(0.72f, 0.42f, 0.48f));
-        CreateDelivery("哭泣的孩子", "toy", new Vector2(15f, -1.3f), "按 E 递出玩具", "原来，我也可以把一点勇气递给别人。", "先找到掉在地上的玩具。", "kindergarten", "我选择先走向另一个害怕的人。", "char_crying_child", new Color(0.72f, 0.42f, 0.48f));
-        CreateInspect("墙上的全家画", new Vector2(-0.5f, 1f), "按 E 看画", "画里的人一直牵着手。", "deco_family_drawing", new Color(0.7f, 0.5f, 0.35f));
-        CreateInspect("积木城堡", new Vector2(7f, -1.8f), "按 E 看积木", "有人把它搭得很高，然后又重新开始。", "deco_blocks", new Color(0.4f, 0.65f, 0.6f));
-        CreateInspect("窗外", new Vector2(16.5f, 1f), "按 E 看向门口", "你还在那里。", "deco_kindergarten_window", new Color(0.45f, 0.58f, 0.72f));
-        var exit = CreateInteractable<StoryDoor>("Classroom Exit", new Vector2(19f, -1.1f), new Vector2(1.3f, 3.1f), new Color(0.45f, 0.5f, 0.65f));
+        var chair = CreateBlock("Oversized Chair", new Vector2(3f, -2.05f), new Vector2(1.3f, 1.4f), new Color(0.35f, 0.32f, 0.48f), true, 1);
+        AddArtSlot(chair, "prop_named_chair");
+        var blocks = CreateBlock("Oversized Blocks", new Vector2(6.3f, -2.25f), new Vector2(1.8f, 1f), new Color(0.38f, 0.55f, 0.55f), true, 1);
+        AddArtSlot(blocks, "deco_blocks");
+
+        var cryingChild = CreateCoreHoldTarget("Crying Child", new Vector2(10f, -1.7f), new Vector2(0.9f, 1.9f),
+            new Color(0.72f, 0.42f, 0.48f), "char_crying_child", "crying-child", HoldTargetMode.Companion,
+            "按住 E 牵住孩子的手", 2.1f, 2.5f, 1, 1.1f, 2.6f);
+        var teacher = CreatePerson("Teacher", new Vector2(16f, -1.7f), new Vector2(1f, 2.2f), new Color(0.55f, 0.68f, 0.72f));
+        AddArtSlot(teacher, "char_teacher");
+        CreateCoreSocket("Teacher Safe Area", new Vector2(16f, -1.5f), "crying-child", string.Empty, 1.8f, 1,
+            "刚才还需要别人牵着的我，现在也能陪另一个人走一段路。", new Color(0.55f, 0.72f, 0.64f, 0.2f));
+
+        var fearRoot = new GameObject("Unfamiliar Shadows").transform;
+        var fears = new[]
+        {
+            CreateBlock("Shadow A", new Vector2(1f, 0.4f), new Vector2(1.4f, 2.8f), new Color(0.05f, 0.04f, 0.1f, 0.4f), false, -2).GetComponent<SpriteRenderer>(),
+            CreateBlock("Shadow B", new Vector2(8f, 0.8f), new Vector2(1.8f, 3.2f), new Color(0.05f, 0.04f, 0.1f, 0.4f), false, -2).GetComponent<SpriteRenderer>()
+        };
+        foreach (var fear in fears)
+        {
+            fear.transform.SetParent(fearRoot, true);
+            AddArtSlot(fear.gameObject, "fx_shadow_blob");
+        }
+        new GameObject("Emotional Environment", typeof(EmotionalEnvironment)).GetComponent<EmotionalEnvironment>()
+            .Configure(hand, fearRoot, fears, Camera.main, new Color(0.11f, 0.09f, 0.16f), new Color(0.035f, 0.025f, 0.08f));
+
+        var exit = CreateInteractable<StoryDoor>("Classroom Exit", new Vector2(20f, -1.1f), new Vector2(1.3f, 3.1f), new Color(0.45f, 0.5f, 0.65f));
         AddArtSlot(exit.gameObject, "prop_kindergarten_door");
         exit.Configure(true, false, "按 E 走进教室");
-        AddOpening("我第一次站在那扇门前时，\n以为门的另一边，是一个没有你的世界。", 0.8f, 5f);
+        AddOpening("第一次，我必须自己决定什么时候松开。", 0.8f, 3.5f);
         Save("01_Kindergarten");
     }
 
@@ -137,32 +142,56 @@ public static class LetGoSceneBuilder
 
     private static void BuildStage()
     {
-        var setup = CreateBase("04_Interlude_Growing", new Vector2(-8f, -2.1f), 3, 48f, new Color(0.07f, 0.05f, 0.12f));
+        var setup = CreateBase("05_Research", new Vector2(-8f, -2.1f), 3, 48f, new Color(0.07f, 0.05f, 0.12f));
         SetPlayerArtSlot(setup.Player, "char_teen");
-        setup.Player.GetComponent<CourageSystem>().Configure(25f, 0.7f);
-        var backstageParent = CreatePerson("Parent Backstage", new Vector2(-9f, -1.7f), new Vector2(1f, 2.2f), new Color(0.85f, 0.55f, 0.3f));
-        AddArtSlot(backstageParent, "char_parent");
+        var hand = AddHandConnection(setup.Player, true);
+        var backstageParent = CreateCoreHoldTarget("Parent Backstage", new Vector2(-9f, -1.7f), new Vector2(1f, 2.2f),
+            new Color(0.85f, 0.55f, 0.3f), "char_parent", "stage-parent", HoldTargetMode.Companion,
+            "按住 E 接住肩上的手", 2.1f, 2.3f, 0, 1.15f, 3.6f, -4.5f);
         var curtainLeft = CreateBlock("Curtain Left", new Vector2(-4.5f, 0f), new Vector2(2f, 7f), new Color(0.3f, 0.03f, 0.08f), false, 2);
         var curtainRight = CreateBlock("Curtain Right", new Vector2(14.5f, 0f), new Vector2(2f, 7f), new Color(0.3f, 0.03f, 0.08f), false, 2);
         AddArtSlot(curtainLeft, "prop_stage_curtain");
         AddArtSlot(curtainRight, "prop_stage_curtain");
         var stageBackground = CreateBlock("Stage Background", new Vector2(6f, -0.2f), new Vector2(34f, 5.5f), new Color(0.08f, 0.04f, 0.12f), false, -5);
         AddArtSlot(stageBackground, "bg_stage_auditorium");
-        CreateBlock("Spotlight A", new Vector2(0f, 0f), new Vector2(4f, 7f), new Color(1f, 0.85f, 0.45f, 0.1f), false, -3);
-        CreateBlock("Spotlight B", new Vector2(5f, 0f), new Vector2(4f, 7f), new Color(1f, 0.85f, 0.45f, 0.12f), false, -3);
-        CreateBlock("Spotlight C", new Vector2(10f, 0f), new Vector2(4f, 7f), new Color(1f, 0.85f, 0.45f, 0.15f), false, -3);
-        CreateEyes(new Vector2(4.5f, 2.4f));
-        CreateZone("Stage Fear", new Vector2(-3f, -1f), "后来我学会了一个人走路。\n却还没有学会，被所有人看见。", true, false, true);
-        CreateHoldObjective("进入聚光灯", new Vector2(0f, -1.3f), "按住 E 稳定呼吸", "脚步在发抖，但我还站在这里。", 2.2f, 0, new Color(0.7f, 0.55f, 0.25f));
-        CreateChoice("稳稳完成", new Vector2(4f, -1.3f), "stage-performance", "stage", "我选择稳稳地完成每一个动作。", "按 E 选择稳稳完成", "我没有追求完美，只是完成了下一个动作。", 1, new Color(0.35f, 0.55f, 0.72f));
-        CreateChoice("向前一步", new Vector2(7f, -1.3f), "stage-performance", "stage", "我选择向前一步，让所有人看见我。", "按 E 选择主动向前", "我向聚光灯前多走了一步。", 1, new Color(0.72f, 0.4f, 0.48f));
-        CreateHoldObjective("最后一句", new Vector2(12f, -1.3f), "按住 E 说出最后一句", "我……准备好了。", 2.8f, 2, new Color(0.9f, 0.7f, 0.3f));
-        CreateInspect("舞台道具", new Vector2(2f, -1.7f), "按 E 检查道具", "我练习过很多次。手知道下一步该做什么。", "prop_stage_set", new Color(0.45f, 0.45f, 0.6f));
-        CreateInspect("观众席", new Vector2(10f, 1f), "按 E 看向观众", "那些眼睛后面，也只是普通的人。", "audience_normal", new Color(0.5f, 0.5f, 0.65f));
+        var spotlightA = CreateBlock("Spotlight A", new Vector2(0f, 0f), new Vector2(3.6f, 7f), new Color(1f, 0.85f, 0.45f, 0.1f), false, -3);
+        var spotlightB = CreateBlock("Spotlight B", new Vector2(5f, 0f), new Vector2(4f, 7f), new Color(1f, 0.85f, 0.45f, 0.12f), false, -3);
+        var spotlightC = CreateBlock("Spotlight C", new Vector2(10f, 0f), new Vector2(3.6f, 7f), new Color(1f, 0.85f, 0.45f, 0.15f), false, -3);
+        AddArtSlot(spotlightA, "fx_stage_spotlight");
+        AddArtSlot(spotlightB, "fx_stage_spotlight");
+        AddArtSlot(spotlightC, "fx_stage_spotlight");
+
+        var fearRoot = new GameObject("Audience Fear").transform;
+        var fears = CreateFearEyes(fearRoot, new Vector2(5f, 2.2f), 10);
+        new GameObject("Emotional Environment", typeof(EmotionalEnvironment)).GetComponent<EmotionalEnvironment>()
+            .Configure(hand, fearRoot, fears, Camera.main, new Color(0.1f, 0.06f, 0.13f), new Color(0.025f, 0.015f, 0.055f));
+
+        var firstCueObject = CreateBlock("First Breath Cue", new Vector2(0f, -1.5f), new Vector2(1.8f, 0.25f), new Color(1f, 0.72f, 0.25f), false, 2);
+        AddArtSlot(firstCueObject, "prop_stage_marker");
+        firstCueObject.AddComponent<SelfAnchorCue>().Configure(hand, 2.2f, 0, string.Empty);
+        CreateLabel("停下 · 按住 E 呼吸", new Vector2(0f, -0.4f), 0.28f, new Color(0.95f, 0.78f, 0.45f));
+
+        var safeRoute = CreateBlock("Steady Route", new Vector2(5f, -2.25f), new Vector2(2f, 0.7f), new Color(0.35f, 0.55f, 0.72f), false, 1);
+        AddArtSlot(safeRoute, "prop_stage_marker");
+        safeRoute.AddComponent<BoxCollider2D>().isTrigger = true;
+        safeRoute.AddComponent<StageRouteChoiceTrigger>().Configure("我选择了离幕布更近的位置。", string.Empty);
+        CreateLabel("稳稳走完", new Vector2(5f, -1.35f), 0.25f, new Color(0.55f, 0.72f, 0.9f));
+
+        CreateBlock("Forward Platform", new Vector2(5f, -1.35f), new Vector2(2.8f, 0.3f), new Color(0.72f, 0.4f, 0.48f), true, 0);
+        var forwardRoute = CreateBlock("Forward Route", new Vector2(5f, -0.45f), new Vector2(2f, 1.1f), new Color(0.72f, 0.4f, 0.48f, 0.25f), false, 1);
+        AddArtSlot(forwardRoute, "prop_stage_marker");
+        forwardRoute.AddComponent<BoxCollider2D>().isTrigger = true;
+        forwardRoute.AddComponent<StageRouteChoiceTrigger>().Configure("我选择向观众再靠近一步。", string.Empty);
+        CreateLabel("向前一步", new Vector2(5f, 0.55f), 0.25f, new Color(0.9f, 0.55f, 0.62f));
+
+        var finalCueObject = CreateBlock("Final Release Cue", new Vector2(10f, -1.5f), new Vector2(1.8f, 0.25f), new Color(1f, 0.82f, 0.4f), false, 2);
+        AddArtSlot(finalCueObject, "prop_stage_marker");
+        finalCueObject.AddComponent<FinalReleaseCue>().Configure(hand, 2.2f, 2);
+        CreateLabel("吸气 · 松开时说出台词", new Vector2(10f, -0.4f), 0.28f, new Color(0.95f, 0.82f, 0.55f));
         var exit = CreateInteractable<StoryDoor>("Back Curtain", new Vector2(17f, -1.1f), new Vector2(1.3f, 3.1f), new Color(0.5f, 0.2f, 0.3f));
         AddArtSlot(exit.gameObject, "prop_stage_curtain");
         exit.Configure(true, false, "按 E 走下舞台");
-        AddOpening("第二次站在门前，我已经不再需要你牵着我。\n可我还是希望，你不要走。", 0.8f, 5f);
+        AddOpening("这一次，没有人能替我走到灯光中央。", 0.8f, 3.5f);
         Save("03_Stage");
     }
 
@@ -183,29 +212,60 @@ public static class LetGoSceneBuilder
 
     private static void BuildResearch()
     {
-        var setup = CreateBase("06_FinalWalk", new Vector2(-8f, -2.1f), 4, 60f, new Color(0.035f, 0.07f, 0.1f));
+        var setup = CreateBase("06_FinalWalk", new Vector2(-8f, -2.1f), 3, 60f, new Color(0.035f, 0.07f, 0.1f));
         SetPlayerArtSlot(setup.Player, "char_adult");
-        setup.Player.GetComponent<CourageSystem>().Configure(40f, 0.45f);
+        var hand = AddHandConnection(setup.Player, false);
         var mentor = CreatePerson("Mentor", new Vector2(-9f, -1.7f), new Vector2(1f, 2.2f), new Color(0.34f, 0.6f, 0.68f));
         AddArtSlot(mentor, "char_mentor");
         var researchBackground = CreateBlock("Research Background", new Vector2(8f, -0.2f), new Vector2(34f, 5.5f), new Color(0.03f, 0.1f, 0.14f), false, -5);
         AddArtSlot(researchBackground, "bg_research_room");
-        CreateLabel("这一次，我不能告诉你答案。\n因为它还不存在。", new Vector2(-6.5f, 2.2f), 0.3f, new Color(0.62f, 0.82f, 0.86f));
-        CreateZone("Research Threshold", new Vector2(-4f, -1f), "再后来，没有人告诉我应该走向哪里。\n我才发现，大人也会害怕走错。", true, false, true);
-        CreateCarryItem("问题笔记", "question-note", new Vector2(-1f, -1.6f), "按 E 拿起问题笔记", "问题还不完整，但它值得被写下来。", "node_question", new Color(0.25f, 0.55f, 0.68f));
-        CreateCarryItem("证据资料", "evidence-file", new Vector2(13f, -1.6f), "按 E 拿起证据", "这些数据并不完美。", "node_evidence", new Color(0.38f, 0.48f, 0.72f));
-        CreateCarryItem("结论草稿", "conclusion-draft", new Vector2(19f, -1.6f), "按 E 拿起草稿", "写下判断，也意味着承担它可能出错。", "node_conclusion", new Color(0.52f, 0.4f, 0.68f));
-        CreateDelivery("问题槽", "question-note", new Vector2(4f, -1.2f), "按 E 放入问题", "我可能理解错，但我可以重新检查。", "这里需要问题笔记。", "research", "面对未知时，我选择先确认问题。", "node_question", new Color(0.25f, 0.55f, 0.68f));
-        CreateDelivery("证据槽", "evidence-file", new Vector2(7f, -1.2f), "按 E 放入证据", "不完美的结果，仍然是结果。", "这里需要证据资料。", "research", "面对未知时，我选择先相信证据。", "node_evidence", new Color(0.38f, 0.48f, 0.72f));
-        CreateDelivery("结论槽", "conclusion-draft", new Vector2(10f, -1.2f), "按 E 放入结论", "我可以诚实地说，我不知道。", "这里需要结论草稿。", "research", "面对未知时，我选择先写下自己的判断。", "node_conclusion", new Color(0.52f, 0.4f, 0.68f));
-        CreateHoldObjective("整理报告", new Vector2(16f, -1.2f), "按住 E 整理最终报告", "答案并不完整，但这是我目前能给出的判断。", 3f, 3, new Color(0.35f, 0.62f, 0.66f));
-        CreateLabel("问题   →   证据   →   结论", new Vector2(7f, 2.6f), 0.38f, new Color(0.55f, 0.75f, 0.88f));
-        CreateInspect("废弃的草稿", new Vector2(1.5f, -1.7f), "按 E 翻看草稿", "写错的部分没有消失。它们把我带到了这里。", "prop_discarded_drafts", new Color(0.3f, 0.42f, 0.52f));
-        CreateInspect("导师的便签", new Vector2(16f, 0.8f), "按 E 阅读便签", "“我不会替你决定，但我相信你的判断。”", "prop_mentor_note", new Color(0.4f, 0.65f, 0.65f));
-        var exit = CreateInteractable<StoryDoor>("Finished Report", new Vector2(23f, -1.1f), new Vector2(1.4f, 3.2f), new Color(0.22f, 0.46f, 0.55f));
+        CreateLabel("按住 E 抓住资料 · 松开 E 提交", new Vector2(-5f, 2.5f), 0.28f, new Color(0.62f, 0.82f, 0.86f));
+
+        CreateCoreHoldTarget("Question Card", new Vector2(-4f, -1.45f), new Vector2(0.9f, 1.2f),
+            new Color(0.25f, 0.55f, 0.68f), "node_question", "question", HoldTargetMode.Carryable,
+            "按住 E 抓住问题", 1.8f, 3f);
+        CreateCoreSocket("Question Board", new Vector2(1f, -1.2f), "question", string.Empty, 1.8f, 0,
+            string.Empty, new Color(0.25f, 0.55f, 0.68f, 0.28f));
+        CreateLabel("问题", new Vector2(1f, 0.1f), 0.32f, new Color(0.5f, 0.78f, 0.86f));
+
+        CreateCoreHoldTarget("Photo Evidence", new Vector2(6f, -1.45f), new Vector2(1f, 1.2f),
+            new Color(0.55f, 0.48f, 0.7f), "node_evidence_photo", "evidence-photo", HoldTargetMode.Carryable,
+            "按住 E 抓住照片记录", 1.8f, 3f, 1, group: "evidence-choice", category: "research",
+            value: "我选择相信亲眼记录下来的细节。");
+        CreateCoreHoldTarget("Data Evidence", new Vector2(9f, -1.45f), new Vector2(1f, 1.2f),
+            new Color(0.35f, 0.58f, 0.78f), "node_evidence_data", "evidence-data", HoldTargetMode.Carryable,
+            "按住 E 抓住数据图表", 1.8f, 3f, 1, group: "evidence-choice", category: "research",
+            value: "我选择相信仍不完整的数据趋势。");
+        CreateCoreSocket("Evidence Board", new Vector2(13f, -1.2f), string.Empty, "evidence-choice", 1.8f, 1,
+            string.Empty, new Color(0.4f, 0.55f, 0.75f, 0.28f));
+        CreateLabel("选择一份证据", new Vector2(13f, 0.1f), 0.3f, new Color(0.55f, 0.7f, 0.9f));
+
+        CreateCoreHoldTarget("Conclusion Card", new Vector2(18f, -1.45f), new Vector2(1f, 1.25f),
+            new Color(0.52f, 0.4f, 0.68f), "node_conclusion", "conclusion", HoldTargetMode.Carryable,
+            "按住 E 抓住尚未确定的结论", 1.9f, 3f, 2);
+        CreateCoreSocket("Conclusion Board", new Vector2(22f, -1.2f), "conclusion", string.Empty, 1.9f, 2,
+            "这不是唯一的答案，但这是我愿意负责的判断。", new Color(0.52f, 0.4f, 0.68f, 0.28f));
+        CreateLabel("松手提交", new Vector2(22f, 0.1f), 0.3f, new Color(0.72f, 0.6f, 0.86f));
+
+        var doubtRoot = new GameObject("Doubt Notes").transform;
+        var doubts = new[]
+        {
+            CreateBlock("Doubt A", new Vector2(17f, 1.4f), new Vector2(2.2f, 0.45f), new Color(0.2f, 0.24f, 0.34f, 0.5f), false, 2).GetComponent<SpriteRenderer>(),
+            CreateBlock("Doubt B", new Vector2(20f, 2.1f), new Vector2(2.5f, 0.45f), new Color(0.2f, 0.24f, 0.34f, 0.5f), false, 2).GetComponent<SpriteRenderer>(),
+            CreateBlock("Doubt C", new Vector2(23f, 1.2f), new Vector2(2f, 0.45f), new Color(0.2f, 0.24f, 0.34f, 0.5f), false, 2).GetComponent<SpriteRenderer>()
+        };
+        foreach (var doubt in doubts)
+        {
+            doubt.transform.SetParent(doubtRoot, true);
+            AddArtSlot(doubt.gameObject, "fx_shadow_blob");
+        }
+        new GameObject("Emotional Environment", typeof(EmotionalEnvironment)).GetComponent<EmotionalEnvironment>()
+            .Configure(hand, doubtRoot, doubts, Camera.main, new Color(0.035f, 0.07f, 0.1f), new Color(0.02f, 0.035f, 0.06f), 2, 3);
+
+        var exit = CreateInteractable<StoryDoor>("Finished Report", new Vector2(26f, -1.1f), new Vector2(1.4f, 3.2f), new Color(0.22f, 0.46f, 0.55f));
         AddArtSlot(exit.gameObject, "prop_meeting_door");
         exit.Configure(true, false, "按 E 带着报告回到会议室");
-        AddOpening("支持的方式也在改变。\n父母给我保护，老师给我鼓励，而导师给我信任。", 0.8f, 5f);
+        AddOpening("这一次，没有人能告诉我哪个答案一定正确。", 0.8f, 3.5f);
         Save("05_Research");
     }
 
@@ -213,37 +273,50 @@ public static class LetGoSceneBuilder
     {
         var setup = CreateBase(string.Empty, new Vector2(-8f, -2.1f), 0, 72f, new Color(0.035f, 0.035f, 0.065f));
         SetPlayerArtSlot(setup.Player, "char_child");
-        var courage = setup.Player.GetComponent<CourageSystem>();
-        courage.Draining = false;
+        var hand = AddHandConnection(setup.Player, false);
 
         var kindergartenMemory = CreateBlock("Kindergarten Memory", new Vector2(-2f, -0.2f), new Vector2(14f, 5.5f), new Color(0.17f, 0.12f, 0.2f), false, -4);
         AddArtSlot(kindergartenMemory, "memory_kindergarten_set");
         var parentMemory = CreatePerson("Parent Memory", new Vector2(-8.8f, -1.7f), new Vector2(1f, 2.2f), new Color(1f, 0.62f, 0.3f, 0.7f));
         AddArtSlot(parentMemory, "char_parent");
-        CreateLabel("幼儿园", new Vector2(-2f, 2.6f), 0.42f, new Color(0.9f, 0.7f, 0.4f));
-        CreateChoiceEcho("kindergarten", new Vector2(-2f, 0.7f), new Color(0.85f, 0.72f, 0.5f));
-        CreateTransition("Child Memory", -7f, new Vector3(0.78f, 0.78f, 1f), new Color(0.75f, 0.82f, 1f), "第一次，我以为放开你的手，就会失去你。", "char_child");
+        CreateBlock("Memory Hand Gate", new Vector2(3f, -0.3f), new Vector2(0.35f, 5.2f), new Color(1f, 0.7f, 0.3f, 0.25f), false, -2);
+        CreateTransition("Child Memory", -7f, new Vector3(0.78f, 0.78f, 1f), new Color(0.75f, 0.82f, 1f), string.Empty, "char_child");
 
         var stageMemory = CreateBlock("Stage Memory", new Vector2(12f, -0.2f), new Vector2(14f, 5.5f), new Color(0.16f, 0.06f, 0.13f), false, -4);
         AddArtSlot(stageMemory, "memory_stage_set");
-        CreateBlock("Memory Spotlight", new Vector2(12f, 0f), new Vector2(5f, 7f), new Color(1f, 0.82f, 0.4f, 0.12f), false, -3);
-        CreateLabel("舞台", new Vector2(12f, 2.6f), 0.42f, new Color(0.9f, 0.68f, 0.4f));
-        CreateChoiceEcho("stage", new Vector2(12f, 0.7f), new Color(0.85f, 0.65f, 0.55f));
-        CreateTransition("Teen Memory", 7f, new Vector3(0.9f, 0.9f, 1f), new Color(0.68f, 0.75f, 1f), "后来我学会了一个人向前。\n却还没有学会，被所有人看见。", "char_teen");
+        var memorySpotlight = CreateBlock("Memory Spotlight", new Vector2(12f, 0f), new Vector2(5f, 7f), new Color(1f, 0.82f, 0.4f, 0.12f), false, -3);
+        AddArtSlot(memorySpotlight, "fx_stage_spotlight");
+        var steadyEcho = CreateBlock("Remembered Steady Route", new Vector2(10.5f, -1.75f), new Vector2(2.2f, 0.25f), new Color(0.35f, 0.55f, 0.72f), false, 1);
+        steadyEcho.AddComponent<MemoryChoiceEcho>().Configure("stage", "我选择了离幕布更近的位置。");
+        AddArtSlot(steadyEcho, "prop_stage_marker");
+        var forwardEcho = CreateBlock("Remembered Forward Route", new Vector2(13.5f, -0.85f), new Vector2(2.2f, 0.25f), new Color(0.72f, 0.4f, 0.48f), false, 1);
+        forwardEcho.AddComponent<MemoryChoiceEcho>().Configure("stage", "我选择向观众再靠近一步。");
+        AddArtSlot(forwardEcho, "prop_stage_marker");
+        CreateTransition("Teen Memory", 7f, new Vector3(0.9f, 0.9f, 1f), new Color(0.68f, 0.75f, 1f), string.Empty, "char_teen");
 
         var researchMemory = CreateBlock("Research Memory", new Vector2(26f, -0.2f), new Vector2(14f, 5.5f), new Color(0.045f, 0.13f, 0.17f), false, -4);
         AddArtSlot(researchMemory, "memory_research_set");
-        CreateLabel("问题      证据      结论", new Vector2(26f, 2.6f), 0.38f, new Color(0.5f, 0.78f, 0.85f));
-        CreateLabel("我可能会错。\n它可能还不够。\n我可以承认我不知道。", new Vector2(26f, 0.7f), 0.32f, new Color(0.48f, 0.58f, 0.68f));
-        CreateChoiceEcho("research", new Vector2(26f, -0.45f), new Color(0.5f, 0.72f, 0.78f));
-        CreateTransition("Adult Memory", 21f, Vector3.one, new Color(0.62f, 0.72f, 0.9f), "再后来，没有人告诉我应该走向哪里。\n我才发现，大人也会害怕走错。", "char_adult");
+        var rememberedQuestion = CreateBlock("Remembered Question", new Vector2(23f, -1.5f), new Vector2(0.7f, 1f), new Color(0.25f, 0.55f, 0.68f), false, 1);
+        AddArtSlot(rememberedQuestion, "node_question");
+        var photoEcho = CreateBlock("Remembered Photo Evidence", new Vector2(26f, -1.5f), new Vector2(0.8f, 1f), new Color(0.55f, 0.48f, 0.7f), false, 1);
+        photoEcho.AddComponent<MemoryChoiceEcho>().Configure("research", "我选择相信亲眼记录下来的细节。");
+        AddArtSlot(photoEcho, "node_evidence_photo");
+        var dataEcho = CreateBlock("Remembered Data Evidence", new Vector2(26f, -1.5f), new Vector2(0.8f, 1f), new Color(0.35f, 0.58f, 0.78f), false, 1);
+        dataEcho.AddComponent<MemoryChoiceEcho>().Configure("research", "我选择相信仍不完整的数据趋势。");
+        AddArtSlot(dataEcho, "node_evidence_data");
+        var rememberedConclusion = CreateBlock("Remembered Conclusion", new Vector2(29f, -1.5f), new Vector2(0.7f, 1f), new Color(0.52f, 0.4f, 0.68f), false, 1);
+        AddArtSlot(rememberedConclusion, "node_conclusion");
+        CreateTransition("Adult Memory", 21f, Vector3.one, new Color(0.62f, 0.72f, 0.9f), string.Empty, "char_adult");
 
         CreateBlock("Unknown Wall", new Vector2(40f, -0.2f), new Vector2(14f, 5.5f), new Color(0.08f, 0.1f, 0.16f), false, -4);
-        var finalDoor = CreateInteractable<StoryDoor>("Unknown Door", new Vector2(40f, -1f), new Vector2(1.6f, 3.6f), new Color(0.75f, 0.78f, 0.88f));
-        AddArtSlot(finalDoor.gameObject, "prop_unknown_door");
-        finalDoor.Configure(false, true, "按 E 寻找一只手");
-        CreateLabel("?", new Vector2(40f, 1.4f), 0.65f, new Color(0.9f, 0.92f, 1f));
-        AddOpening("向右走。\n你可以停下来，也可以回头。", 0.8f, 4f);
+        var youngPerson = CreateCoreHoldTarget("Young Presenter", new Vector2(37f, -1.7f), new Vector2(0.9f, 2f),
+            new Color(0.45f, 0.62f, 0.82f), "char_teen", "young-presenter", HoldTargetMode.Recipient,
+            "按住 E 牵住他的手", 2.2f, 2.5f);
+        var finalDoor = CreateBlock("Unknown Door", new Vector2(40f, -1f), new Vector2(1.6f, 3.6f), new Color(0.75f, 0.78f, 0.88f), false, 1);
+        AddArtSlot(finalDoor, "prop_unknown_door");
+        new GameObject("Release The Next Person", typeof(ReleaseEndingGoal)).GetComponent<ReleaseEndingGoal>()
+            .Configure(hand, youngPerson, 1.4f);
+        AddOpening("向右走。", 0.8f, 2.5f);
         Save("06_FinalWalk");
     }
 
@@ -278,11 +351,26 @@ public static class LetGoSceneBuilder
         }
 
         var ui = CreateStoryUI();
+        CreateSceneAudio();
         var directorObject = new GameObject("Story Scene Director");
         var director = directorObject.AddComponent<StorySceneDirector>();
         director.Configure(nextScene, player != null ? player.transform : null, checkpoint, objectives,
             ui.Narration, ui.Prompt, ui.Objective, ui.Fade, ui.Title);
         return new BaseSetup { Player = player, Director = director };
+    }
+
+    private static void CreateSceneAudio()
+    {
+        var go = new GameObject("Scene Audio", typeof(SceneAudio));
+        var effects = go.AddComponent<AudioSource>();
+        var ambience = go.AddComponent<AudioSource>();
+        var music = go.AddComponent<AudioSource>();
+        var tension = go.AddComponent<AudioSource>();
+        effects.playOnAwake = false;
+        ambience.playOnAwake = false;
+        music.playOnAwake = false;
+        tension.playOnAwake = false;
+        go.GetComponent<SceneAudio>().ConfigureSources(effects, ambience, music, tension);
     }
 
     private static GameObject CreatePlayer(Vector2 position)
@@ -321,6 +409,60 @@ public static class LetGoSceneBuilder
         AddArtSlot(player, slotId, player.GetComponent<Animator>());
     }
 
+    private static HandConnection AddHandConnection(GameObject player, bool selfAnchorEnabled)
+    {
+        var lineObject = new GameObject("Hand Connection Light", typeof(LineRenderer));
+        var line = lineObject.GetComponent<LineRenderer>();
+        line.positionCount = 2;
+        line.useWorldSpace = true;
+        line.material = new Material(Shader.Find("Sprites/Default"));
+        line.startColor = line.endColor = new Color(1f, 0.65f, 0.28f);
+        line.startWidth = line.endWidth = 0.14f;
+        line.sortingOrder = 8;
+        line.enabled = false;
+        var connection = player.AddComponent<HandConnection>();
+        connection.Configure(line, selfAnchorEnabled);
+        return connection;
+    }
+
+    private static HoldTarget CreateCoreHoldTarget(string name, Vector2 position, Vector2 size, Color color,
+        string artSlot, string targetId, HoldTargetMode mode, string prompt, float interactionRadius,
+        float maxDistance, int prerequisite = 0, float companionOffset = 1.1f, float companionSpeed = 4f,
+        float companionMaxX = 999f, string group = "", string category = "", string value = "")
+    {
+        var go = CreateBlock(name, position, size, color, false, 3);
+        AddArtSlot(go, artSlot);
+        var target = go.AddComponent<HoldTarget>();
+        target.Configure(targetId, mode, prompt, interactionRadius, maxDistance, prerequisite,
+            companionOffset, companionSpeed, companionMaxX, group, category, value);
+        return target;
+    }
+
+    private static HoldSocket CreateCoreSocket(string name, Vector2 position, string targetId, string group,
+        float radius, int prerequisite, string completionLine, Color color)
+    {
+        var go = CreateBlock(name, position, new Vector2(1.4f, 1.8f), color, false, 0);
+        var socket = go.AddComponent<HoldSocket>();
+        socket.Configure(targetId, group, radius, prerequisite, completionLine);
+        return socket;
+    }
+
+    private static SpriteRenderer[] CreateFearEyes(Transform parent, Vector2 center, int count)
+    {
+        var renderers = new SpriteRenderer[count];
+        for (var i = 0; i < count; i++)
+        {
+            var x = center.x + (i - count * 0.5f) * 1.35f;
+            var y = center.y + Mathf.Sin(i * 1.7f) * 0.5f;
+            var eye = CreateBlock($"Audience Eye {i + 1}", new Vector2(x, y), new Vector2(0.55f, 0.22f),
+                new Color(0.85f, 0.86f, 1f, 0.55f), false, 0);
+            AddArtSlot(eye, "audience_eyes");
+            eye.transform.SetParent(parent, true);
+            renderers[i] = eye.GetComponent<SpriteRenderer>();
+        }
+        return renderers;
+    }
+
     private static GameObject CreatePerson(string name, Vector2 position, Vector2 size, Color color)
         => CreateBlock(name, position, size, color, false, 1);
 
@@ -333,10 +475,11 @@ public static class LetGoSceneBuilder
     }
 
     private static HoldObjectiveStation CreateHoldObjective(string name, Vector2 position, string prompt, string line,
-        float seconds, int prerequisite, Color color)
+        float seconds, int prerequisite, Color color, float interactionRadius = 1.5f,
+        string lockedPrompt = "先完成前面的步骤")
     {
         var station = CreateInteractable<HoldObjectiveStation>(name, position, new Vector2(1.25f, 1.25f), color);
-        station.Configure(prompt, line, seconds, prerequisite);
+        station.Configure(prompt, line, seconds, prerequisite, interactionRadius, lockedPrompt);
         CreateLabel(name, position + Vector2.up * 1.1f, 0.26f, new Color(0.85f, 0.86f, 0.95f));
         return station;
     }

@@ -1,0 +1,135 @@
+using System.Collections.Generic;
+using UnityEngine;
+
+namespace LetGo
+{
+    public enum HoldTargetMode
+    {
+        Support,
+        Companion,
+        Carryable,
+        Recipient
+    }
+
+    public sealed class HoldTarget : MonoBehaviour
+    {
+        private static readonly List<HoldTarget> ActiveTargets = new();
+
+        [SerializeField] private string targetId;
+        [SerializeField] private HoldTargetMode mode;
+        [SerializeField] private string prompt = "按住 E 抓住";
+        [SerializeField] private float interactionRadius = 1.8f;
+        [SerializeField] private float maxDistance = 2.4f;
+        [SerializeField] private int prerequisiteCount;
+        [SerializeField] private float followOffset = 1.1f;
+        [SerializeField] private float followSpeed = 4f;
+        [SerializeField] private float maximumFollowX = 999f;
+        [SerializeField] private string selectionGroup;
+        [SerializeField] private string choiceCategory;
+        [SerializeField] private string choiceValue;
+
+        private HandConnection heldBy;
+        private bool placed;
+        private bool unavailable;
+
+        public string TargetId => targetId;
+        public HoldTargetMode Mode => mode;
+        public string Prompt => prompt;
+        public float MaxDistance => maxDistance;
+        public float HeldDuration { get; private set; }
+        public string SelectionGroup => selectionGroup;
+        public string ChoiceCategory => choiceCategory;
+        public string ChoiceValue => choiceValue;
+        public bool CanHold => !placed && !unavailable &&
+            (StorySceneDirector.Instance == null || StorySceneDirector.Instance.CompletedObjectives >= prerequisiteCount);
+
+        public void Configure(string id, HoldTargetMode targetMode, string promptText, float radius, float distance,
+            int prerequisite = 0, float companionOffset = 1.1f, float companionSpeed = 4f,
+            float companionMaxX = 999f, string group = "", string category = "", string value = "")
+        {
+            targetId = id;
+            mode = targetMode;
+            prompt = promptText;
+            interactionRadius = radius;
+            maxDistance = distance;
+            prerequisiteCount = prerequisite;
+            followOffset = companionOffset;
+            followSpeed = companionSpeed;
+            maximumFollowX = companionMaxX;
+            selectionGroup = group;
+            choiceCategory = category;
+            choiceValue = value;
+        }
+
+        private void OnEnable()
+        {
+            if (!ActiveTargets.Contains(this)) ActiveTargets.Add(this);
+        }
+
+        private void OnDisable() => ActiveTargets.Remove(this);
+
+        public static HoldTarget FindNearest(Vector3 playerPosition)
+        {
+            HoldTarget nearest = null;
+            var bestDistance = float.MaxValue;
+            foreach (var target in ActiveTargets)
+            {
+                if (target == null || !target.CanHold) continue;
+                var distance = Vector2.Distance(playerPosition, target.transform.position);
+                if (distance > target.interactionRadius || distance >= bestDistance) continue;
+                nearest = target;
+                bestDistance = distance;
+            }
+            return nearest;
+        }
+
+        public void BeginHold(HandConnection connection)
+        {
+            heldBy = connection;
+            HeldDuration = 0f;
+        }
+
+        public void TickHeld(HandConnection connection, float deltaTime)
+        {
+            if (heldBy != connection) return;
+            HeldDuration += deltaTime;
+            var playerPosition = connection.transform.position;
+            if (mode == HoldTargetMode.Carryable)
+            {
+                var desired = playerPosition + new Vector3(0.8f, 0.55f, 0f);
+                transform.position = Vector3.Lerp(transform.position, desired, 1f - Mathf.Exp(-12f * deltaTime));
+            }
+            else if (mode == HoldTargetMode.Companion)
+            {
+                var desiredX = Mathf.Min(playerPosition.x - followOffset, maximumFollowX);
+                var desired = new Vector3(desiredX, transform.position.y, transform.position.z);
+                transform.position = Vector3.MoveTowards(transform.position, desired, followSpeed * deltaTime);
+            }
+        }
+
+        public void EndHold()
+        {
+            heldBy = null;
+            if (mode == HoldTargetMode.Carryable || mode == HoldTargetMode.Companion)
+                HoldSocket.TryPlace(this);
+        }
+
+        public void MarkPlaced(Vector3 position)
+        {
+            placed = true;
+            transform.position = position;
+        }
+
+        public void MarkUnavailable()
+        {
+            unavailable = true;
+            var renderer = GetComponent<SpriteRenderer>();
+            if (renderer != null)
+            {
+                var color = renderer.color;
+                color.a = 0.25f;
+                renderer.color = color;
+            }
+        }
+    }
+}
