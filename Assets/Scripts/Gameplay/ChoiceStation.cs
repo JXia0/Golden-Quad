@@ -31,7 +31,7 @@ namespace LetGo
             JourneyChoices.Record(category, choiceValue, false);
             director.CompleteObjective(completionLine);
             director.ClearPrompt(prompt);
-            foreach (var station in FindObjectsByType<ChoiceStation>(FindObjectsSortMode.None))
+            foreach (var station in FindObjectsByType<ChoiceStation>())
                 if (station.groupId == groupId) station.Lock(station == this);
         }
 

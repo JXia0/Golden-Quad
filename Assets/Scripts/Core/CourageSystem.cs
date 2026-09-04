@@ -14,6 +14,13 @@ namespace LetGo
         public float Normalized => maxCourage <= 0f ? 1f : courage / maxCourage;
         public bool Draining { get => draining; set => draining = value; }
 
+        public void Configure(float duration, float drainRate)
+        {
+            maxCourage = duration;
+            drainPerSecond = drainRate;
+            courage = maxCourage;
+        }
+
         private void Awake() => courage = maxCourage;
 
         private void Update()

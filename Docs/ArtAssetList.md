@@ -5,8 +5,35 @@
 - 优先完成标记为 **P0** 的资产；P0 足以完成正式版本。
 - 所有角色统一侧视角，面朝右。代码会通过水平翻转支持向左移动。
 - 推荐角色单帧高度 256 px，环境模块以 256 px 或 512 px 网格制作。
+- 角色导入后建议约占 Unity 世界高度 1.3 单位；三位主角使用一致的画布和脚底 Pivot，避免年龄切换时跳位。
 - 分层导出 PNG，透明背景；背景可使用整张 PNG。
 - 文件名使用下面列出的英文名称，便于直接替换 Unity 灰盒。
+
+## 美术放入 Unity 的方式
+
+1. 将最终 Sprite、Sprite Sheet 和 Animator Controller 放入 `Assets/Art/Final`。
+2. Sprite 文件名必须与清单中的文件名完全一致，例如 `char_child.png`。
+3. 如果角色带 Animator Controller，命名为对应角色名加 `_controller`，例如 `char_child_controller.controller`。
+4. 主角 Animator Controller 至少建立 `Speed`（Float）参数：`Speed <= 0.05` 播 Idle，较大时播 Walk。可选参数为 `Moving`（Bool）、`VerticalSpeed`（Float）、`Carrying`（Bool）。
+5. 在 Unity 选择 `Tools > Let Go > Apply Final Art By Filename`。
+6. 工具会遍历七个正式场景，将同名 Sprite 和 Animator Controller 写入预留的 Art Slot。
+
+该工具只在手动执行时运行，不参与游戏运行，也不会持续扫描资源。
+
+## 本轮互动扩展新增
+
+以下 6 件是为了新增的拾取、交付和观察互动补入的美术：
+
+| 文件名 | 用途 |
+|---|---|
+| `prop_name_card` | 幼儿园可拾取的名字卡 |
+| `deco_family_drawing` | 可检查的全家画 |
+| `deco_blocks` | 可检查的积木城堡 |
+| `deco_kindergarten_window` | 玩家回望父母的位置 |
+| `prop_discarded_drafts` | 研究场景可检查的废弃草稿 |
+| `prop_mentor_note` | 研究场景可阅读的导师便签 |
+
+另外，原有的书包、柜子、座位、玩具、问题、证据和结论现在都承担实际拾取或交付功能，需保证轮廓清楚，并能与背景区分。
 
 ## 角色与动画
 
@@ -52,9 +79,13 @@
 | P0 | `prop_kindergarten_door` | 1 | 较高的教室门和门把手 |
 | P0 | `prop_cubby` | 1 | 书包柜，可做前后两个状态 |
 | P0 | `prop_child_backpack` | 1 | 地面/柜中两个状态 |
-| P0 | `prop_named_chair` | 1 | 写有主角名字的座位 |
+| P0 | `prop_name_card` | 1 | 主角需要拾取的名字卡 |
+| P0 | `prop_named_chair` | 1 | 接收名字卡的座位 |
 | P0 | `prop_toy` | 1 | 可被递出的玩具 |
 | P1 | `deco_kindergarten_set` | 1 套 | 儿童画、挂旗、积木、墙面图案 |
+| P0 | `deco_family_drawing` | 1 | 可检查的墙上全家画 |
+| P0 | `deco_blocks` | 1 | 可检查的积木城堡 |
+| P0 | `deco_kindergarten_window` | 1 | 能回望父母位置的窗户 |
 
 ## 场景三：舞台
 
@@ -80,6 +111,8 @@
 | P0 | `fx_node_connection` | 1 | 节点之间的连接线，可由代码绘制 |
 | P0 | `doubt_text_cards` | 4 | 四句怀疑文字的独立透明图层 |
 | P1 | `prop_research_clutter` | 1 套 | 资料、便签、书、杯子、台灯 |
+| P0 | `prop_discarded_drafts` | 1 | 可检查的废弃草稿 |
+| P0 | `prop_mentor_note` | 1 | 导师留下的便签 |
 
 ## 过场与最终记忆长廊
 

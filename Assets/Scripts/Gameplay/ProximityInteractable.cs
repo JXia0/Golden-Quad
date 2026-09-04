@@ -14,7 +14,7 @@ namespace LetGo
             if (completed) return;
             if (player == null)
             {
-                var controller = FindFirstObjectByType<PlayerController2D>();
+                var controller = FindAnyObjectByType<PlayerController2D>();
                 if (controller != null) player = controller.transform;
                 return;
             }
