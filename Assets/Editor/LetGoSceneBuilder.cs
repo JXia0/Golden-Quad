@@ -10,10 +10,12 @@ using UnityEngine.UI;
 [InitializeOnLoad]
 public static class LetGoSceneBuilder
 {
-    private const string BuildVersion = "4.1.0";
+    private const string BuildVersion = "4.2.0";
     private const string MarkerPath = "ProjectSettings/LetGoSceneBuild.version";
     private const string SpritePath = "Assets/Art/Placeholders/BlockSprite.asset";
+    private const string GlowSpritePath = "Assets/Art/Placeholders/CourageGlow.asset";
     private static Sprite blockSprite;
+    private static Sprite glowSprite;
 
     static LetGoSceneBuilder()
     {
@@ -25,6 +27,7 @@ public static class LetGoSceneBuilder
     {
         EnsureFolders();
         blockSprite = EnsureBlockSprite();
+        glowSprite = EnsureGlowSprite();
         BuildPrologue();
         BuildKindergarten();
         BuildStage();
@@ -409,11 +412,15 @@ public static class LetGoSceneBuilder
         var collider = player.GetComponent<CapsuleCollider2D>();
         collider.size = new Vector2(0.75f, 1.3f);
 
-        var glow = CreateBlock("Inner Light", Vector2.zero, Vector2.one, new Color(1f, 0.72f, 0.25f, 0.4f), false, 2);
+        var glow = new GameObject("Courage Glow", typeof(SpriteRenderer));
         glow.transform.SetParent(player.transform, false);
-        glow.transform.localScale = Vector3.one * 1.5f;
+        glow.transform.localPosition = new Vector3(0f, 0.28f, 0f);
+        var glowRenderer = glow.GetComponent<SpriteRenderer>();
+        glowRenderer.sprite = glowSprite;
+        glowRenderer.color = new Color(1f, 0.72f, 0.25f, 0.65f);
+        glowRenderer.sortingOrder = 2;
         var serialized = new SerializedObject(player.GetComponent<CourageSystem>());
-        serialized.FindProperty("innerLight").objectReferenceValue = glow.GetComponent<SpriteRenderer>();
+        serialized.FindProperty("innerLight").objectReferenceValue = glowRenderer;
         serialized.ApplyModifiedPropertiesWithoutUndo();
 
         var carriedVisualObject = CreateBlock("Carried Item", Vector2.zero, new Vector2(0.45f, 0.45f), Color.white, false, 8);
@@ -733,6 +740,39 @@ public static class LetGoSceneBuilder
         AssetDatabase.CreateAsset(texture, SpritePath);
         var sprite = Sprite.Create(texture, new Rect(0f, 0f, 2f, 2f), new Vector2(0.5f, 0.5f), 2f);
         sprite.name = "Block Sprite";
+        AssetDatabase.AddObjectToAsset(sprite, texture);
+        AssetDatabase.SaveAssets();
+        return sprite;
+    }
+
+    private static Sprite EnsureGlowSprite()
+    {
+        var existing = AssetDatabase.LoadAllAssetsAtPath(GlowSpritePath).OfType<Sprite>().FirstOrDefault();
+        if (existing != null) return existing;
+
+        const int size = 64;
+        var texture = new Texture2D(size, size, TextureFormat.RGBA32, false)
+        {
+            name = "Courage Glow Texture",
+            filterMode = FilterMode.Bilinear,
+            wrapMode = TextureWrapMode.Clamp
+        };
+        var pixels = new Color[size * size];
+        var center = (size - 1) * 0.5f;
+        for (var y = 0; y < size; y++)
+        {
+            for (var x = 0; x < size; x++)
+            {
+                var distance = Vector2.Distance(new Vector2(x, y), new Vector2(center, center)) / center;
+                var alpha = 1f - Mathf.SmoothStep(0.05f, 1f, distance);
+                pixels[y * size + x] = new Color(1f, 1f, 1f, alpha * alpha);
+            }
+        }
+        texture.SetPixels(pixels);
+        texture.Apply();
+        AssetDatabase.CreateAsset(texture, GlowSpritePath);
+        var sprite = Sprite.Create(texture, new Rect(0f, 0f, size, size), new Vector2(0.5f, 0.5f), size);
+        sprite.name = "Courage Glow Sprite";
         AssetDatabase.AddObjectToAsset(sprite, texture);
         AssetDatabase.SaveAssets();
         return sprite;
