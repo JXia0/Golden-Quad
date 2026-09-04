@@ -124,9 +124,19 @@ public static class LetGoArtBinder
         var exact = FindSpriteFile(slotId, new[] { ArtRoot, SpriteRoot });
         if (exact != null) return exact;
         if (slotId == "char_child")
-            return FindLargestSpriteAtPath("Assets/Sprites/char_child/char_child_Idle 4.png");
+            return FindFirstSpriteAtPath("Assets/Sprites/char_child/char_child_Idle 4.png");
         if (slotId == "char_teen")
-            return FindLargestSpriteAtPath("Assets/Sprites/char_teen/char_teen_Idle 4.png");
+            return FindFirstSpriteAtPath("Assets/Sprites/char_teen/char_teen_Idle 4.png");
+        if (slotId == "char_adult")
+            return FindFirstSpriteAtPath("Assets/Sprites/char_adult/char_adult_Idle 4.png");
+        if (slotId == "char_parent")
+            return FindFirstSpriteAtPath("Assets/Sprites/char_parent/char_parent_Idle 4.png");
+        if (slotId == "char_crying_child")
+            return FindFirstSpriteAtPath("Assets/Sprites/char_crying_child/char_crying_child_哭泣 4.png");
+        if (slotId == "char_teacher")
+            return FindFirstSpriteAtPath("Assets/Sprites/char_teacher/char_teacher 侧面站立 1.png");
+        if (slotId == "char_mentor")
+            return FindFirstSpriteAtPath("Assets/Sprites/char_mentor/char_mentor  侧面站立 1.png");
         var fallback = slotId switch
         {
             "memory_kindergarten_set" => "幼儿园背景图",
@@ -162,6 +172,10 @@ public static class LetGoArtBinder
     private static Sprite FindLargestSpriteAtPath(string path)
         => AssetDatabase.LoadAllAssetsAtPath(path).OfType<Sprite>()
             .OrderByDescending(sprite => sprite.rect.width * sprite.rect.height).FirstOrDefault();
+
+    private static Sprite FindFirstSpriteAtPath(string path)
+        => AssetDatabase.LoadAllAssetsAtPath(path).OfType<Sprite>()
+            .OrderBy(sprite => sprite.name).FirstOrDefault();
 
     private static AnimatorController FindController(string name)
     {

@@ -10,7 +10,7 @@ using UnityEngine.UI;
 [InitializeOnLoad]
 public static class LetGoSceneBuilder
 {
-    private const string BuildVersion = "4.5.0";
+    private const string BuildVersion = "4.6.0";
     private const string MarkerPath = "ProjectSettings/LetGoSceneBuild.version";
     private const string SpritePath = "Assets/Art/Placeholders/BlockSprite.asset";
     private const string GlowSpritePath = "Assets/Art/Placeholders/CourageGlow.asset";

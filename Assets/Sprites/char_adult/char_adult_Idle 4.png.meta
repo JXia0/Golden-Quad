@@ -114,111 +114,89 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: char_adult_Idle 4_0
+      name: char_adult_idle_00
       rect:
         serializedVersion: 2
-        x: 128
+        x: 0
         y: 0
-        width: 480
-        height: 724
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        width: 512
+        height: 683
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: bd20804c56d14cf30800000000000000
-      internalID: 4594829842742510299
+      spriteID: 97d6e4cfc7fa7324f93f43001ba6ba5e
+      internalID: 1857089251
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: char_adult_Idle 4_1
+      name: char_adult_idle_01
       rect:
         serializedVersion: 2
-        x: 666
+        x: 512
         y: 0
-        width: 292
-        height: 724
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        width: 512
+        height: 683
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: e6884061986151300800000000000000
-      internalID: 222108534660434030
+      spriteID: fcd5d90f19e96a046bc6aeef0032dbec
+      internalID: 238060588
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: char_adult_Idle 4_2
+      name: char_adult_idle_02
       rect:
         serializedVersion: 2
-        x: 1062
+        x: 1024
         y: 0
-        width: 582
-        height: 724
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        width: 512
+        height: 683
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: b9bfd6c312f59c780800000000000000
-      internalID: -8662287811918038117
+      spriteID: a1cee657e61ff444ba66e3d323a01a19
+      internalID: -1902960439
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: char_adult_Idle 4_3
+      name: char_adult_idle_03
       rect:
         serializedVersion: 2
-        x: 1166
-        y: 120
-        width: 6
-        height: 6
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: f38eb7818de6e02d0800000000000000
-      internalID: -3310586801667971009
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: char_adult_Idle 4_4
-      rect:
-        serializedVersion: 2
-        x: 1754
+        x: 1536
         y: 0
-        width: 367
-        height: 721
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        width: 512
+        height: 683
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 4f8642d55986c3d30800000000000000
-      internalID: 4412516725638326516
+      spriteID: 73f71a42fe94a474ab5db57f135e52a2
+      internalID: -24784345
       vertices: []
       indices: 
       edges: []
@@ -227,7 +205,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: 7d0f780756cd6e245b611e5cb6a38968
     internalID: 0
     vertices: []
     indices: 
@@ -237,11 +215,10 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      char_adult_Idle 4_0: 4594829842742510299
-      char_adult_Idle 4_1: 222108534660434030
-      char_adult_Idle 4_2: -8662287811918038117
-      char_adult_Idle 4_3: -3310586801667971009
-      char_adult_Idle 4_4: 4412516725638326516
+      char_adult_idle_00: 1857089251
+      char_adult_idle_01: 238060588
+      char_adult_idle_02: -1902960439
+      char_adult_idle_03: -24784345
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

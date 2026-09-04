@@ -123,177 +123,67 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: "char_adult_\u4F38\u624B 3_0"
+      name: char_adult_reach_00
       rect:
         serializedVersion: 2
-        x: 161
-        y: 15
-        width: 501
-        height: 690
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 0
+        y: 0
+        width: 683
+        height: 683
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: dd9253d1900339120800000000000000
-      internalID: 2419330240530950621
+      spriteID: f13b7b3e99b7f57468ae02d9de282a33
+      internalID: -352569767
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: "char_adult_\u4F38\u624B 3_1"
+      name: char_adult_reach_01
       rect:
         serializedVersion: 2
-        x: 778
-        y: 389
-        width: 62
-        height: 200
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 683
+        y: 0
+        width: 682
+        height: 683
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 726aa4c696a510da0800000000000000
-      internalID: -5980399421336410585
+      spriteID: 582d5b1afdbb7a24aa2fbfbc7f1b5c4c
+      internalID: 667373899
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: "char_adult_\u4F38\u624B 3_2"
+      name: char_adult_reach_02
       rect:
         serializedVersion: 2
-        x: 949
-        y: 15
-        width: 494
-        height: 689
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 1365
+        y: 0
+        width: 683
+        height: 683
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 5e79d9ed778cfd650800000000000000
-      internalID: 6259942424229812197
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: "char_adult_\u4F38\u624B 3_3"
-      rect:
-        serializedVersion: 2
-        x: 1501
-        y: 15
-        width: 553
-        height: 689
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: c0ac56fd8138932d0800000000000000
-      internalID: -3298461109221733876
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: "char_adult_\u4F38\u624B 3_4"
-      rect:
-        serializedVersion: 2
-        x: 766
-        y: 242
-        width: 90
-        height: 125
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: fe61c5ee409e95ce0800000000000000
-      internalID: -1415844400443156753
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: "char_adult_\u4F38\u624B 3_5"
-      rect:
-        serializedVersion: 2
-        x: 804
-        y: 125
-        width: 12
-        height: 8
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: ef5578f901f1ee130800000000000000
-      internalID: 3597847308571989502
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: "char_adult_\u4F38\u624B 3_6"
-      rect:
-        serializedVersion: 2
-        x: 812
-        y: 104
-        width: 6
-        height: 7
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 16512e943313917a0800000000000000
-      internalID: -6406034898605173407
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: "char_adult_\u4F38\u624B 3_7"
-      rect:
-        serializedVersion: 2
-        x: 812
-        y: 53
-        width: 42
-        height: 54
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: ddbaab427de32eca0800000000000000
-      internalID: -5989155460694234147
+      spriteID: 5387f2b9b238e854ca3160d87c18e115
+      internalID: -700146143
       vertices: []
       indices: 
       edges: []
@@ -302,7 +192,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: fc9d92ac2bd36794ba3616794fab6180
     internalID: 0
     vertices: []
     indices: 
@@ -312,14 +202,9 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      "char_adult_\u4F38\u624B 3_0": 2419330240530950621
-      "char_adult_\u4F38\u624B 3_1": -5980399421336410585
-      "char_adult_\u4F38\u624B 3_2": 6259942424229812197
-      "char_adult_\u4F38\u624B 3_3": -3298461109221733876
-      "char_adult_\u4F38\u624B 3_4": -1415844400443156753
-      "char_adult_\u4F38\u624B 3_5": 3597847308571989502
-      "char_adult_\u4F38\u624B 3_6": -6406034898605173407
-      "char_adult_\u4F38\u624B 3_7": -5989155460694234147
+      char_adult_reach_00: -352569767
+      char_adult_reach_01: 667373899
+      char_adult_reach_02: -700146143
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
