@@ -10,7 +10,7 @@ using UnityEngine.UI;
 [InitializeOnLoad]
 public static class LetGoSceneBuilder
 {
-    private const string BuildVersion = "3.2.0";
+    private const string BuildVersion = "3.3.0";
     private const string MarkerPath = "ProjectSettings/LetGoSceneBuild.version";
     private const string SpritePath = "Assets/Art/Placeholders/BlockSprite.asset";
     private static Sprite blockSprite;
@@ -44,6 +44,7 @@ public static class LetGoSceneBuilder
         AssetDatabase.SaveAssets();
         AssetDatabase.Refresh();
         EditorSceneManager.OpenScene(paths[0]);
+        LetGoArtBinder.ApplyFinalArt();
         Debug.Log("[LetGo] Built the five-scene hold-and-release playable flow.");
     }
 
@@ -62,6 +63,10 @@ public static class LetGoSceneBuilder
     {
         var setup = CreateBase("01_Kindergarten", new Vector2(-5f, -2.1f), 0, 24f, new Color(0.08f, 0.09f, 0.14f));
         SetPlayerArtSlot(setup.Player, "char_adult");
+        var report = CreateBlock("Carried Research Report", Vector2.zero, new Vector2(0.42f, 0.68f), Color.white, false, 4);
+        report.transform.SetParent(setup.Player.transform, false);
+        report.transform.localPosition = new Vector3(0.48f, 0.08f, 0f);
+        AddArtSlot(report, "prop_research_report");
         new GameObject("Reset Journey Choices", typeof(JourneyStartReset));
         CreateLabel("成年后的第一次独立研究汇报", new Vector2(1.5f, 2.8f), 0.4f, new Color(0.7f, 0.76f, 0.9f));
         var officeBackground = CreateBlock("MeetingRoom", new Vector2(0f, -0.2f), new Vector2(15f, 5.5f), new Color(0.2f, 0.24f, 0.34f), false, -4);
@@ -96,6 +101,8 @@ public static class LetGoSceneBuilder
         AddArtSlot(chair, "prop_named_chair");
         var blocks = CreateBlock("Oversized Blocks", new Vector2(6.3f, -2.25f), new Vector2(1.8f, 1f), new Color(0.38f, 0.55f, 0.55f), true, 1);
         AddArtSlot(blocks, "deco_blocks");
+        var toy = CreateBlock("Dropped Toy", new Vector2(8.3f, -2.35f), new Vector2(0.72f, 0.78f), Color.white, false, 2);
+        AddArtSlot(toy, "prop_toy");
 
         var cryingChild = CreateCoreHoldTarget("Crying Child", new Vector2(10f, -1.7f), new Vector2(0.9f, 1.9f),
             new Color(0.72f, 0.42f, 0.48f), "char_crying_child", "crying-child", HoldTargetMode.Companion,
@@ -162,7 +169,7 @@ public static class LetGoSceneBuilder
         AddArtSlot(spotlightC, "fx_stage_spotlight");
 
         var fearRoot = new GameObject("Audience Fear").transform;
-        var fears = CreateFearEyes(fearRoot, new Vector2(5f, 2.2f), 10);
+        var fears = CreateAudienceFear(fearRoot, new Vector2(5f, 0.55f));
         new GameObject("Emotional Environment", typeof(EmotionalEnvironment)).GetComponent<EmotionalEnvironment>()
             .Configure(hand, fearRoot, fears, Camera.main, new Color(0.1f, 0.06f, 0.13f), new Color(0.025f, 0.015f, 0.055f));
 
@@ -219,6 +226,8 @@ public static class LetGoSceneBuilder
         AddArtSlot(mentor, "char_mentor");
         var researchBackground = CreateBlock("Research Background", new Vector2(8f, -0.2f), new Vector2(34f, 5.5f), new Color(0.03f, 0.1f, 0.14f), false, -5);
         AddArtSlot(researchBackground, "bg_research_room");
+        var researchDesk = CreateBlock("Research Desk", new Vector2(13f, -2.05f), new Vector2(8f, 2.1f), Color.white, false, 0);
+        AddArtSlot(researchDesk, "prop_research_desk");
         CreateLabel("按住 E 抓住资料 · 松开 E 提交", new Vector2(-5f, 2.5f), 0.28f, new Color(0.62f, 0.82f, 0.86f));
 
         CreateCoreHoldTarget("Question Card", new Vector2(-4f, -1.45f), new Vector2(0.9f, 1.2f),
@@ -461,6 +470,15 @@ public static class LetGoSceneBuilder
             renderers[i] = eye.GetComponent<SpriteRenderer>();
         }
         return renderers;
+    }
+
+    private static SpriteRenderer[] CreateAudienceFear(Transform parent, Vector2 center)
+    {
+        var crowd = CreateBlock("Audience Eyes Artwork", center, new Vector2(20f, 4.4f),
+            new Color(0.85f, 0.86f, 1f, 0.55f), false, 0);
+        AddArtSlot(crowd, "audience_eyes");
+        crowd.transform.SetParent(parent, true);
+        return new[] { crowd.GetComponent<SpriteRenderer>() };
     }
 
     private static GameObject CreatePerson(string name, Vector2 position, Vector2 size, Color color)
