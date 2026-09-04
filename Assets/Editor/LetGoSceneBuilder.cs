@@ -10,7 +10,7 @@ using UnityEngine.UI;
 [InitializeOnLoad]
 public static class LetGoSceneBuilder
 {
-    private const string BuildVersion = "3.2.0";
+    private const string BuildVersion = "3.9.0";
     private const string MarkerPath = "ProjectSettings/LetGoSceneBuild.version";
     private const string SpritePath = "Assets/Art/Placeholders/BlockSprite.asset";
     private static Sprite blockSprite;
@@ -44,6 +44,7 @@ public static class LetGoSceneBuilder
         AssetDatabase.SaveAssets();
         AssetDatabase.Refresh();
         EditorSceneManager.OpenScene(paths[0]);
+        LetGoArtBinder.ApplyFinalArt();
         Debug.Log("[LetGo] Built the five-scene hold-and-release playable flow.");
     }
 
@@ -62,9 +63,13 @@ public static class LetGoSceneBuilder
     {
         var setup = CreateBase("01_Kindergarten", new Vector2(-5f, -2.1f), 0, 24f, new Color(0.08f, 0.09f, 0.14f));
         SetPlayerArtSlot(setup.Player, "char_adult");
+        var report = CreateBlock("Carried Research Report", Vector2.zero, new Vector2(0.42f, 0.68f), Color.white, false, 4);
+        report.transform.SetParent(setup.Player.transform, false);
+        report.transform.localPosition = new Vector3(0.48f, 0.08f, 0f);
+        AddArtSlot(report, "prop_research_report");
         new GameObject("Reset Journey Choices", typeof(JourneyStartReset));
         CreateLabel("成年后的第一次独立研究汇报", new Vector2(1.5f, 2.8f), 0.4f, new Color(0.7f, 0.76f, 0.9f));
-        var officeBackground = CreateBlock("MeetingRoom", new Vector2(0f, -0.2f), new Vector2(15f, 5.5f), new Color(0.2f, 0.24f, 0.34f), false, -4);
+        var officeBackground = CreateBlock("MeetingRoom", new Vector2(0f, -0.2f), new Vector2(34f, 5.5f), new Color(0.2f, 0.24f, 0.34f), false, -4);
         AddArtSlot(officeBackground, "bg_office_hallway");
         CreateLabel("会议室", new Vector2(5f, 1.5f), 0.35f, Color.white);
         var door = CreateInteractable<StoryDoor>("Meeting Door", new Vector2(4.4f, -1.3f), new Vector2(1.2f, 2.7f), new Color(0.4f, 0.45f, 0.58f));
@@ -84,10 +89,10 @@ public static class LetGoSceneBuilder
             "按住 E 牵住父母的手", 2.1f, 2.3f, 0, 1.15f, 3.6f, -4.2f);
         CreateBlock("Warm Light", new Vector2(-9f, -0.8f), new Vector2(5f, 5f), new Color(1f, 0.55f, 0.2f, 0.12f), false, -5);
         CreateLabel("按住 E 维持牵手 · 松开 E 放手", new Vector2(-8f, 2.5f), 0.28f, new Color(0.95f, 0.78f, 0.46f));
-        var kindergartenBackground = CreateBlock("Classroom Wall", new Vector2(9f, -0.3f), new Vector2(25f, 5.2f), new Color(0.15f, 0.17f, 0.25f), false, -4);
+        var kindergartenBackground = CreateBlock("Classroom Wall", new Vector2(9f, -0.3f), new Vector2(34f, 5.5f), new Color(0.15f, 0.17f, 0.25f), false, -4);
         AddArtSlot(kindergartenBackground, "bg_kindergarten_hall");
 
-        var classroomGate = CreateBlock("Classroom Hand Gate", new Vector2(-2.8f, -0.5f), new Vector2(0.45f, 5.5f), new Color(0.95f, 0.72f, 0.35f, 0.3f), false, 2);
+        var classroomGate = CreateBlock("Classroom Hand Gate", new Vector2(-2.8f, -0.5f), new Vector2(2.2f, 5.5f), new Color(0.95f, 0.72f, 0.35f, 0.3f), false, 2);
         AddArtSlot(classroomGate, "prop_kindergarten_door");
         var releaseGate = new GameObject("Release Parent At Door", typeof(ReleaseGate)).GetComponent<ReleaseGate>();
         releaseGate.Configure(hand, guardian.TargetId, -1.8f, string.Empty);
@@ -96,6 +101,8 @@ public static class LetGoSceneBuilder
         AddArtSlot(chair, "prop_named_chair");
         var blocks = CreateBlock("Oversized Blocks", new Vector2(6.3f, -2.25f), new Vector2(1.8f, 1f), new Color(0.38f, 0.55f, 0.55f), true, 1);
         AddArtSlot(blocks, "deco_blocks");
+        var toy = CreateBlock("Dropped Toy", new Vector2(8.3f, -2.35f), new Vector2(0.72f, 0.78f), Color.white, false, 2);
+        AddArtSlot(toy, "prop_toy");
 
         var cryingChild = CreateCoreHoldTarget("Crying Child", new Vector2(10f, -1.7f), new Vector2(0.9f, 1.9f),
             new Color(0.72f, 0.42f, 0.48f), "char_crying_child", "crying-child", HoldTargetMode.Companion,
@@ -148,11 +155,13 @@ public static class LetGoSceneBuilder
         var backstageParent = CreateCoreHoldTarget("Parent Backstage", new Vector2(-9f, -1.7f), new Vector2(1f, 2.2f),
             new Color(0.85f, 0.55f, 0.3f), "char_parent", "stage-parent", HoldTargetMode.Companion,
             "按住 E 接住肩上的手", 2.1f, 2.3f, 0, 1.15f, 3.6f, -4.5f);
-        var curtainLeft = CreateBlock("Curtain Left", new Vector2(-4.5f, 0f), new Vector2(2f, 7f), new Color(0.3f, 0.03f, 0.08f), false, 2);
-        var curtainRight = CreateBlock("Curtain Right", new Vector2(14.5f, 0f), new Vector2(2f, 7f), new Color(0.3f, 0.03f, 0.08f), false, 2);
-        AddArtSlot(curtainLeft, "prop_stage_curtain");
-        AddArtSlot(curtainRight, "prop_stage_curtain");
-        var stageBackground = CreateBlock("Stage Background", new Vector2(6f, -0.2f), new Vector2(34f, 5.5f), new Color(0.08f, 0.04f, 0.12f), false, -5);
+        // The delivered curtain art includes a large transparent half, so each full 3:1 canvas
+        // spans one side of the stage while its painted half frames the playable center.
+        var curtainLeft = CreateBlock("Curtain Left", new Vector2(-4.5f, 0f), new Vector2(17.5f, 5.8f), new Color(0.3f, 0.03f, 0.08f), false, 2);
+        var curtainRight = CreateBlock("Curtain Right", new Vector2(14.5f, 0f), new Vector2(17.5f, 5.8f), new Color(0.3f, 0.03f, 0.08f), false, 2);
+        AddArtSlot(curtainLeft, "prop_stage_curtain_l");
+        AddArtSlot(curtainRight, "prop_stage_curtain_r");
+        var stageBackground = CreateBlock("Stage Background", new Vector2(6f, -0.2f), new Vector2(34f, 11.33f), new Color(0.08f, 0.04f, 0.12f), false, -5);
         AddArtSlot(stageBackground, "bg_stage_auditorium");
         var spotlightA = CreateBlock("Spotlight A", new Vector2(0f, 0f), new Vector2(3.6f, 7f), new Color(1f, 0.85f, 0.45f, 0.1f), false, -3);
         var spotlightB = CreateBlock("Spotlight B", new Vector2(5f, 0f), new Vector2(4f, 7f), new Color(1f, 0.85f, 0.45f, 0.12f), false, -3);
@@ -162,7 +171,7 @@ public static class LetGoSceneBuilder
         AddArtSlot(spotlightC, "fx_stage_spotlight");
 
         var fearRoot = new GameObject("Audience Fear").transform;
-        var fears = CreateFearEyes(fearRoot, new Vector2(5f, 2.2f), 10);
+        var fears = CreateAudienceFear(fearRoot, new Vector2(5f, 0.55f));
         new GameObject("Emotional Environment", typeof(EmotionalEnvironment)).GetComponent<EmotionalEnvironment>()
             .Configure(hand, fearRoot, fears, Camera.main, new Color(0.1f, 0.06f, 0.13f), new Color(0.025f, 0.015f, 0.055f));
 
@@ -188,8 +197,7 @@ public static class LetGoSceneBuilder
         AddArtSlot(finalCueObject, "prop_stage_marker");
         finalCueObject.AddComponent<FinalReleaseCue>().Configure(hand, 2.2f, 2);
         CreateLabel("吸气 · 松开时说出台词", new Vector2(10f, -0.4f), 0.28f, new Color(0.95f, 0.82f, 0.55f));
-        var exit = CreateInteractable<StoryDoor>("Back Curtain", new Vector2(17f, -1.1f), new Vector2(1.3f, 3.1f), new Color(0.5f, 0.2f, 0.3f));
-        AddArtSlot(exit.gameObject, "prop_stage_curtain");
+        var exit = CreateInteractable<StoryDoor>("Back Curtain", new Vector2(17f, -1.1f), new Vector2(1.3f, 3.1f), new Color(0.5f, 0.2f, 0.3f, 0.05f));
         exit.Configure(true, false, "按 E 走下舞台");
         AddOpening("这一次，没有人能替我走到灯光中央。", 0.8f, 3.5f);
         Save("03_Stage");
@@ -219,6 +227,8 @@ public static class LetGoSceneBuilder
         AddArtSlot(mentor, "char_mentor");
         var researchBackground = CreateBlock("Research Background", new Vector2(8f, -0.2f), new Vector2(34f, 5.5f), new Color(0.03f, 0.1f, 0.14f), false, -5);
         AddArtSlot(researchBackground, "bg_research_room");
+        var researchDesk = CreateBlock("Research Desk", new Vector2(13f, -2.05f), new Vector2(8f, 2.1f), Color.white, false, 0);
+        AddArtSlot(researchDesk, "prop_research_desk");
         CreateLabel("按住 E 抓住资料 · 松开 E 提交", new Vector2(-5f, 2.5f), 0.28f, new Color(0.62f, 0.82f, 0.86f));
 
         CreateCoreHoldTarget("Question Card", new Vector2(-4f, -1.45f), new Vector2(0.9f, 1.2f),
@@ -250,9 +260,9 @@ public static class LetGoSceneBuilder
         var doubtRoot = new GameObject("Doubt Notes").transform;
         var doubts = new[]
         {
-            CreateBlock("Doubt A", new Vector2(17f, 1.4f), new Vector2(2.2f, 0.45f), new Color(0.2f, 0.24f, 0.34f, 0.5f), false, 2).GetComponent<SpriteRenderer>(),
-            CreateBlock("Doubt B", new Vector2(20f, 2.1f), new Vector2(2.5f, 0.45f), new Color(0.2f, 0.24f, 0.34f, 0.5f), false, 2).GetComponent<SpriteRenderer>(),
-            CreateBlock("Doubt C", new Vector2(23f, 1.2f), new Vector2(2f, 0.45f), new Color(0.2f, 0.24f, 0.34f, 0.5f), false, 2).GetComponent<SpriteRenderer>()
+            CreateBlock("Doubt A", new Vector2(17f, 1.4f), new Vector2(0.9f, 1.8f), new Color(0.2f, 0.24f, 0.34f, 0.5f), false, 2).GetComponent<SpriteRenderer>(),
+            CreateBlock("Doubt B", new Vector2(20f, 1.7f), new Vector2(1.1f, 2.2f), new Color(0.2f, 0.24f, 0.34f, 0.5f), false, 2).GetComponent<SpriteRenderer>(),
+            CreateBlock("Doubt C", new Vector2(23f, 1.2f), new Vector2(0.85f, 1.7f), new Color(0.2f, 0.24f, 0.34f, 0.5f), false, 2).GetComponent<SpriteRenderer>()
         };
         foreach (var doubt in doubts)
         {
@@ -461,6 +471,15 @@ public static class LetGoSceneBuilder
             renderers[i] = eye.GetComponent<SpriteRenderer>();
         }
         return renderers;
+    }
+
+    private static SpriteRenderer[] CreateAudienceFear(Transform parent, Vector2 center)
+    {
+        var crowd = CreateBlock("Audience Eyes Artwork", center, new Vector2(20f, 4.4f),
+            new Color(0.85f, 0.86f, 1f, 0.55f), false, 0);
+        AddArtSlot(crowd, "audience_eyes");
+        crowd.transform.SetParent(parent, true);
+        return new[] { crowd.GetComponent<SpriteRenderer>() };
     }
 
     private static GameObject CreatePerson(string name, Vector2 position, Vector2 size, Color color)

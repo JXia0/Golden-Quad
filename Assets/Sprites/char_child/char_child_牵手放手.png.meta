@@ -123,177 +123,89 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: "char_child_\u7275\u624B\u653E\u624B_0"
+      name: char_child_hand_00
       rect:
         serializedVersion: 2
-        x: 62
+        x: 0
         y: 0
-        width: 500
-        height: 637
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        width: 512
+        height: 624
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 02a904ca6e36967a0800000000000000
-      internalID: -6383461154437424608
+      spriteID: b2e84f0b2e4b9e24d96f468fd5d83676
+      internalID: 17323577
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: "char_child_\u7275\u624B\u653E\u624B_1"
+      name: char_child_hand_01
       rect:
         serializedVersion: 2
-        x: 531
-        y: 21
-        width: 15
-        height: 32
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 081c9bf006456f8f0800000000000000
-      internalID: -507125136475176576
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: "char_child_\u7275\u624B\u653E\u624B_2"
-      rect:
-        serializedVersion: 2
-        x: 569
+        x: 512
         y: 0
-        width: 551
-        height: 637
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        width: 512
+        height: 624
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: add3dbeb381f02b40800000000000000
-      internalID: 5413592300242419162
+      spriteID: 4e0bd07fc0b25344eba4df1509b28834
+      internalID: -797712418
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: "char_child_\u7275\u624B\u653E\u624B_3"
+      name: char_child_hand_02
       rect:
         serializedVersion: 2
-        x: 1166
+        x: 1024
         y: 0
-        width: 412
-        height: 618
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        width: 512
+        height: 624
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: ba27b2a6b58f92e40800000000000000
-      internalID: 5632305880510460587
+      spriteID: e94c544a5c09e4144a6b1dadb9f070ee
+      internalID: -1039875844
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: "char_child_\u7275\u624B\u653E\u624B_4"
+      name: char_child_hand_03
       rect:
         serializedVersion: 2
-        x: 1619
+        x: 1536
         y: 0
-        width: 538
-        height: 626
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        width: 512
+        height: 624
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 5210656abfa614cd0800000000000000
-      internalID: -2575659882819223259
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: "char_child_\u7275\u624B\u653E\u624B_5"
-      rect:
-        serializedVersion: 2
-        x: 1623
-        y: 17
-        width: 35
-        height: 55
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: df99b3cd07f557d10800000000000000
-      internalID: 2122707737710926333
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: "char_child_\u7275\u624B\u653E\u624B_6"
-      rect:
-        serializedVersion: 2
-        x: 1631
-        y: 0
-        width: 17
-        height: 25
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: af7f56eed6f4a1480800000000000000
-      internalID: -8927735977738897414
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: "char_child_\u7275\u624B\u653E\u624B_7"
-      rect:
-        serializedVersion: 2
-        x: 175
-        y: 0
-        width: 14
-        height: 5
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 50ad6c40e38a359d0800000000000000
-      internalID: -2786698760090625531
+      spriteID: 7e296ead29af4084ebae5414a7ba674f
+      internalID: 909985877
       vertices: []
       indices: 
       edges: []
@@ -302,7 +214,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: 1ec2801f572f42841b97a6b48ec7f0ed
     internalID: 0
     vertices: []
     indices: 
@@ -312,14 +224,10 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      "char_child_\u7275\u624B\u653E\u624B_0": -6383461154437424608
-      "char_child_\u7275\u624B\u653E\u624B_1": -507125136475176576
-      "char_child_\u7275\u624B\u653E\u624B_2": 5413592300242419162
-      "char_child_\u7275\u624B\u653E\u624B_3": 5632305880510460587
-      "char_child_\u7275\u624B\u653E\u624B_4": -2575659882819223259
-      "char_child_\u7275\u624B\u653E\u624B_5": 2122707737710926333
-      "char_child_\u7275\u624B\u653E\u624B_6": -8927735977738897414
-      "char_child_\u7275\u624B\u653E\u624B_7": -2786698760090625531
+      char_child_hand_00: 17323577
+      char_child_hand_01: -797712418
+      char_child_hand_02: -1039875844
+      char_child_hand_03: 909985877
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

@@ -1,31 +1,10 @@
 fileFormatVersion: 2
-guid: 0c01d189875a4f54394c685a8d896e1b
+guid: f155ebd2b59815e419fe87fd60452831
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -3899898954737110110
-    second: char_child_Idle 4_0
-  - first:
-      213: -1678189201428843452
-    second: char_child_Idle 4_1
-  - first:
-      213: -3058775526257195043
-    second: char_child_Idle 4_2
-  - first:
-      213: -6036952766014411528
-    second: char_child_Idle 4_3
-  - first:
-      213: -8137695084441241606
-    second: char_child_Idle 4_4
-  - first:
-      213: 6867265005519609960
-    second: char_child_Idle 4_5
-  - first:
-      213: 283213005655385884
-    second: char_child_Idle 4_6
-  - first:
-      213: -2712393419521932651
-    second: char_child_Idle 4_7
+      213: 7388252262754489199
+    second: bg_kindergarten_hall_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -123,89 +102,23 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: char_child_idle_00
+      name: bg_kindergarten_hall_0
       rect:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 512
-        height: 719
-      alignment: 7
-      pivot: {x: 0.5, y: 0}
+        width: 3400
+        height: 550
+      alignment: 0
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: 0
+      tessellationDetail: -1
       bones: []
-      spriteID: bbb1f0bbf8d98e4448e8c1e40e7ed1d2
-      internalID: 1347895108
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: char_child_idle_01
-      rect:
-        serializedVersion: 2
-        x: 512
-        y: 0
-        width: 512
-        height: 719
-      alignment: 7
-      pivot: {x: 0.5, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 541ad6cf799f8a441855c7a113f70940
-      internalID: -1368994014
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: char_child_idle_02
-      rect:
-        serializedVersion: 2
-        x: 1024
-        y: 0
-        width: 512
-        height: 719
-      alignment: 7
-      pivot: {x: 0.5, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 89c70edf89111b143989ce837d2f70ac
-      internalID: -1786029888
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: char_child_idle_03
-      rect:
-        serializedVersion: 2
-        x: 1536
-        y: 0
-        width: 512
-        height: 719
-      alignment: 7
-      pivot: {x: 0.5, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: ed4692233a0d19743848952374bb5d7f
-      internalID: -1974840963
+      spriteID: f631570d948588660800000000000000
+      internalID: 7388252262754489199
       vertices: []
       indices: 
       edges: []
@@ -214,7 +127,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 45c20af1649dfdb43ac3926522b80bb7
+    spriteID: 
     internalID: 0
     vertices: []
     indices: 
@@ -224,10 +137,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      char_child_idle_00: 1347895108
-      char_child_idle_01: -1368994014
-      char_child_idle_02: -1786029888
-      char_child_idle_03: -1974840963
+      bg_kindergarten_hall_0: 7388252262754489199
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

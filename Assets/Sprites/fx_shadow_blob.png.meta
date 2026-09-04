@@ -1,25 +1,22 @@
 fileFormatVersion: 2
-guid: 3ab9b8765dbe6cc48a49c89a85829011
+guid: d0b63d8a38cfa4b4bb0f3844e2615044
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -4469596389381758192
-    second: char_child_Walk 6_0
+      213: -6990185897662362727
+    second: fx_shadow_blob_0
   - first:
-      213: -8050817332066578378
-    second: char_child_Walk 6_1
+      213: 8690229183592634659
+    second: fx_shadow_blob_1
   - first:
-      213: -5479648528678059643
-    second: char_child_Walk 6_2
+      213: 1901824703698567258
+    second: fx_shadow_blob_2
   - first:
-      213: -4490239765172807127
-    second: char_child_Walk 6_3
+      213: 932052692750338947
+    second: fx_shadow_blob_3
   - first:
-      213: 380103751918398377
-    second: char_child_Walk 6_4
-  - first:
-      213: -1946623626202407034
-    second: char_child_Walk 6_5
+      213: 2673426790809531325
+    second: fx_shadow_blob_4
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -117,133 +114,111 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: char_child_walk_00
+      name: fx_shadow_blob_0
       rect:
         serializedVersion: 2
-        x: 0
-        y: 0
-        width: 341
-        height: 683
-      alignment: 7
-      pivot: {x: 0.5, y: 0}
+        x: 215
+        y: 67
+        width: 630
+        height: 1375
+      alignment: 0
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: 0
+      tessellationDetail: -1
       bones: []
-      spriteID: fb3faf32fbda5464aa11cc4413d2112f
-      internalID: 1430137103
+      spriteID: 99bc3ef26feddfe90800000000000000
+      internalID: -6990185897662362727
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: char_child_walk_01
+      name: fx_shadow_blob_1
       rect:
         serializedVersion: 2
-        x: 341
-        y: 0
-        width: 342
-        height: 683
-      alignment: 7
-      pivot: {x: 0.5, y: 0}
+        x: 450
+        y: 1437
+        width: 15
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: 0
+      tessellationDetail: -1
       bones: []
-      spriteID: efad8e8f194e6474395eb3e89d643c94
-      internalID: -935764511
+      spriteID: 32995c05665e99870800000000000000
+      internalID: 8690229183592634659
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: char_child_walk_02
+      name: fx_shadow_blob_2
       rect:
         serializedVersion: 2
-        x: 683
-        y: 0
-        width: 341
-        height: 683
-      alignment: 7
-      pivot: {x: 0.5, y: 0}
+        x: 429
+        y: 61
+        width: 32
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: 0
+      tessellationDetail: -1
       bones: []
-      spriteID: 86b7dbc6ea8dbd04a9d3dc1ef952fe5c
-      internalID: 1105164347
+      spriteID: a500401ed73a46a10800000000000000
+      internalID: 1901824703698567258
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: char_child_walk_03
+      name: fx_shadow_blob_3
       rect:
         serializedVersion: 2
-        x: 1024
-        y: 0
-        width: 341
-        height: 683
-      alignment: 7
-      pivot: {x: 0.5, y: 0}
+        x: 442
+        y: 79
+        width: 13
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: 0
+      tessellationDetail: -1
       bones: []
-      spriteID: bcf00572e2a57894e90e3128cdf946dd
-      internalID: -1115135349
+      spriteID: 38b845f5cf05fec00800000000000000
+      internalID: 932052692750338947
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: char_child_walk_04
+      name: fx_shadow_blob_4
       rect:
         serializedVersion: 2
-        x: 1365
-        y: 0
-        width: 342
-        height: 683
-      alignment: 7
-      pivot: {x: 0.5, y: 0}
+        x: 518
+        y: 80
+        width: 10
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: 0
+      tessellationDetail: -1
       bones: []
-      spriteID: 41f0fca2b22417c4e97efa1319cd450e
-      internalID: -711993272
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: char_child_walk_05
-      rect:
-        serializedVersion: 2
-        x: 1707
-        y: 0
-        width: 341
-        height: 683
-      alignment: 7
-      pivot: {x: 0.5, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: b7730abb395beb44f9eb2f3d0e32e858
-      internalID: -1658932953
+      spriteID: db3f637708be91520800000000000000
+      internalID: 2673426790809531325
       vertices: []
       indices: 
       edges: []
@@ -252,7 +227,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 4126129f7ffd1ad4abf2d16e4c7773dc
+    spriteID: 
     internalID: 0
     vertices: []
     indices: 
@@ -262,12 +237,11 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      char_child_walk_00: 1430137103
-      char_child_walk_01: -935764511
-      char_child_walk_02: 1105164347
-      char_child_walk_03: -1115135349
-      char_child_walk_04: -711993272
-      char_child_walk_05: -1658932953
+      fx_shadow_blob_0: -6990185897662362727
+      fx_shadow_blob_1: 8690229183592634659
+      fx_shadow_blob_2: 1901824703698567258
+      fx_shadow_blob_3: 932052692750338947
+      fx_shadow_blob_4: 2673426790809531325
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

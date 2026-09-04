@@ -9,6 +9,7 @@ using UnityEngine;
 public static class LetGoArtBinder
 {
     private const string ArtRoot = "Assets/Art/Final";
+    private const string SpriteRoot = "Assets/Sprites";
     private const string AudioRoot = "Assets/Audio/Final";
 
     [MenuItem("Tools/Let Go/Apply Final Art By Filename")]
@@ -17,6 +18,7 @@ public static class LetGoArtBinder
         Directory.CreateDirectory(ArtRoot);
         Directory.CreateDirectory(AudioRoot);
         AssetDatabase.Refresh();
+        LetGoSpriteAssetIntegrator.BuildChildController();
         var previousScenes = EditorSceneManager.GetSceneManagerSetup();
         var changedSlots = 0;
 
@@ -29,7 +31,7 @@ public static class LetGoArtBinder
                 var sprite = FindSprite(slot.SlotId);
                 if (sprite != null && slot.TargetRenderer != null)
                 {
-                    var targetBounds = slot.TargetRenderer.bounds.size;
+                    var targetBounds = GetTargetBounds(slot, slot.TargetRenderer);
                     slot.TargetRenderer.sprite = sprite;
                     slot.TargetRenderer.color = Color.white;
                     if (IsBackdrop(slot.SlotId)) FitRendererToBounds(slot.TargetRenderer, targetBounds);
@@ -84,44 +86,85 @@ public static class LetGoArtBinder
     }
 
     private static bool IsBackdrop(string slotId)
-        => slotId.StartsWith("bg_", System.StringComparison.OrdinalIgnoreCase) ||
-           slotId.StartsWith("memory_", System.StringComparison.OrdinalIgnoreCase);
+        => slotId.StartsWith("bg_", System.StringComparison.OrdinalIgnoreCase);
+
+    private static Vector3 GetTargetBounds(ArtSlot slot, SpriteRenderer renderer)
+    {
+        if (slot.SlotId.StartsWith("char_", System.StringComparison.OrdinalIgnoreCase) &&
+            renderer.TryGetComponent<CapsuleCollider2D>(out var capsule))
+            return capsule.bounds.size;
+        return renderer.bounds.size;
+    }
 
     private static void FitRendererToBounds(SpriteRenderer renderer, Vector3 targetBounds)
     {
+        renderer.transform.localScale = Vector3.one;
         var currentBounds = renderer.bounds.size;
         if (currentBounds.x <= 0.0001f || currentBounds.y <= 0.0001f) return;
-        var scale = renderer.transform.localScale;
-        scale.x *= targetBounds.x / currentBounds.x;
-        scale.y *= targetBounds.y / currentBounds.y;
-        renderer.transform.localScale = scale;
+        renderer.transform.localScale = new Vector3(
+            targetBounds.x / currentBounds.x,
+            targetBounds.y / currentBounds.y,
+            1f);
         EditorUtility.SetDirty(renderer.transform);
     }
 
     private static void FitRendererInsideBounds(SpriteRenderer renderer, Vector3 targetBounds)
     {
+        renderer.transform.localScale = Vector3.one;
         var currentBounds = renderer.bounds.size;
         if (currentBounds.x <= 0.0001f || currentBounds.y <= 0.0001f) return;
         var factor = Mathf.Min(targetBounds.x / currentBounds.x, targetBounds.y / currentBounds.y);
-        renderer.transform.localScale *= factor;
+        renderer.transform.localScale = new Vector3(factor, factor, 1f);
         EditorUtility.SetDirty(renderer.transform);
     }
 
     private static Sprite FindSprite(string slotId)
     {
         if (string.IsNullOrWhiteSpace(slotId)) return null;
-        foreach (var guid in AssetDatabase.FindAssets($"{slotId} t:Sprite", new[] { ArtRoot }))
+        var exact = FindSpriteFile(slotId, new[] { ArtRoot, SpriteRoot });
+        if (exact != null) return exact;
+        if (slotId == "char_child")
+            return FindLargestSpriteAtPath("Assets/Sprites/char_child/char_child_Idle 4.png");
+        var fallback = slotId switch
+        {
+            "memory_kindergarten_set" => "幼儿园背景图",
+            "memory_stage_set" => "bg_stage_auditorium",
+            "memory_research_set" => "bg_research_room",
+            "prop_unknown_door" => "prop_meeting_door",
+            _ => string.Empty
+        };
+        return string.IsNullOrEmpty(fallback) ? null : FindSpriteFile(fallback, new[] { SpriteRoot });
+    }
+
+    private static Sprite FindSpriteFile(string fileName, string[] roots)
+    {
+        var extensions = new[] { ".png", ".jpg", ".jpeg", ".psd" };
+        foreach (var root in roots)
+        foreach (var extension in extensions)
+        {
+            var directPath = $"{root}/{fileName}{extension}";
+            if (!File.Exists(directPath)) continue;
+            var directSprite = FindLargestSpriteAtPath(directPath);
+            if (directSprite != null) return directSprite;
+        }
+
+        foreach (var guid in AssetDatabase.FindAssets($"{fileName} t:Sprite", roots))
         {
             var path = AssetDatabase.GUIDToAssetPath(guid);
-            if (!string.Equals(Path.GetFileNameWithoutExtension(path), slotId, System.StringComparison.OrdinalIgnoreCase)) continue;
-            return AssetDatabase.LoadAllAssetsAtPath(path).OfType<Sprite>().FirstOrDefault();
+            if (!string.Equals(Path.GetFileNameWithoutExtension(path), fileName, System.StringComparison.OrdinalIgnoreCase)) continue;
+            return FindLargestSpriteAtPath(path);
         }
         return null;
     }
 
+    private static Sprite FindLargestSpriteAtPath(string path)
+        => AssetDatabase.LoadAllAssetsAtPath(path).OfType<Sprite>()
+            .OrderByDescending(sprite => sprite.rect.width * sprite.rect.height).FirstOrDefault();
+
     private static AnimatorController FindController(string name)
     {
-        foreach (var guid in AssetDatabase.FindAssets($"{name} t:AnimatorController", new[] { ArtRoot }))
+        foreach (var guid in AssetDatabase.FindAssets($"{name} t:AnimatorController",
+                     new[] { ArtRoot, LetGoSpriteAssetIntegrator.GeneratedRoot }))
         {
             var path = AssetDatabase.GUIDToAssetPath(guid);
             if (string.Equals(Path.GetFileNameWithoutExtension(path), name, System.StringComparison.OrdinalIgnoreCase))

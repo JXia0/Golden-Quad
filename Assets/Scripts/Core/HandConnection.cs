@@ -12,6 +12,7 @@ namespace LetGo
 
         private PlayerController2D player;
         private Rigidbody2D body;
+        private Animator animator;
         private HoldTarget currentTarget;
         private HoldTarget promptedTarget;
         private bool selfAnchoring;
@@ -44,6 +45,7 @@ namespace LetGo
         {
             player = GetComponent<PlayerController2D>();
             body = GetComponent<Rigidbody2D>();
+            animator = GetComponent<Animator>();
         }
 
         private void Update()
@@ -94,6 +96,7 @@ namespace LetGo
         {
             currentTarget = target;
             target.BeginHold(this);
+            if (target.TargetId == "parent") SetAnimatorBool("HoldingParent", true);
             SceneAudio.Instance?.PlayInteract();
             player.SetInteractionLocked(false);
             if (tether != null) tether.enabled = true;
@@ -107,6 +110,7 @@ namespace LetGo
             var released = currentTarget;
             currentTarget = null;
             if (tether != null) tether.enabled = false;
+            if (released != null && released.TargetId == "parent") SetAnimatorBool("HoldingParent", false);
             if (released != null && released.Mode == HoldTargetMode.Carryable) SceneAudio.Instance?.PlayItemMove();
             else SceneAudio.Instance?.PlayRelease();
             released?.EndHold();
@@ -167,6 +171,17 @@ namespace LetGo
         {
             ClearTargetPrompt();
             player?.SetInteractionLocked(false);
+        }
+
+        private void SetAnimatorBool(string parameter, bool value)
+        {
+            if (animator == null || animator.runtimeAnimatorController == null) return;
+            foreach (var item in animator.parameters)
+            {
+                if (item.name != parameter || item.type != AnimatorControllerParameterType.Bool) continue;
+                animator.SetBool(parameter, value);
+                return;
+            }
         }
     }
 }

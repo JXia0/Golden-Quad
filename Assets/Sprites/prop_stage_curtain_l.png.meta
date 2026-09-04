@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 122590828ae8a0b42b385c80fae4a6e5
+guid: fd3b1de57e7fe574cb984f3e6ee92b8d
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 1636051678428369736
-    second: bg_kindergardenhall_0
+      213: -984910364477111846
+    second: prop_stage_curtain_l_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -102,13 +102,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: bg_kindergardenhall_0
+      name: prop_stage_curtain_l_0
       rect:
         serializedVersion: 2
-        x: 0
-        y: 0
-        width: 3400
-        height: 550
+        x: 14
+        y: 47
+        width: 1695
+        height: 677
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -117,8 +117,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 84397e6555c64b610800000000000000
-      internalID: 1636051678428369736
+      spriteID: ad1cdb5ed35e452f0800000000000000
+      internalID: -984910364477111846
       vertices: []
       indices: 
       edges: []
@@ -137,7 +137,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      bg_kindergardenhall_0: 1636051678428369736
+      prop_stage_curtain_l_0: -984910364477111846
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
