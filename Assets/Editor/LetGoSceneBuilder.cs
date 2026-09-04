@@ -10,7 +10,7 @@ using UnityEngine.UI;
 [InitializeOnLoad]
 public static class LetGoSceneBuilder
 {
-    private const string BuildVersion = "4.3.0";
+    private const string BuildVersion = "4.4.0";
     private const string MarkerPath = "ProjectSettings/LetGoSceneBuild.version";
     private const string SpritePath = "Assets/Art/Placeholders/BlockSprite.asset";
     private const string GlowSpritePath = "Assets/Art/Placeholders/CourageGlow.asset";
@@ -204,14 +204,14 @@ public static class LetGoSceneBuilder
         AddArtSlot(safeRoute, "prop_stage_marker");
         safeRoute.AddComponent<BoxCollider2D>().isTrigger = true;
         safeRoute.AddComponent<StageRouteChoiceTrigger>().Configure("我选择了离幕布更近的位置。", string.Empty);
-        CreateLabel("稳稳走完", new Vector2(5f, -1.35f), 0.25f, new Color(0.55f, 0.72f, 0.9f));
+        CreateLabel("向右走：稳稳完成", new Vector2(5f, -1.35f), 0.25f, new Color(0.55f, 0.72f, 0.9f));
 
-        CreateBlock("Forward Platform", new Vector2(5f, -1.35f), new Vector2(2.8f, 0.3f), new Color(0.72f, 0.4f, 0.48f), true, 0);
+        CreateBlock("Forward Platform", new Vector2(5f, -1.35f), new Vector2(2.8f, 0.3f), new Color(0.72f, 0.4f, 0.48f), false, 0);
         var forwardRoute = CreateBlock("Forward Route", new Vector2(5f, -0.45f), new Vector2(2f, 1.1f), new Color(0.72f, 0.4f, 0.48f, 0.25f), false, 1);
         AddArtSlot(forwardRoute, "prop_stage_marker");
         forwardRoute.AddComponent<BoxCollider2D>().isTrigger = true;
         forwardRoute.AddComponent<StageRouteChoiceTrigger>().Configure("我选择向观众再靠近一步。", string.Empty);
-        CreateLabel("向前一步", new Vector2(5f, 0.55f), 0.25f, new Color(0.9f, 0.55f, 0.62f));
+        CreateLabel("跳进上方标记：主动向前一步", new Vector2(5f, 0.55f), 0.25f, new Color(0.9f, 0.55f, 0.62f));
 
         var finalCueObject = CreateBlock("Final Release Cue", new Vector2(10f, -1.5f), new Vector2(1.8f, 0.25f), new Color(1f, 0.82f, 0.4f), false, 2);
         AddArtSlot(finalCueObject, "prop_stage_marker");
