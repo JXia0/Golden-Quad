@@ -7,7 +7,6 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
-[InitializeOnLoad]
 public static class LetGoSceneBuilder
 {
     private const string BuildVersion = "4.7.0";
@@ -17,12 +16,19 @@ public static class LetGoSceneBuilder
     private static Sprite blockSprite;
     private static Sprite glowSprite;
 
-    static LetGoSceneBuilder()
+    [MenuItem("Tools/Let Go/Rebuild All Game Scenes (Overwrites Manual Layout)")]
+    private static void ConfirmBuildAllScenes()
     {
-        EditorApplication.delayCall += BuildWhenReady;
+        if (!EditorUtility.DisplayDialog(
+                "Rebuild all Let Go scenes?",
+                "This recreates every gameplay scene and overwrites manual Transform, collider, and sorting adjustments.",
+                "Rebuild",
+                "Cancel"))
+            return;
+
+        BuildAllScenes();
     }
 
-    [MenuItem("Tools/Let Go/Build All Game Scenes")]
     public static void BuildAllScenes()
     {
         EnsureFolders();
@@ -49,17 +55,6 @@ public static class LetGoSceneBuilder
         EditorSceneManager.OpenScene(paths[0]);
         LetGoArtBinder.ApplyFinalArt();
         Debug.Log("[LetGo] Built the five-scene hold-and-release playable flow.");
-    }
-
-    private static void BuildWhenReady()
-    {
-        if (EditorApplication.isPlayingOrWillChangePlaymode || EditorApplication.isCompiling || EditorApplication.isUpdating)
-        {
-            EditorApplication.delayCall += BuildWhenReady;
-            return;
-        }
-        if (File.Exists(MarkerPath) && File.ReadAllText(MarkerPath).Trim() == BuildVersion) return;
-        BuildAllScenes();
     }
 
     private static void BuildPrologue()
