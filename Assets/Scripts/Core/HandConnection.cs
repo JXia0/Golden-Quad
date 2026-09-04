@@ -109,6 +109,8 @@ namespace LetGo
         {
             var released = currentTarget;
             currentTarget = null;
+            if (released != null && released.Mode == HoldTargetMode.Companion)
+                stableRemaining = stableMoveSeconds;
             if (tether != null) tether.enabled = false;
             if (released != null && released.TargetId == "parent") SetAnimatorBool("HoldingParent", false);
             if (released != null && released.Mode == HoldTargetMode.Carryable) SceneAudio.Instance?.PlayItemMove();

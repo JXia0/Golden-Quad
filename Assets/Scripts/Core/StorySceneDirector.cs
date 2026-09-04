@@ -81,6 +81,7 @@ namespace LetGo
         {
             completedObjectives = Mathf.Min(requiredObjectives, completedObjectives + 1);
             SceneAudio.Instance?.PlayObjective();
+            if (player != null) player.GetComponent<CourageSystem>()?.RestoreFull();
             UpdateObjectiveText();
             if (!string.IsNullOrWhiteSpace(completionLine)) Say(completionLine);
         }

@@ -8,9 +8,10 @@ namespace LetGo
         [SerializeField] private string targetId;
         [SerializeField] private float boundaryX;
         [TextArea] [SerializeField] private string completionLine;
-        private bool sawConnection;
+        private bool reachedDoorTogether;
         private bool completed;
         private const string ReleasePrompt = "松开 E，自己跨过这扇门";
+        private const string BringHandPrompt = "先牵着父母的手，一起走到门前";
 
         public void Configure(HandConnection handConnection, string requiredTargetId, float x, string line)
         {
@@ -18,6 +19,8 @@ namespace LetGo
             targetId = requiredTargetId;
             boundaryX = x;
             completionLine = line;
+            if (connection != null)
+                transform.position = new Vector3(boundaryX, connection.transform.position.y, 0f);
         }
 
         private void Update()
@@ -25,15 +28,26 @@ namespace LetGo
             if (completed || connection == null) return;
             if (connection.CurrentTarget != null && connection.CurrentTarget.TargetId == targetId)
             {
-                sawConnection = true;
                 if (connection.transform.position.x > boundaryX - 1.8f)
+                {
+                    reachedDoorTogether = true;
+                    StorySceneDirector.Instance?.ClearPrompt(BringHandPrompt);
                     StorySceneDirector.Instance?.ShowPrompt(ReleasePrompt);
+                }
             }
-            else StorySceneDirector.Instance?.ClearPrompt(ReleasePrompt);
+            else
+            {
+                StorySceneDirector.Instance?.ClearPrompt(ReleasePrompt);
+                if (!reachedDoorTogether && connection.transform.position.x > boundaryX - 1.8f)
+                    StorySceneDirector.Instance?.ShowPrompt(BringHandPrompt);
+                else StorySceneDirector.Instance?.ClearPrompt(BringHandPrompt);
+            }
 
-            if (!sawConnection || connection.transform.position.x < boundaryX || connection.CurrentTarget != null) return;
+            if (!reachedDoorTogether || connection.transform.position.x < boundaryX || connection.CurrentTarget != null) return;
             completed = true;
             StorySceneDirector.Instance?.ClearPrompt(ReleasePrompt);
+            StorySceneDirector.Instance?.ClearPrompt(BringHandPrompt);
+            StorySceneDirector.Instance?.SetCheckpoint(transform);
             StorySceneDirector.Instance?.CompleteObjective(completionLine);
         }
     }

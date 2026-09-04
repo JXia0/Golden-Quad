@@ -10,7 +10,7 @@ using UnityEngine.UI;
 [InitializeOnLoad]
 public static class LetGoSceneBuilder
 {
-    private const string BuildVersion = "4.4.0";
+    private const string BuildVersion = "4.5.0";
     private const string MarkerPath = "ProjectSettings/LetGoSceneBuild.version";
     private const string SpritePath = "Assets/Art/Placeholders/BlockSprite.asset";
     private const string GlowSpritePath = "Assets/Art/Placeholders/CourageGlow.asset";
@@ -92,18 +92,28 @@ public static class LetGoSceneBuilder
         var setup = CreateBase("03_Stage", new Vector2(-8f, -2.1f), 4, 50f, new Color(0.11f, 0.09f, 0.16f));
         SetPlayerArtSlot(setup.Player, "char_child");
         var hand = AddHandConnection(setup.Player, false);
+        var courage = setup.Player.GetComponent<CourageSystem>();
+        courage.Configure(4.5f, 1.2f);
+        courage.ConfigureSupport(hand, "parent", 3f, 4f, false);
         var guardian = CreateCoreHoldTarget("Parent", new Vector2(-9f, -1.7f), new Vector2(1f, 2.2f),
             new Color(1f, 0.65f, 0.32f), "char_parent", "parent", HoldTargetMode.Companion,
             "按住 E 牵住父母的手", 2.1f, 2.3f, 0, 1.15f, 3.6f, -4.2f);
-        CreateBlock("Warm Light", new Vector2(-9f, -0.8f), new Vector2(5f, 5f), new Color(1f, 0.55f, 0.2f, 0.12f), false, -5);
-        CreateLabel("按住 E 维持牵手 · 松开 E 放手", new Vector2(-8f, 2.5f), 0.28f, new Color(0.95f, 0.78f, 0.46f));
+        var warmLight = CreateBlock("Warm Light", new Vector2(-9f, -0.8f), new Vector2(5f, 5f),
+            new Color(1f, 0.55f, 0.2f, 0.12f), false, -5);
+        warmLight.transform.SetParent(guardian.transform, true);
+        CreateLabel("牵手时勇气不会下降 · 门前放手后，余温会陪你 3 秒", new Vector2(-7.8f, 2.5f),
+            0.25f, new Color(0.95f, 0.78f, 0.46f));
+        CreateZone("Fear Begins", new Vector2(-6.3f, 0f),
+            "牵着手时，影子不会靠近。松开以后，手心的余温还会陪我走一小段。",
+            true, false, false);
         var kindergartenBackground = CreateBlock("Classroom Wall", new Vector2(9f, -0.3f), new Vector2(34f, 5.5f), new Color(0.15f, 0.17f, 0.25f), false, -4);
         AddArtSlot(kindergartenBackground, "bg_kindergarten_hall");
 
         var classroomGate = CreateBlock("Classroom Hand Gate", new Vector2(-2.8f, -0.5f), new Vector2(2.2f, 5.5f), new Color(0.95f, 0.72f, 0.35f, 0.3f), false, 2);
         AddArtSlot(classroomGate, "prop_kindergarten_door");
         var releaseGate = new GameObject("Release Parent At Door", typeof(ReleaseGate)).GetComponent<ReleaseGate>();
-        releaseGate.Configure(hand, guardian.TargetId, -1.8f, string.Empty);
+        releaseGate.Configure(hand, guardian.TargetId, -1.8f,
+            "你停在门外，手心的温度却没有立刻消失。现在，我要带着它找到自己的座位。");
 
         var chair = CreateBlock("Oversized Chair", new Vector2(3f, -2.05f), new Vector2(1.3f, 1.4f), new Color(0.35f, 0.32f, 0.48f), true, 1);
         AddArtSlot(chair, "prop_named_chair");
