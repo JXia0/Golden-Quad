@@ -29,14 +29,17 @@ namespace LetGo
 
         private void OnTriggerEnter2D(Collider2D other)
         {
-            if (triggered || !other.TryGetComponent<PlayerController2D>(out _)) return;
+            if (triggered || !other.TryGetComponent<PlayerController2D>(out var player)) return;
             triggered = true;
-            other.GetComponent<PlayerController2D>()?.SetCharacterScale(playerScale);
-            var renderer = other.GetComponent<SpriteRenderer>();
+            var renderer = player.CharacterRenderer;
             if (renderer != null)
             {
                 renderer.color = playerColor;
-                if (transitionSprite != null) renderer.sprite = transitionSprite;
+                if (transitionSprite != null)
+                {
+                    renderer.sprite = transitionSprite;
+                    player.FitCharacterVisualToCollider();
+                }
             }
             var animator = other.GetComponent<Animator>();
             if (animator != null && transitionController != null) animator.runtimeAnimatorController = transitionController;

@@ -1,0 +1,268 @@
+fileFormatVersion: 2
+guid: d71109e014bd8ff4ba9080892ecd995d
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -1599821435890356679
+    second: "char_teen_\u624B\u6309\u80F8\u53E3\u547C\u5438 4_0"
+  - first:
+      213: -7774831365332465501
+    second: "char_teen_\u624B\u6309\u80F8\u53E3\u547C\u5438 4_1"
+  - first:
+      213: 7517363504105725932
+    second: "char_teen_\u624B\u6309\u80F8\u53E3\u547C\u5438 4_2"
+  - first:
+      213: 8594486969295623201
+    second: "char_teen_\u624B\u6309\u80F8\u53E3\u547C\u5438 4_3"
+  - first:
+      213: -7592981928036660008
+    second: "char_teen_\u624B\u6309\u80F8\u53E3\u547C\u5438 4_4"
+  - first:
+      213: -4779835622379610696
+    second: "char_teen_\u624B\u6309\u80F8\u53E3\u547C\u5438 4_5"
+  - first:
+      213: -981013485791403896
+    second: "char_teen_\u624B\u6309\u80F8\u53E3\u547C\u5438 4_6"
+  - first:
+      213: -8409880175295723352
+    second: "char_teen_\u624B\u6309\u80F8\u53E3\u547C\u5438 4_7"
+  - first:
+      213: -2606077540695916020
+    second: "char_teen_\u624B\u6309\u80F8\u53E3\u547C\u5438 4_8"
+  - first:
+      213: -8799179677356876479
+    second: "char_teen_\u624B\u6309\u80F8\u53E3\u547C\u5438 4_9"
+  - first:
+      213: -7918150573261400150
+    second: "char_teen_\u624B\u6309\u80F8\u53E3\u547C\u5438 4_10"
+  - first:
+      213: 4626987162480802915
+    second: "char_teen_\u624B\u6309\u80F8\u53E3\u547C\u5438 4_11"
+  - first:
+      213: 5343944360827940904
+    second: "char_teen_\u624B\u6309\u80F8\u53E3\u547C\u5438 4_12"
+  - first:
+      213: 9073031189792608140
+    second: "char_teen_\u624B\u6309\u80F8\u53E3\u547C\u5438 4_13"
+  - first:
+      213: 179111058125030915
+    second: "char_teen_\u624B\u6309\u80F8\u53E3\u547C\u5438 4_14"
+  - first:
+      213: 6750442527927163879
+    second: "char_teen_\u624B\u6309\u80F8\u53E3\u547C\u5438 4_15"
+  - first:
+      213: -1772120509721173294
+    second: "char_teen_\u624B\u6309\u80F8\u53E3\u547C\u5438 4_16"
+  - first:
+      213: 3406674845878947473
+    second: "char_teen_\u624B\u6309\u80F8\u53E3\u547C\u5438 4_17"
+  - first:
+      213: -8872896161873792607
+    second: "char_teen_\u624B\u6309\u80F8\u53E3\u547C\u5438 4_18"
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationMethod: 0
+  spriteTessellationDetail: -1
+  spriteGeometrySubdivision: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: char_teen_breath_00
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 512
+        height: 683
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6a23f07f4084397418bf67a5826bda32
+      internalID: -175823313
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: char_teen_breath_01
+      rect:
+        serializedVersion: 2
+        x: 512
+        y: 0
+        width: 512
+        height: 683
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 962373ac391c22041b5e9456af479c63
+      internalID: -1654831799
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: char_teen_breath_02
+      rect:
+        serializedVersion: 2
+        x: 1024
+        y: 0
+        width: 512
+        height: 683
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e1fe65de6eabefc43aff33d8422b096a
+      internalID: -1370291773
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: char_teen_breath_03
+      rect:
+        serializedVersion: 2
+        x: 1536
+        y: 0
+        width: 512
+        height: 683
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 819e7293774d7184c8908c0e2dbf5804
+      internalID: 97970065
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 2a2154fa115cbe84590e0ac43c46c282
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      char_teen_breath_00: -175823313
+      char_teen_breath_01: -1654831799
+      char_teen_breath_02: -1370291773
+      char_teen_breath_03: 97970065
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

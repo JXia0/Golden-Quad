@@ -1,0 +1,327 @@
+fileFormatVersion: 2
+guid: 28034ac65174a5248a6b6a5a94cef69a
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 568814959830055408
+    second: "char_crying_child_\u63A5\u8FC7\u73A9\u5177 3_0"
+  - first:
+      213: -1644982230975514303
+    second: "char_crying_child_\u63A5\u8FC7\u73A9\u5177 3_1"
+  - first:
+      213: -4579806541493998544
+    second: "char_crying_child_\u63A5\u8FC7\u73A9\u5177 3_2"
+  - first:
+      213: 305747634672996889
+    second: "char_crying_child_\u63A5\u8FC7\u73A9\u5177 3_3"
+  - first:
+      213: 5650946455671595973
+    second: "char_crying_child_\u63A5\u8FC7\u73A9\u5177 3_4"
+  - first:
+      213: -8649200091142480869
+    second: "char_crying_child_\u63A5\u8FC7\u73A9\u5177 3_5"
+  - first:
+      213: -7155470751549670137
+    second: "char_crying_child_\u63A5\u8FC7\u73A9\u5177 3_6"
+  - first:
+      213: 1952782182048411304
+    second: "char_crying_child_\u63A5\u8FC7\u73A9\u5177 3_7"
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationMethod: 0
+  spriteTessellationDetail: -1
+  spriteGeometrySubdivision: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: "char_crying_child_\u63A5\u8FC7\u73A9\u5177 3_0"
+      rect:
+        serializedVersion: 2
+        x: 24
+        y: 15
+        width: 542
+        height: 801
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0f939973136d4e700800000000000000
+      internalID: 568814959830055408
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: "char_crying_child_\u63A5\u8FC7\u73A9\u5177 3_1"
+      rect:
+        serializedVersion: 2
+        x: 561
+        y: 690
+        width: 83
+        height: 52
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 149ffdc5069db29e0800000000000000
+      internalID: -1644982230975514303
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: "char_crying_child_\u63A5\u8FC7\u73A9\u5177 3_2"
+      rect:
+        serializedVersion: 2
+        x: 603
+        y: 14
+        width: 712
+        height: 782
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 03c6d3227324170c0800000000000000
+      internalID: -4579806541493998544
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: "char_crying_child_\u63A5\u8FC7\u73A9\u5177 3_3"
+      rect:
+        serializedVersion: 2
+        x: 1350
+        y: 16
+        width: 500
+        height: 768
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 91299939adb3e3400800000000000000
+      internalID: 305747634672996889
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: "char_crying_child_\u63A5\u8FC7\u73A9\u5177 3_4"
+      rect:
+        serializedVersion: 2
+        x: 1354
+        y: 680
+        width: 14
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5c3ee078cd13c6e40800000000000000
+      internalID: 5650946455671595973
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: "char_crying_child_\u63A5\u8FC7\u73A9\u5177 3_5"
+      rect:
+        serializedVersion: 2
+        x: 1161
+        y: 646
+        width: 8
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b1c1d20b75ed7f780800000000000000
+      internalID: -8649200091142480869
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: "char_crying_child_\u63A5\u8FC7\u73A9\u5177 3_6"
+      rect:
+        serializedVersion: 2
+        x: 1163
+        y: 574
+        width: 14
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 70d3f254349a2bc90800000000000000
+      internalID: -7155470751549670137
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: "char_crying_child_\u63A5\u8FC7\u73A9\u5177 3_7"
+      rect:
+        serializedVersion: 2
+        x: 528
+        y: 377
+        width: 8
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8ae25bc5c0da91b10800000000000000
+      internalID: 1952782182048411304
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      "char_crying_child_\u63A5\u8FC7\u73A9\u5177 3_0": 568814959830055408
+      "char_crying_child_\u63A5\u8FC7\u73A9\u5177 3_1": -1644982230975514303
+      "char_crying_child_\u63A5\u8FC7\u73A9\u5177 3_2": -4579806541493998544
+      "char_crying_child_\u63A5\u8FC7\u73A9\u5177 3_3": 305747634672996889
+      "char_crying_child_\u63A5\u8FC7\u73A9\u5177 3_4": 5650946455671595973
+      "char_crying_child_\u63A5\u8FC7\u73A9\u5177 3_5": -8649200091142480869
+      "char_crying_child_\u63A5\u8FC7\u73A9\u5177 3_6": -7155470751549670137
+      "char_crying_child_\u63A5\u8FC7\u73A9\u5177 3_7": 1952782182048411304
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

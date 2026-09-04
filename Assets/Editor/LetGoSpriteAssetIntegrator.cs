@@ -12,6 +12,16 @@ public static class LetGoSpriteAssetIntegrator
     private const string WalkSheet = "Assets/Sprites/char_child/char_child_Walk 6.png";
     private const string HandSheet = "Assets/Sprites/char_child/char_child_牵手放手.png";
     private const string ControllerPath = GeneratedRoot + "/char_child_controller.controller";
+    private const string TeenIdleSheet = "Assets/Sprites/char_teen/char_teen_Idle 4.png";
+    private const string TeenWalkSheet = "Assets/Sprites/char_teen/char_teen_Walk 6.png";
+    private const string TeenBreathSheet = "Assets/Sprites/char_teen/char_teen_手按胸口呼吸 4.png";
+    private const string TeenControllerPath = GeneratedRoot + "/char_teen_controller.controller";
+
+    public static void BuildAvailableControllers()
+    {
+        BuildChildController();
+        BuildTeenController();
+    }
 
     public static AnimatorController BuildChildController()
     {
@@ -29,10 +39,10 @@ public static class LetGoSpriteAssetIntegrator
 
         var existingController = AssetDatabase.LoadAssetAtPath<AnimatorController>(ControllerPath);
         if (existingController != null &&
-            AssetDatabase.LoadAssetAtPath<AnimationClip>(GeneratedRoot + "/char_child_idle.anim") != null &&
-            AssetDatabase.LoadAssetAtPath<AnimationClip>(GeneratedRoot + "/char_child_walk.anim") != null &&
-            AssetDatabase.LoadAssetAtPath<AnimationClip>(GeneratedRoot + "/char_child_hold_parent.anim") != null &&
-            AssetDatabase.LoadAssetAtPath<AnimationClip>(GeneratedRoot + "/char_child_release_parent.anim") != null)
+            UsesCharacterVisual(AssetDatabase.LoadAssetAtPath<AnimationClip>(GeneratedRoot + "/char_child_idle.anim")) &&
+            UsesCharacterVisual(AssetDatabase.LoadAssetAtPath<AnimationClip>(GeneratedRoot + "/char_child_walk.anim")) &&
+            UsesCharacterVisual(AssetDatabase.LoadAssetAtPath<AnimationClip>(GeneratedRoot + "/char_child_hold_parent.anim")) &&
+            UsesCharacterVisual(AssetDatabase.LoadAssetAtPath<AnimationClip>(GeneratedRoot + "/char_child_release_parent.anim")))
             return existingController;
 
         DeleteGeneratedAsset("char_child_idle.anim");
@@ -73,6 +83,57 @@ public static class LetGoSpriteAssetIntegrator
         releaseToIdle.hasExitTime = true;
         releaseToIdle.exitTime = 1f;
         releaseToIdle.duration = 0.05f;
+
+        EditorUtility.SetDirty(controller);
+        AssetDatabase.SaveAssets();
+        return controller;
+    }
+
+    public static AnimatorController BuildTeenController()
+    {
+        if (!File.Exists(TeenIdleSheet) || !File.Exists(TeenWalkSheet) || !File.Exists(TeenBreathSheet)) return null;
+        Directory.CreateDirectory(GeneratedRoot);
+        EnsureGridSlices(TeenIdleSheet, "char_teen_idle", 4);
+        EnsureGridSlices(TeenWalkSheet, "char_teen_walk", 6);
+        EnsureGridSlices(TeenBreathSheet, "char_teen_breath", 4);
+
+        var idleSprites = LoadSprites(TeenIdleSheet);
+        var walkSprites = LoadSprites(TeenWalkSheet);
+        var breathSprites = LoadSprites(TeenBreathSheet);
+        if (idleSprites.Length != 4 || walkSprites.Length != 6 || breathSprites.Length != 4) return null;
+
+        var existingController = AssetDatabase.LoadAssetAtPath<AnimatorController>(TeenControllerPath);
+        if (existingController != null &&
+            UsesCharacterVisual(AssetDatabase.LoadAssetAtPath<AnimationClip>(GeneratedRoot + "/char_teen_idle.anim")) &&
+            UsesCharacterVisual(AssetDatabase.LoadAssetAtPath<AnimationClip>(GeneratedRoot + "/char_teen_walk.anim")) &&
+            UsesCharacterVisual(AssetDatabase.LoadAssetAtPath<AnimationClip>(GeneratedRoot + "/char_teen_breath.anim")))
+            return existingController;
+
+        DeleteGeneratedAsset("char_teen_idle.anim");
+        DeleteGeneratedAsset("char_teen_walk.anim");
+        DeleteGeneratedAsset("char_teen_breath.anim");
+        AssetDatabase.DeleteAsset(TeenControllerPath);
+
+        var idleClip = CreateClip("char_teen_idle.anim", idleSprites, 4f, true);
+        var walkClip = CreateClip("char_teen_walk.anim", walkSprites, 8f, true);
+        var breathClip = CreateClip("char_teen_breath.anim", breathSprites, 4f, true);
+        var controller = AnimatorController.CreateAnimatorControllerAtPath(TeenControllerPath);
+        controller.AddParameter("Speed", AnimatorControllerParameterType.Float);
+        controller.AddParameter("SelfAnchoring", AnimatorControllerParameterType.Bool);
+        var machine = controller.layers[0].stateMachine;
+        var idle = machine.AddState("Idle");
+        var walk = machine.AddState("Walk");
+        var breath = machine.AddState("Hand On Chest");
+        idle.motion = idleClip;
+        walk.motion = walkClip;
+        breath.motion = breathClip;
+        machine.defaultState = idle;
+
+        AddCondition(idle, walk, AnimatorConditionMode.Greater, 0.05f, "Speed");
+        AddCondition(walk, idle, AnimatorConditionMode.Less, 0.05f, "Speed");
+        AddCondition(idle, breath, AnimatorConditionMode.If, 0f, "SelfAnchoring");
+        AddCondition(walk, breath, AnimatorConditionMode.If, 0f, "SelfAnchoring");
+        AddCondition(breath, idle, AnimatorConditionMode.IfNot, 0f, "SelfAnchoring");
 
         EditorUtility.SetDirty(controller);
         AssetDatabase.SaveAssets();
@@ -141,7 +202,7 @@ public static class LetGoSpriteAssetIntegrator
         var binding = new EditorCurveBinding
         {
             type = typeof(SpriteRenderer),
-            path = string.Empty,
+            path = "Character Visual",
             propertyName = "m_Sprite"
         };
         AnimationUtility.SetObjectReferenceCurve(clip, binding, keys);
@@ -164,4 +225,8 @@ public static class LetGoSpriteAssetIntegrator
 
     private static void DeleteGeneratedAsset(string fileName)
         => AssetDatabase.DeleteAsset(GeneratedRoot + "/" + fileName);
+
+    private static bool UsesCharacterVisual(AnimationClip clip)
+        => clip != null && AnimationUtility.GetObjectReferenceCurveBindings(clip)
+            .Any(binding => binding.path == "Character Visual" && binding.propertyName == "m_Sprite");
 }

@@ -10,10 +10,12 @@ using UnityEngine.UI;
 [InitializeOnLoad]
 public static class LetGoSceneBuilder
 {
-    private const string BuildVersion = "3.9.0";
+    private const string BuildVersion = "4.5.0";
     private const string MarkerPath = "ProjectSettings/LetGoSceneBuild.version";
     private const string SpritePath = "Assets/Art/Placeholders/BlockSprite.asset";
+    private const string GlowSpritePath = "Assets/Art/Placeholders/CourageGlow.asset";
     private static Sprite blockSprite;
+    private static Sprite glowSprite;
 
     static LetGoSceneBuilder()
     {
@@ -25,6 +27,7 @@ public static class LetGoSceneBuilder
     {
         EnsureFolders();
         blockSprite = EnsureBlockSprite();
+        glowSprite = EnsureGlowSprite();
         BuildPrologue();
         BuildKindergarten();
         BuildStage();
@@ -71,7 +74,12 @@ public static class LetGoSceneBuilder
         CreateLabel("成年后的第一次独立研究汇报", new Vector2(1.5f, 2.8f), 0.4f, new Color(0.7f, 0.76f, 0.9f));
         var officeBackground = CreateBlock("MeetingRoom", new Vector2(0f, -0.2f), new Vector2(34f, 5.5f), new Color(0.2f, 0.24f, 0.34f), false, -4);
         AddArtSlot(officeBackground, "bg_office_hallway");
-        CreateLabel("会议室", new Vector2(5f, 1.5f), 0.35f, Color.white);
+        var officeClock = CreateBlock("Office Clock", new Vector2(-0.2f, 1.65f), new Vector2(1.15f, 1.15f), Color.white, false, -2);
+        AddArtSlot(officeClock, "prop_office_clock");
+        var waySign = CreateBlock("Meeting Way Sign", new Vector2(2f, 1.65f), new Vector2(2.4f, 0.65f), Color.white, false, -2);
+        AddArtSlot(waySign, "prop_office_waysign");
+        var doorSign = CreateBlock("Meeting Door Sign", new Vector2(4.4f, 0.6f), new Vector2(2.4f, 0.65f), Color.white, false, 2);
+        AddArtSlot(doorSign, "prop_office_doorsigns");
         var door = CreateInteractable<StoryDoor>("Meeting Door", new Vector2(4.4f, -1.3f), new Vector2(1.2f, 2.7f), new Color(0.4f, 0.45f, 0.58f));
         AddArtSlot(door.gameObject, "prop_meeting_door");
         door.Configure(false, false, "按 E 触碰门把手");
@@ -81,35 +89,57 @@ public static class LetGoSceneBuilder
 
     private static void BuildKindergarten()
     {
-        var setup = CreateBase("03_Stage", new Vector2(-8f, -2.1f), 2, 50f, new Color(0.11f, 0.09f, 0.16f));
+        var setup = CreateBase("03_Stage", new Vector2(-8f, -2.1f), 4, 50f, new Color(0.11f, 0.09f, 0.16f));
         SetPlayerArtSlot(setup.Player, "char_child");
         var hand = AddHandConnection(setup.Player, false);
+        var courage = setup.Player.GetComponent<CourageSystem>();
+        courage.Configure(4.5f, 1.2f);
+        courage.ConfigureSupport(hand, "parent", 3f, 4f, false);
         var guardian = CreateCoreHoldTarget("Parent", new Vector2(-9f, -1.7f), new Vector2(1f, 2.2f),
             new Color(1f, 0.65f, 0.32f), "char_parent", "parent", HoldTargetMode.Companion,
             "按住 E 牵住父母的手", 2.1f, 2.3f, 0, 1.15f, 3.6f, -4.2f);
-        CreateBlock("Warm Light", new Vector2(-9f, -0.8f), new Vector2(5f, 5f), new Color(1f, 0.55f, 0.2f, 0.12f), false, -5);
-        CreateLabel("按住 E 维持牵手 · 松开 E 放手", new Vector2(-8f, 2.5f), 0.28f, new Color(0.95f, 0.78f, 0.46f));
+        var warmLight = CreateBlock("Warm Light", new Vector2(-9f, -0.8f), new Vector2(5f, 5f),
+            new Color(1f, 0.55f, 0.2f, 0.12f), false, -5);
+        warmLight.transform.SetParent(guardian.transform, true);
+        CreateLabel("牵手时勇气不会下降 · 门前放手后，余温会陪你 3 秒", new Vector2(-7.8f, 2.5f),
+            0.25f, new Color(0.95f, 0.78f, 0.46f));
+        CreateZone("Fear Begins", new Vector2(-6.3f, 0f),
+            "牵着手时，影子不会靠近。松开以后，手心的余温还会陪我走一小段。",
+            true, false, false);
         var kindergartenBackground = CreateBlock("Classroom Wall", new Vector2(9f, -0.3f), new Vector2(34f, 5.5f), new Color(0.15f, 0.17f, 0.25f), false, -4);
         AddArtSlot(kindergartenBackground, "bg_kindergarten_hall");
 
         var classroomGate = CreateBlock("Classroom Hand Gate", new Vector2(-2.8f, -0.5f), new Vector2(2.2f, 5.5f), new Color(0.95f, 0.72f, 0.35f, 0.3f), false, 2);
         AddArtSlot(classroomGate, "prop_kindergarten_door");
         var releaseGate = new GameObject("Release Parent At Door", typeof(ReleaseGate)).GetComponent<ReleaseGate>();
-        releaseGate.Configure(hand, guardian.TargetId, -1.8f, string.Empty);
+        releaseGate.Configure(hand, guardian.TargetId, -1.8f,
+            "你停在门外，手心的温度却没有立刻消失。现在，我要带着它找到自己的座位。");
 
         var chair = CreateBlock("Oversized Chair", new Vector2(3f, -2.05f), new Vector2(1.3f, 1.4f), new Color(0.35f, 0.32f, 0.48f), true, 1);
         AddArtSlot(chair, "prop_named_chair");
-        var blocks = CreateBlock("Oversized Blocks", new Vector2(6.3f, -2.25f), new Vector2(1.8f, 1f), new Color(0.38f, 0.55f, 0.55f), true, 1);
+        chair.AddComponent<ObjectiveStation>().Configure(
+            "按 E 确认写着自己名字的座位",
+            "我第一次在没有你指给我的时候，认出了自己的名字。", 1);
+        CreateLabel("按 E 确认名字", new Vector2(3f, -0.95f), 0.24f, new Color(0.85f, 0.88f, 1f));
+        var blocks = CreateBlock("Oversized Blocks", new Vector2(6.3f, -2.42f), new Vector2(1.6f, 0.65f), new Color(0.38f, 0.55f, 0.55f), true, 1);
         AddArtSlot(blocks, "deco_blocks");
-        var toy = CreateBlock("Dropped Toy", new Vector2(8.3f, -2.35f), new Vector2(0.72f, 0.78f), Color.white, false, 2);
-        AddArtSlot(toy, "prop_toy");
+        blocks.AddComponent<InspectPoint>().Configure(
+            "按 E 看看散落的积木",
+            "它们没有家里的积木那么可怕。只是需要我自己决定，绕过去，还是跳过去。");
+        CreateLabel("Space / W / ↑ 跳过积木", new Vector2(6.3f, -1.25f), 0.24f, new Color(0.72f, 0.88f, 0.9f));
+        CreateCarryItem("掉落的玩具", "kindergarten-toy", new Vector2(8.3f, -2.35f),
+            "按 E 捡起玩具", "我可以把它带给那个正在哭的孩子。", "prop_toy", Color.white);
 
         var cryingChild = CreateCoreHoldTarget("Crying Child", new Vector2(10f, -1.7f), new Vector2(0.9f, 1.9f),
             new Color(0.72f, 0.42f, 0.48f), "char_crying_child", "crying-child", HoldTargetMode.Companion,
-            "按住 E 牵住孩子的手", 2.1f, 2.5f, 1, 1.1f, 2.6f);
+            "按住 E 牵住孩子的手", 2.1f, 2.5f, 3, 1.1f, 2.6f);
+        cryingChild.gameObject.AddComponent<DeliveryStation>().Configure(
+            "kindergarten-toy", "按 E 把玩具递给哭泣的孩子",
+            "他接过玩具，慢慢停止了哭泣。刚才还需要别人安慰的我，也能先向前伸出手。",
+            "地上好像有一个属于他的玩具。", "kindergarten", "shared-comfort");
         var teacher = CreatePerson("Teacher", new Vector2(16f, -1.7f), new Vector2(1f, 2.2f), new Color(0.55f, 0.68f, 0.72f));
         AddArtSlot(teacher, "char_teacher");
-        CreateCoreSocket("Teacher Safe Area", new Vector2(16f, -1.5f), "crying-child", string.Empty, 1.8f, 1,
+        CreateCoreSocket("Teacher Safe Area", new Vector2(16f, -1.5f), "crying-child", string.Empty, 1.8f, 3,
             "刚才还需要别人牵着的我，现在也能陪另一个人走一段路。", new Color(0.55f, 0.72f, 0.64f, 0.2f));
 
         var fearRoot = new GameObject("Unfamiliar Shadows").transform;
@@ -184,14 +214,14 @@ public static class LetGoSceneBuilder
         AddArtSlot(safeRoute, "prop_stage_marker");
         safeRoute.AddComponent<BoxCollider2D>().isTrigger = true;
         safeRoute.AddComponent<StageRouteChoiceTrigger>().Configure("我选择了离幕布更近的位置。", string.Empty);
-        CreateLabel("稳稳走完", new Vector2(5f, -1.35f), 0.25f, new Color(0.55f, 0.72f, 0.9f));
+        CreateLabel("向右走：稳稳完成", new Vector2(5f, -1.35f), 0.25f, new Color(0.55f, 0.72f, 0.9f));
 
-        CreateBlock("Forward Platform", new Vector2(5f, -1.35f), new Vector2(2.8f, 0.3f), new Color(0.72f, 0.4f, 0.48f), true, 0);
+        CreateBlock("Forward Platform", new Vector2(5f, -1.35f), new Vector2(2.8f, 0.3f), new Color(0.72f, 0.4f, 0.48f), false, 0);
         var forwardRoute = CreateBlock("Forward Route", new Vector2(5f, -0.45f), new Vector2(2f, 1.1f), new Color(0.72f, 0.4f, 0.48f, 0.25f), false, 1);
         AddArtSlot(forwardRoute, "prop_stage_marker");
         forwardRoute.AddComponent<BoxCollider2D>().isTrigger = true;
         forwardRoute.AddComponent<StageRouteChoiceTrigger>().Configure("我选择向观众再靠近一步。", string.Empty);
-        CreateLabel("向前一步", new Vector2(5f, 0.55f), 0.25f, new Color(0.9f, 0.55f, 0.62f));
+        CreateLabel("跳进上方标记：主动向前一步", new Vector2(5f, 0.55f), 0.25f, new Color(0.9f, 0.55f, 0.62f));
 
         var finalCueObject = CreateBlock("Final Release Cue", new Vector2(10f, -1.5f), new Vector2(1.8f, 0.25f), new Color(1f, 0.82f, 0.4f), false, 2);
         AddArtSlot(finalCueObject, "prop_stage_marker");
@@ -385,26 +415,33 @@ public static class LetGoSceneBuilder
 
     private static GameObject CreatePlayer(Vector2 position)
     {
-        var player = new GameObject("Player", typeof(SpriteRenderer), typeof(Rigidbody2D), typeof(CapsuleCollider2D),
+        var player = new GameObject("Player", typeof(Rigidbody2D), typeof(CapsuleCollider2D),
             typeof(PlayerController2D), typeof(CourageSystem), typeof(CarryInventory), typeof(Animator),
             typeof(CharacterAnimationDriver));
         player.transform.position = position;
         player.transform.localScale = Vector3.one;
-        var renderer = player.GetComponent<SpriteRenderer>();
+        var visual = new GameObject("Character Visual", typeof(SpriteRenderer));
+        visual.transform.SetParent(player.transform, false);
+        var renderer = visual.GetComponent<SpriteRenderer>();
         renderer.sprite = blockSprite;
         renderer.color = new Color(0.7f, 0.78f, 1f);
         renderer.sortingOrder = 3;
+        player.GetComponent<PlayerController2D>().ConfigureCharacterVisual(visual.transform);
         var body = player.GetComponent<Rigidbody2D>();
         body.gravityScale = 2.3f;
         body.collisionDetectionMode = CollisionDetectionMode2D.Continuous;
         var collider = player.GetComponent<CapsuleCollider2D>();
         collider.size = new Vector2(0.75f, 1.3f);
 
-        var glow = CreateBlock("Inner Light", Vector2.zero, Vector2.one, new Color(1f, 0.72f, 0.25f, 0.4f), false, 2);
+        var glow = new GameObject("Courage Glow", typeof(SpriteRenderer));
         glow.transform.SetParent(player.transform, false);
-        glow.transform.localScale = Vector3.one * 1.5f;
+        glow.transform.localPosition = new Vector3(0f, 0.28f, 0f);
+        var glowRenderer = glow.GetComponent<SpriteRenderer>();
+        glowRenderer.sprite = glowSprite;
+        glowRenderer.color = new Color(1f, 0.72f, 0.25f, 0.65f);
+        glowRenderer.sortingOrder = 2;
         var serialized = new SerializedObject(player.GetComponent<CourageSystem>());
-        serialized.FindProperty("innerLight").objectReferenceValue = glow.GetComponent<SpriteRenderer>();
+        serialized.FindProperty("innerLight").objectReferenceValue = glowRenderer;
         serialized.ApplyModifiedPropertiesWithoutUndo();
 
         var carriedVisualObject = CreateBlock("Carried Item", Vector2.zero, new Vector2(0.45f, 0.45f), Color.white, false, 8);
@@ -416,7 +453,8 @@ public static class LetGoSceneBuilder
 
     private static void SetPlayerArtSlot(GameObject player, string slotId)
     {
-        AddArtSlot(player, slotId, player.GetComponent<Animator>());
+        var renderer = player.transform.Find("Character Visual").GetComponent<SpriteRenderer>();
+        AddArtSlot(player, slotId, player.GetComponent<Animator>(), renderer);
     }
 
     private static HandConnection AddHandConnection(GameObject player, bool selfAnchorEnabled)
@@ -547,11 +585,11 @@ public static class LetGoSceneBuilder
         return go.AddComponent<T>();
     }
 
-    private static void AddArtSlot(GameObject target, string slotId, Animator animator = null)
+    private static void AddArtSlot(GameObject target, string slotId, Animator animator = null, SpriteRenderer renderer = null)
     {
         var slot = target.GetComponent<ArtSlot>();
         if (slot == null) slot = target.AddComponent<ArtSlot>();
-        slot.Configure(slotId, target.GetComponent<SpriteRenderer>(), animator);
+        slot.Configure(slotId, renderer != null ? renderer : target.GetComponent<SpriteRenderer>(), animator);
     }
 
     private static StoryZone CreateZone(string name, Vector2 position, string line, bool beginDrain, bool stopDrain, bool checkpoint)
@@ -723,6 +761,39 @@ public static class LetGoSceneBuilder
         AssetDatabase.CreateAsset(texture, SpritePath);
         var sprite = Sprite.Create(texture, new Rect(0f, 0f, 2f, 2f), new Vector2(0.5f, 0.5f), 2f);
         sprite.name = "Block Sprite";
+        AssetDatabase.AddObjectToAsset(sprite, texture);
+        AssetDatabase.SaveAssets();
+        return sprite;
+    }
+
+    private static Sprite EnsureGlowSprite()
+    {
+        var existing = AssetDatabase.LoadAllAssetsAtPath(GlowSpritePath).OfType<Sprite>().FirstOrDefault();
+        if (existing != null) return existing;
+
+        const int size = 64;
+        var texture = new Texture2D(size, size, TextureFormat.RGBA32, false)
+        {
+            name = "Courage Glow Texture",
+            filterMode = FilterMode.Bilinear,
+            wrapMode = TextureWrapMode.Clamp
+        };
+        var pixels = new Color[size * size];
+        var center = (size - 1) * 0.5f;
+        for (var y = 0; y < size; y++)
+        {
+            for (var x = 0; x < size; x++)
+            {
+                var distance = Vector2.Distance(new Vector2(x, y), new Vector2(center, center)) / center;
+                var alpha = 1f - Mathf.SmoothStep(0.05f, 1f, distance);
+                pixels[y * size + x] = new Color(1f, 1f, 1f, alpha * alpha);
+            }
+        }
+        texture.SetPixels(pixels);
+        texture.Apply();
+        AssetDatabase.CreateAsset(texture, GlowSpritePath);
+        var sprite = Sprite.Create(texture, new Rect(0f, 0f, size, size), new Vector2(0.5f, 0.5f), size);
+        sprite.name = "Courage Glow Sprite";
         AssetDatabase.AddObjectToAsset(sprite, texture);
         AssetDatabase.SaveAssets();
         return sprite;

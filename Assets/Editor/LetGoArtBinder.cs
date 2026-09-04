@@ -18,7 +18,7 @@ public static class LetGoArtBinder
         Directory.CreateDirectory(ArtRoot);
         Directory.CreateDirectory(AudioRoot);
         AssetDatabase.Refresh();
-        LetGoSpriteAssetIntegrator.BuildChildController();
+        LetGoSpriteAssetIntegrator.BuildAvailableControllers();
         var previousScenes = EditorSceneManager.GetSceneManagerSetup();
         var changedSlots = 0;
 
@@ -91,7 +91,7 @@ public static class LetGoArtBinder
     private static Vector3 GetTargetBounds(ArtSlot slot, SpriteRenderer renderer)
     {
         if (slot.SlotId.StartsWith("char_", System.StringComparison.OrdinalIgnoreCase) &&
-            renderer.TryGetComponent<CapsuleCollider2D>(out var capsule))
+            slot.TryGetComponent<CapsuleCollider2D>(out var capsule))
             return capsule.bounds.size;
         return renderer.bounds.size;
     }
@@ -125,6 +125,8 @@ public static class LetGoArtBinder
         if (exact != null) return exact;
         if (slotId == "char_child")
             return FindLargestSpriteAtPath("Assets/Sprites/char_child/char_child_Idle 4.png");
+        if (slotId == "char_teen")
+            return FindLargestSpriteAtPath("Assets/Sprites/char_teen/char_teen_Idle 4.png");
         var fallback = slotId switch
         {
             "memory_kindergarten_set" => "幼儿园背景图",

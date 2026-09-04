@@ -1,0 +1,431 @@
+fileFormatVersion: 2
+guid: 5ef235890410e1b4b89a07d4d12d03b3
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -5075626786464373234
+    second: char_adult_Walk 6_0
+  - first:
+      213: 6948436600974261567
+    second: char_adult_Walk 6_1
+  - first:
+      213: 7928099845335713283
+    second: char_adult_Walk 6_2
+  - first:
+      213: 5770408247194917748
+    second: char_adult_Walk 6_3
+  - first:
+      213: 1922788300856264420
+    second: char_adult_Walk 6_4
+  - first:
+      213: 1388721329410480361
+    second: char_adult_Walk 6_5
+  - first:
+      213: 7480027551978926463
+    second: char_adult_Walk 6_6
+  - first:
+      213: -5491573302743676789
+    second: char_adult_Walk 6_7
+  - first:
+      213: 6829769805125319154
+    second: char_adult_Walk 6_8
+  - first:
+      213: -3667288700521810178
+    second: char_adult_Walk 6_9
+  - first:
+      213: 2737675477714782500
+    second: char_adult_Walk 6_10
+  - first:
+      213: 2971527558134106165
+    second: char_adult_Walk 6_11
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationMethod: 0
+  spriteTessellationDetail: -1
+  spriteGeometrySubdivision: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: char_adult_Walk 6_0
+      rect:
+        serializedVersion: 2
+        x: 24
+        y: 49
+        width: 699
+        height: 643
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e06655c5450cf89b0800000000000000
+      internalID: -5075626786464373234
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: char_adult_Walk 6_1
+      rect:
+        serializedVersion: 2
+        x: 748
+        y: 33
+        width: 293
+        height: 659
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f3db461364ecd6060800000000000000
+      internalID: 6948436600974261567
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: char_adult_Walk 6_2
+      rect:
+        serializedVersion: 2
+        x: 1014
+        y: 502
+        width: 31
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3068011fdc4460e60800000000000000
+      internalID: 7928099845335713283
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: char_adult_Walk 6_3
+      rect:
+        serializedVersion: 2
+        x: 1062
+        y: 25
+        width: 387
+        height: 667
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 47b99075abb941050800000000000000
+      internalID: 5770408247194917748
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: char_adult_Walk 6_4
+      rect:
+        serializedVersion: 2
+        x: 1446
+        y: 47
+        width: 359
+        height: 645
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4e680d2b5cd1faa10800000000000000
+      internalID: 1922788300856264420
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: char_adult_Walk 6_5
+      rect:
+        serializedVersion: 2
+        x: 1746
+        y: 521
+        width: 39
+        height: 40
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9e8158bf0bab54310800000000000000
+      internalID: 1388721329410480361
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: char_adult_Walk 6_6
+      rect:
+        serializedVersion: 2
+        x: 1818
+        y: 47
+        width: 327
+        height: 644
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f71b6d97d656ec760800000000000000
+      internalID: 7480027551978926463
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: char_adult_Walk 6_7
+      rect:
+        serializedVersion: 2
+        x: 1008
+        y: 495
+        width: 7
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b88c1ff3d230ac3b0800000000000000
+      internalID: -5491573302743676789
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: char_adult_Walk 6_8
+      rect:
+        serializedVersion: 2
+        x: 1014
+        y: 500
+        width: 7
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2f9fe2cb37738ce50800000000000000
+      internalID: 6829769805125319154
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: char_adult_Walk 6_9
+      rect:
+        serializedVersion: 2
+        x: 1016
+        y: 498
+        width: 13
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ef6f7946b5c2b1dc0800000000000000
+      internalID: -3667288700521810178
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: char_adult_Walk 6_10
+      rect:
+        serializedVersion: 2
+        x: 682
+        y: 482
+        width: 9
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 429cc77975d2ef520800000000000000
+      internalID: 2737675477714782500
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: char_adult_Walk 6_11
+      rect:
+        serializedVersion: 2
+        x: 999
+        y: 482
+        width: 17
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5380edef19cfc3920800000000000000
+      internalID: 2971527558134106165
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      char_adult_Walk 6_0: -5075626786464373234
+      char_adult_Walk 6_1: 6948436600974261567
+      char_adult_Walk 6_10: 2737675477714782500
+      char_adult_Walk 6_11: 2971527558134106165
+      char_adult_Walk 6_2: 7928099845335713283
+      char_adult_Walk 6_3: 5770408247194917748
+      char_adult_Walk 6_4: 1922788300856264420
+      char_adult_Walk 6_5: 1388721329410480361
+      char_adult_Walk 6_6: 7480027551978926463
+      char_adult_Walk 6_7: -5491573302743676789
+      char_adult_Walk 6_8: 6829769805125319154
+      char_adult_Walk 6_9: -3667288700521810178
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
