@@ -13,8 +13,10 @@ namespace LetGo
         private Rigidbody2D body;
         private CapsuleCollider2D bodyCollider;
         private bool controlsEnabled = true;
+        private bool interactionLocked;
         private Vector3 characterScale;
         private float facing = 1f;
+        private float footstepTimer;
 
         public bool ControlsEnabled
         {
@@ -38,14 +40,19 @@ namespace LetGo
 
         private void Update()
         {
-            if (!controlsEnabled) return;
+            if (!controlsEnabled || interactionLocked) return;
             if (GameInput.JumpPressed && IsGrounded()) body.linearVelocity = new Vector2(body.linearVelocity.x, jumpForce);
             if (GameInput.RestartPressed) StorySceneDirector.Instance?.RespawnPlayer();
+            UpdateFootsteps();
         }
 
         private void FixedUpdate()
         {
-            if (!controlsEnabled) return;
+            if (!controlsEnabled || interactionLocked)
+            {
+                if (body != null) body.linearVelocity = new Vector2(0f, body.linearVelocity.y);
+                return;
+            }
             body.linearVelocity = new Vector2(GameInput.Horizontal * moveSpeed, body.linearVelocity.y);
             if (Mathf.Abs(GameInput.Horizontal) > 0.01f)
             {
@@ -60,6 +67,12 @@ namespace LetGo
             ApplyScale();
         }
 
+        public void SetInteractionLocked(bool value)
+        {
+            interactionLocked = value;
+            if (value && body != null) body.linearVelocity = new Vector2(0f, body.linearVelocity.y);
+        }
+
         private void ApplyScale()
         {
             transform.localScale = new Vector3(Mathf.Abs(characterScale.x) * facing, characterScale.y, characterScale.z);
@@ -71,7 +84,20 @@ namespace LetGo
             var origin = new Vector2(bounds.center.x, bounds.min.y - 0.02f);
             var hit = Physics2D.BoxCast(origin, new Vector2(bounds.size.x * 0.75f, 0.05f), 0f, Vector2.down,
                 groundCheckDistance, groundMask);
-            return hit.collider != null && hit.collider != bodyCollider;
+            return hit.collider != null && hit.collider != bodyCollider && !hit.collider.isTrigger;
+        }
+
+        private void UpdateFootsteps()
+        {
+            if (Mathf.Abs(GameInput.Horizontal) < 0.1f || !IsGrounded())
+            {
+                footstepTimer = 0f;
+                return;
+            }
+            footstepTimer -= Time.deltaTime;
+            if (footstepTimer > 0f) return;
+            footstepTimer = 0.42f;
+            SceneAudio.Instance?.PlayFootstep();
         }
     }
 }

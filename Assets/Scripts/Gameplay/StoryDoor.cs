@@ -26,6 +26,7 @@ namespace LetGo
             }
             completed = true;
             director.ClearPrompt(prompt);
+            SceneAudio.Instance?.PlayDoor();
             if (openEnding) director.ShowOpenEnding();
             else director.LoadNextScene();
         }

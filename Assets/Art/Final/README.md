@@ -7,4 +7,4 @@
 - 主角控制器至少提供 `Speed` Float 参数，用于 Idle/Walk 切换。
 - 导入完成后执行 Unity 菜单 `Tools > Let Go > Apply Final Art By Filename`。
 
-绑定工具会更新七个正式场景；它不在游戏运行时扫描文件。
+绑定工具会更新五个正式场景，并按灰盒占位区域自动缩放；它不在游戏运行时扫描文件。
