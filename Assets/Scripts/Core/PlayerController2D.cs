@@ -18,6 +18,8 @@ namespace LetGo
         private Vector3 characterScale;
         private float facing = 1f;
         private float footstepTimer;
+        private readonly RaycastHit2D[] groundHits = new RaycastHit2D[8];
+        private ContactFilter2D groundFilter;
 
         public bool ControlsEnabled
         {
@@ -41,6 +43,9 @@ namespace LetGo
             if (characterVisual == null) characterVisual = transform.Find("Character Visual");
             body.freezeRotation = true;
             characterScale = characterVisual == null ? Vector3.one : characterVisual.localScale;
+            groundFilter = new ContactFilter2D();
+            groundFilter.SetLayerMask(groundMask);
+            groundFilter.useTriggers = false;
         }
 
         private void Update()
@@ -110,9 +115,14 @@ namespace LetGo
         {
             var bounds = bodyCollider.bounds;
             var origin = new Vector2(bounds.center.x, bounds.min.y - 0.02f);
-            var hit = Physics2D.BoxCast(origin, new Vector2(bounds.size.x * 0.75f, 0.05f), 0f, Vector2.down,
-                groundCheckDistance, groundMask);
-            return hit.collider != null && hit.collider != bodyCollider && !hit.collider.isTrigger;
+            var hitCount = Physics2D.BoxCast(origin, new Vector2(bounds.size.x * 0.75f, 0.05f), 0f,
+                Vector2.down, groundFilter, groundHits, groundCheckDistance);
+            for (var i = 0; i < hitCount; i++)
+            {
+                var hitCollider = groundHits[i].collider;
+                if (hitCollider != null && hitCollider != bodyCollider) return true;
+            }
+            return false;
         }
 
         private void UpdateFootsteps()

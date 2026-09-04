@@ -67,8 +67,8 @@ namespace LetGo
 
         public void ClearPrompt(string expected = null)
         {
-            if (promptText == null) return;
-            if (string.IsNullOrEmpty(expected) || promptText.text == expected) promptText.text = string.Empty;
+            if (promptText == null || string.IsNullOrEmpty(expected)) return;
+            if (promptText.text == expected) promptText.text = string.Empty;
         }
 
         public void Say(string text, float duration = 3.5f)

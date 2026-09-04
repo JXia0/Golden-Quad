@@ -10,7 +10,7 @@ using UnityEngine.UI;
 [InitializeOnLoad]
 public static class LetGoSceneBuilder
 {
-    private const string BuildVersion = "4.2.0";
+    private const string BuildVersion = "4.4.0";
     private const string MarkerPath = "ProjectSettings/LetGoSceneBuild.version";
     private const string SpritePath = "Assets/Art/Placeholders/BlockSprite.asset";
     private const string GlowSpritePath = "Assets/Art/Placeholders/CourageGlow.asset";
@@ -89,7 +89,7 @@ public static class LetGoSceneBuilder
 
     private static void BuildKindergarten()
     {
-        var setup = CreateBase("03_Stage", new Vector2(-8f, -2.1f), 2, 50f, new Color(0.11f, 0.09f, 0.16f));
+        var setup = CreateBase("03_Stage", new Vector2(-8f, -2.1f), 4, 50f, new Color(0.11f, 0.09f, 0.16f));
         SetPlayerArtSlot(setup.Player, "char_child");
         var hand = AddHandConnection(setup.Player, false);
         var guardian = CreateCoreHoldTarget("Parent", new Vector2(-9f, -1.7f), new Vector2(1f, 2.2f),
@@ -107,18 +107,29 @@ public static class LetGoSceneBuilder
 
         var chair = CreateBlock("Oversized Chair", new Vector2(3f, -2.05f), new Vector2(1.3f, 1.4f), new Color(0.35f, 0.32f, 0.48f), true, 1);
         AddArtSlot(chair, "prop_named_chair");
+        chair.AddComponent<ObjectiveStation>().Configure(
+            "按 E 确认写着自己名字的座位",
+            "我第一次在没有你指给我的时候，认出了自己的名字。", 1);
+        CreateLabel("按 E 确认名字", new Vector2(3f, -0.95f), 0.24f, new Color(0.85f, 0.88f, 1f));
         var blocks = CreateBlock("Oversized Blocks", new Vector2(6.3f, -2.42f), new Vector2(1.6f, 0.65f), new Color(0.38f, 0.55f, 0.55f), true, 1);
         AddArtSlot(blocks, "deco_blocks");
+        blocks.AddComponent<InspectPoint>().Configure(
+            "按 E 看看散落的积木",
+            "它们没有家里的积木那么可怕。只是需要我自己决定，绕过去，还是跳过去。");
         CreateLabel("Space / W / ↑ 跳过积木", new Vector2(6.3f, -1.25f), 0.24f, new Color(0.72f, 0.88f, 0.9f));
-        var toy = CreateBlock("Dropped Toy", new Vector2(8.3f, -2.35f), new Vector2(0.72f, 0.78f), Color.white, false, 2);
-        AddArtSlot(toy, "prop_toy");
+        CreateCarryItem("掉落的玩具", "kindergarten-toy", new Vector2(8.3f, -2.35f),
+            "按 E 捡起玩具", "我可以把它带给那个正在哭的孩子。", "prop_toy", Color.white);
 
         var cryingChild = CreateCoreHoldTarget("Crying Child", new Vector2(10f, -1.7f), new Vector2(0.9f, 1.9f),
             new Color(0.72f, 0.42f, 0.48f), "char_crying_child", "crying-child", HoldTargetMode.Companion,
-            "按住 E 牵住孩子的手", 2.1f, 2.5f, 1, 1.1f, 2.6f);
+            "按住 E 牵住孩子的手", 2.1f, 2.5f, 3, 1.1f, 2.6f);
+        cryingChild.gameObject.AddComponent<DeliveryStation>().Configure(
+            "kindergarten-toy", "按 E 把玩具递给哭泣的孩子",
+            "他接过玩具，慢慢停止了哭泣。刚才还需要别人安慰的我，也能先向前伸出手。",
+            "地上好像有一个属于他的玩具。", "kindergarten", "shared-comfort");
         var teacher = CreatePerson("Teacher", new Vector2(16f, -1.7f), new Vector2(1f, 2.2f), new Color(0.55f, 0.68f, 0.72f));
         AddArtSlot(teacher, "char_teacher");
-        CreateCoreSocket("Teacher Safe Area", new Vector2(16f, -1.5f), "crying-child", string.Empty, 1.8f, 1,
+        CreateCoreSocket("Teacher Safe Area", new Vector2(16f, -1.5f), "crying-child", string.Empty, 1.8f, 3,
             "刚才还需要别人牵着的我，现在也能陪另一个人走一段路。", new Color(0.55f, 0.72f, 0.64f, 0.2f));
 
         var fearRoot = new GameObject("Unfamiliar Shadows").transform;
@@ -193,14 +204,14 @@ public static class LetGoSceneBuilder
         AddArtSlot(safeRoute, "prop_stage_marker");
         safeRoute.AddComponent<BoxCollider2D>().isTrigger = true;
         safeRoute.AddComponent<StageRouteChoiceTrigger>().Configure("我选择了离幕布更近的位置。", string.Empty);
-        CreateLabel("稳稳走完", new Vector2(5f, -1.35f), 0.25f, new Color(0.55f, 0.72f, 0.9f));
+        CreateLabel("向右走：稳稳完成", new Vector2(5f, -1.35f), 0.25f, new Color(0.55f, 0.72f, 0.9f));
 
-        CreateBlock("Forward Platform", new Vector2(5f, -1.35f), new Vector2(2.8f, 0.3f), new Color(0.72f, 0.4f, 0.48f), true, 0);
+        CreateBlock("Forward Platform", new Vector2(5f, -1.35f), new Vector2(2.8f, 0.3f), new Color(0.72f, 0.4f, 0.48f), false, 0);
         var forwardRoute = CreateBlock("Forward Route", new Vector2(5f, -0.45f), new Vector2(2f, 1.1f), new Color(0.72f, 0.4f, 0.48f, 0.25f), false, 1);
         AddArtSlot(forwardRoute, "prop_stage_marker");
         forwardRoute.AddComponent<BoxCollider2D>().isTrigger = true;
         forwardRoute.AddComponent<StageRouteChoiceTrigger>().Configure("我选择向观众再靠近一步。", string.Empty);
-        CreateLabel("向前一步", new Vector2(5f, 0.55f), 0.25f, new Color(0.9f, 0.55f, 0.62f));
+        CreateLabel("跳进上方标记：主动向前一步", new Vector2(5f, 0.55f), 0.25f, new Color(0.9f, 0.55f, 0.62f));
 
         var finalCueObject = CreateBlock("Final Release Cue", new Vector2(10f, -1.5f), new Vector2(1.8f, 0.25f), new Color(1f, 0.82f, 0.4f), false, 2);
         AddArtSlot(finalCueObject, "prop_stage_marker");
