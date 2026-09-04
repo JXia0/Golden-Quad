@@ -7,22 +7,28 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
-[InitializeOnLoad]
 public static class LetGoSceneBuilder
 {
-    private const string BuildVersion = "4.6.0";
+    private const string BuildVersion = "4.7.0";
     private const string MarkerPath = "ProjectSettings/LetGoSceneBuild.version";
     private const string SpritePath = "Assets/Art/Placeholders/BlockSprite.asset";
     private const string GlowSpritePath = "Assets/Art/Placeholders/CourageGlow.asset";
     private static Sprite blockSprite;
     private static Sprite glowSprite;
 
-    static LetGoSceneBuilder()
+    [MenuItem("Tools/Let Go/Rebuild All Game Scenes (Overwrites Manual Layout)")]
+    private static void ConfirmBuildAllScenes()
     {
-        EditorApplication.delayCall += BuildWhenReady;
+        if (!EditorUtility.DisplayDialog(
+                "Rebuild all Let Go scenes?",
+                "This recreates every gameplay scene and overwrites manual Transform, collider, and sorting adjustments.",
+                "Rebuild",
+                "Cancel"))
+            return;
+
+        BuildAllScenes();
     }
 
-    [MenuItem("Tools/Let Go/Build All Game Scenes")]
     public static void BuildAllScenes()
     {
         EnsureFolders();
@@ -51,20 +57,9 @@ public static class LetGoSceneBuilder
         Debug.Log("[LetGo] Built the five-scene hold-and-release playable flow.");
     }
 
-    private static void BuildWhenReady()
-    {
-        if (EditorApplication.isPlayingOrWillChangePlaymode || EditorApplication.isCompiling || EditorApplication.isUpdating)
-        {
-            EditorApplication.delayCall += BuildWhenReady;
-            return;
-        }
-        if (File.Exists(MarkerPath) && File.ReadAllText(MarkerPath).Trim() == BuildVersion) return;
-        BuildAllScenes();
-    }
-
     private static void BuildPrologue()
     {
-        var setup = CreateBase("01_Kindergarten", new Vector2(-5f, -2.1f), 0, 24f, new Color(0.08f, 0.09f, 0.14f));
+        var setup = CreateBase("01_Kindergarten", new Vector2(-5f, -2.1f), 0, 24f, new Color(0.08f, 0.09f, 0.14f), true, false);
         SetPlayerArtSlot(setup.Player, "char_adult");
         var report = CreateBlock("Carried Research Report", Vector2.zero, new Vector2(0.42f, 0.68f), Color.white, false, 4);
         report.transform.SetParent(setup.Player.transform, false);
@@ -80,7 +75,7 @@ public static class LetGoSceneBuilder
         AddArtSlot(waySign, "prop_office_waysign");
         var doorSign = CreateBlock("Meeting Door Sign", new Vector2(4.4f, 0.6f), new Vector2(2.4f, 0.65f), Color.white, false, 2);
         AddArtSlot(doorSign, "prop_office_doorsigns");
-        var door = CreateInteractable<StoryDoor>("Meeting Door", new Vector2(4.4f, -1.3f), new Vector2(1.2f, 2.7f), new Color(0.4f, 0.45f, 0.58f));
+        var door = CreateInteractable<StoryDoor>("Meeting Door", new Vector2(15.95f, -1.35f), new Vector2(1.2f, 2.7f), new Color(0.4f, 0.45f, 0.58f));
         AddArtSlot(door.gameObject, "prop_meeting_door");
         door.Configure(false, false, "按 E 触碰门把手");
         AddOpening("小时候，我以为长大，是某一天突然发生的事。\n像生日，像毕业，像门框上突然高出的一条线。", 0.8f, 6f);
@@ -156,8 +151,9 @@ public static class LetGoSceneBuilder
         new GameObject("Emotional Environment", typeof(EmotionalEnvironment)).GetComponent<EmotionalEnvironment>()
             .Configure(hand, fearRoot, fears, Camera.main, new Color(0.11f, 0.09f, 0.16f), new Color(0.035f, 0.025f, 0.08f));
 
-        var exit = CreateInteractable<StoryDoor>("Classroom Exit", new Vector2(20f, -1.1f), new Vector2(1.3f, 3.1f), new Color(0.45f, 0.5f, 0.65f));
+        var exit = CreateInteractable<StoryDoor>("Classroom Exit", new Vector2(24.44f, -1.1f), new Vector2(1.3f, 3.1f), new Color(0.45f, 0.5f, 0.65f));
         AddArtSlot(exit.gameObject, "prop_kindergarten_door");
+        exit.GetComponent<SpriteRenderer>().enabled = false;
         exit.Configure(true, false, "按 E 走进教室");
         AddOpening("第一次，我必须自己决定什么时候松开。", 0.8f, 3.5f);
         Save("01_Kindergarten");
@@ -366,7 +362,8 @@ public static class LetGoSceneBuilder
         public StorySceneDirector Director;
     }
 
-    private static BaseSetup CreateBase(string nextScene, Vector2 spawn, int objectives, float groundWidth, Color background, bool playerEnabled = true)
+    private static BaseSetup CreateBase(string nextScene, Vector2 spawn, int objectives, float groundWidth, Color background,
+        bool playerEnabled = true, bool showGround = true)
     {
         EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
         var cameraObject = new GameObject("Main Camera", typeof(Camera), typeof(AudioListener), typeof(CameraFollow2D));
@@ -387,7 +384,12 @@ public static class LetGoSceneBuilder
             var checkpointObject = new GameObject("Initial Checkpoint");
             checkpointObject.transform.position = spawn;
             checkpoint = checkpointObject.transform;
-            CreateBlock("Ground", new Vector2(spawn.x + groundWidth * 0.5f - 3f, -3.25f), new Vector2(groundWidth, 1f), new Color(0.12f, 0.14f, 0.2f), true, -1);
+            var groundPosition = new Vector2(spawn.x + groundWidth * 0.5f - 3f, -3.25f);
+            var groundSize = new Vector2(groundWidth, 1f);
+            if (showGround)
+                CreateBlock("Ground", groundPosition, groundSize, new Color(0.12f, 0.14f, 0.2f), true, -1);
+            else
+                CreateInvisibleGround(groundPosition, groundSize);
         }
 
         var ui = CreateStoryUI();
@@ -632,6 +634,13 @@ public static class LetGoSceneBuilder
         renderer.sortingOrder = order;
         if (solid) go.AddComponent<BoxCollider2D>();
         return go;
+    }
+
+    private static void CreateInvisibleGround(Vector2 position, Vector2 size)
+    {
+        var ground = new GameObject("Ground", typeof(BoxCollider2D));
+        ground.transform.position = position;
+        ground.transform.localScale = new Vector3(size.x, size.y, 1f);
     }
 
     private static void CreateLabel(string value, Vector2 position, float size, Color color)
