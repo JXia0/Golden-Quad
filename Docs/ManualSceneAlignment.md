@@ -18,6 +18,12 @@
 - 交互门：`Meeting Door`
 - 装饰：`Office Clock`、`Meeting Way Sign`、`Meeting Door Sign`
 
+当前背景参考坐标：
+
+- `bg_office_hallway.png` 为 `3400 × 550`，场景显示范围约为 X `-16.98` 到 `16.98`。背景门洞位于像素 X `3225` 到 `3367`，所以 `Meeting Door` 的中心是 `(15.95, -1.35)`。
+- `bg_kindergarten_hall.png` 为 `3400 × 550`，场景显示范围约为 X `-7.98` 到 `25.98`。最右侧发光教室门的中心约为 X `24.44`，所以 `Classroom Exit` 的位置是 `(24.44, -1.1)`。
+- 幼儿园背景已经画出了打开的教室门，`Classroom Exit` 的 SpriteRenderer 默认关闭，只保留互动逻辑。需要检查位置时可以在 Inspector 临时开启，检查后再关闭。
+
 先确定背景的位置和尺寸，之后不要再移动背景。选中需要对齐的物体：
 
 - 按 `W` 移动。

@@ -75,7 +75,7 @@ public static class LetGoSceneBuilder
         AddArtSlot(waySign, "prop_office_waysign");
         var doorSign = CreateBlock("Meeting Door Sign", new Vector2(4.4f, 0.6f), new Vector2(2.4f, 0.65f), Color.white, false, 2);
         AddArtSlot(doorSign, "prop_office_doorsigns");
-        var door = CreateInteractable<StoryDoor>("Meeting Door", new Vector2(4.4f, -1.3f), new Vector2(1.2f, 2.7f), new Color(0.4f, 0.45f, 0.58f));
+        var door = CreateInteractable<StoryDoor>("Meeting Door", new Vector2(15.95f, -1.35f), new Vector2(1.2f, 2.7f), new Color(0.4f, 0.45f, 0.58f));
         AddArtSlot(door.gameObject, "prop_meeting_door");
         door.Configure(false, false, "按 E 触碰门把手");
         AddOpening("小时候，我以为长大，是某一天突然发生的事。\n像生日，像毕业，像门框上突然高出的一条线。", 0.8f, 6f);
@@ -151,8 +151,9 @@ public static class LetGoSceneBuilder
         new GameObject("Emotional Environment", typeof(EmotionalEnvironment)).GetComponent<EmotionalEnvironment>()
             .Configure(hand, fearRoot, fears, Camera.main, new Color(0.11f, 0.09f, 0.16f), new Color(0.035f, 0.025f, 0.08f));
 
-        var exit = CreateInteractable<StoryDoor>("Classroom Exit", new Vector2(20f, -1.1f), new Vector2(1.3f, 3.1f), new Color(0.45f, 0.5f, 0.65f));
+        var exit = CreateInteractable<StoryDoor>("Classroom Exit", new Vector2(24.44f, -1.1f), new Vector2(1.3f, 3.1f), new Color(0.45f, 0.5f, 0.65f));
         AddArtSlot(exit.gameObject, "prop_kindergarten_door");
+        exit.GetComponent<SpriteRenderer>().enabled = false;
         exit.Configure(true, false, "按 E 走进教室");
         AddOpening("第一次，我必须自己决定什么时候松开。", 0.8f, 3.5f);
         Save("01_Kindergarten");
