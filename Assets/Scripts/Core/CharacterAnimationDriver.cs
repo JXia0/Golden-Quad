@@ -9,20 +9,24 @@ namespace LetGo
         private static readonly int MovingId = Animator.StringToHash("Moving");
         private static readonly int VerticalSpeedId = Animator.StringToHash("VerticalSpeed");
         private static readonly int CarryingId = Animator.StringToHash("Carrying");
+        private static readonly int SelfAnchoringId = Animator.StringToHash("SelfAnchoring");
 
         private Animator animator;
         private PlayerController2D player;
         private CarryInventory inventory;
+        private HandConnection connection;
         private bool hasSpeed;
         private bool hasMoving;
         private bool hasVerticalSpeed;
         private bool hasCarrying;
+        private bool hasSelfAnchoring;
 
         private void Awake()
         {
             animator = GetComponent<Animator>();
             player = GetComponent<PlayerController2D>();
             inventory = GetComponent<CarryInventory>();
+            connection = GetComponent<HandConnection>();
 
             foreach (var parameter in animator.parameters)
             {
@@ -30,6 +34,7 @@ namespace LetGo
                 if (parameter.nameHash == MovingId && parameter.type == AnimatorControllerParameterType.Bool) hasMoving = true;
                 if (parameter.nameHash == VerticalSpeedId && parameter.type == AnimatorControllerParameterType.Float) hasVerticalSpeed = true;
                 if (parameter.nameHash == CarryingId && parameter.type == AnimatorControllerParameterType.Bool) hasCarrying = true;
+                if (parameter.nameHash == SelfAnchoringId && parameter.type == AnimatorControllerParameterType.Bool) hasSelfAnchoring = true;
             }
         }
 
@@ -41,6 +46,7 @@ namespace LetGo
             if (hasMoving) animator.SetBool(MovingId, horizontalSpeed > 0.05f);
             if (hasVerticalSpeed) animator.SetFloat(VerticalSpeedId, velocity.y);
             if (hasCarrying) animator.SetBool(CarryingId, inventory != null && inventory.HasItem);
+            if (hasSelfAnchoring) animator.SetBool(SelfAnchoringId, connection != null && connection.IsSelfAnchoring);
         }
     }
 }

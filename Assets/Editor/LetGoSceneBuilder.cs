@@ -10,7 +10,7 @@ using UnityEngine.UI;
 [InitializeOnLoad]
 public static class LetGoSceneBuilder
 {
-    private const string BuildVersion = "3.9.0";
+    private const string BuildVersion = "4.0.0";
     private const string MarkerPath = "ProjectSettings/LetGoSceneBuild.version";
     private const string SpritePath = "Assets/Art/Placeholders/BlockSprite.asset";
     private static Sprite blockSprite;
@@ -71,7 +71,12 @@ public static class LetGoSceneBuilder
         CreateLabel("成年后的第一次独立研究汇报", new Vector2(1.5f, 2.8f), 0.4f, new Color(0.7f, 0.76f, 0.9f));
         var officeBackground = CreateBlock("MeetingRoom", new Vector2(0f, -0.2f), new Vector2(34f, 5.5f), new Color(0.2f, 0.24f, 0.34f), false, -4);
         AddArtSlot(officeBackground, "bg_office_hallway");
-        CreateLabel("会议室", new Vector2(5f, 1.5f), 0.35f, Color.white);
+        var officeClock = CreateBlock("Office Clock", new Vector2(-0.2f, 1.65f), new Vector2(1.15f, 1.15f), Color.white, false, -2);
+        AddArtSlot(officeClock, "prop_office_clock");
+        var waySign = CreateBlock("Meeting Way Sign", new Vector2(2f, 1.65f), new Vector2(2.4f, 0.65f), Color.white, false, -2);
+        AddArtSlot(waySign, "prop_office_waysign");
+        var doorSign = CreateBlock("Meeting Door Sign", new Vector2(4.4f, 0.6f), new Vector2(2.4f, 0.65f), Color.white, false, 2);
+        AddArtSlot(doorSign, "prop_office_doorsigns");
         var door = CreateInteractable<StoryDoor>("Meeting Door", new Vector2(4.4f, -1.3f), new Vector2(1.2f, 2.7f), new Color(0.4f, 0.45f, 0.58f));
         AddArtSlot(door.gameObject, "prop_meeting_door");
         door.Configure(false, false, "按 E 触碰门把手");

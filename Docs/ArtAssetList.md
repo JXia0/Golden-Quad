@@ -14,7 +14,7 @@
 | 文件名 | 最低交付 | 用途 |
 |---|---|---|
 | `char_child` | Idle 4 帧、Walk 6 帧 | 幼儿园与长廊幼儿阶段 |
-| `char_teen` | Idle 4 帧、Walk 6 帧、手按胸口 1–4 帧 | 舞台、年轻汇报者与长廊少年阶段 |
+| `char_teen` | Idle 4 帧、Walk 6 帧、手按胸口呼吸 4 帧、舞台动作 3 帧 | 舞台、年轻汇报者与长廊少年阶段 |
 | `char_adult` | Idle 4 帧、Walk 6 帧 | 序章、研究与长廊成人阶段 |
 | `char_parent` | 牵手/等待姿势各 1 张 | 幼儿园、后台、长廊 |
 | `char_crying_child` | 哭泣与被牵住姿势各 1 张 | 幼儿园 |
@@ -40,6 +40,9 @@
 | 文件名 | 用途/需要区分的状态 |
 |---|---|
 | `prop_meeting_door` | 序章门、研究完成出口 |
+| `prop_office_clock` | 序章墙面时钟，表现汇报前等待的时间压力 |
+| `prop_office_doorsigns` | 会议室门牌 |
+| `prop_office_waysign` | 指向会议室的走廊标牌 |
 | `prop_kindergarten_door` | 放手门槛与教室出口 |
 | `prop_named_chair` | 放大的幼儿园椅子 |
 | `deco_blocks` | 放大的积木障碍 |
@@ -67,16 +70,19 @@
 
 ## 当前 `Assets/Sprites` 接入状态
 
-- 已接入四张主背景、幼儿园回忆背景、左右舞台幕布、观众眼睛、两张门、命名椅、研究桌、报告、玩具、问题卡、两种证据、结论卡与阴影人物。
+- 已接入四张主背景、幼儿园回忆背景、左右舞台幕布、观众眼睛、两张门、办公室时钟与指示牌、命名椅、研究桌、报告、玩具、问题卡、两种证据、结论卡与阴影人物。
 - 儿童 Idle 4 帧、Walk 6 帧和牵手/放手 4 帧会自动重新切片，并生成 `Assets/Art/Generated/char_child_controller.controller`。
+- 少年 Idle 4 帧、Walk 6 帧和手按胸口呼吸 4 帧会自动重新切片，并生成 `Assets/Art/Generated/char_teen_controller.controller`；呼吸动画由现有按住 `E` 稳定机制直接驱动。
 - `char_child_递玩具 3.png` 暂不绑定。当前核心玩法已经改为牵住哭泣的孩子并带到老师身边，使用递玩具动画会与玩家动作不一致。
 - `prop_stage_curtain_left/right.png` 与 `prop_stage_curtain_l/r.png` 内容重复；场景使用较短文件名的 `l/r` 版本。
 
 ## P1：有时间再加
 
 - 舞台普通观众剪影 3–4 个变体。
+- `char_teen_舞台动作 3.png`：横向三帧，依次为站定看向观众、手向前打开开始表达、收势重新站稳；画布和脚底 Pivot 与少年其他动画一致。
+- `prop_stage_chair.png`、`prop_stage_microphone.png`、`prop_stage_box.png`：分别交付三张独立透明 PNG，不拼图；内容固定为一把木椅、一个落地麦克风和一个矮台/脚踏箱。
 - 幼儿园墙画、挂旗、书包柜等纯装饰层。
 - 研究桌面杂物与报告边缘注释。
-- 浮尘粒子和轻微暗角纹理。
+- `fx_fear_vignette.png`：一张独立的 1920×1080 透明 PNG，四周深蓝黑、中间透明；Unity 通过全屏 UI Image 改变透明度。浮尘粒子由 Unity 制作。
 
 P1 不应遮挡手部光线、舞台站位、资料卡或门把手。
