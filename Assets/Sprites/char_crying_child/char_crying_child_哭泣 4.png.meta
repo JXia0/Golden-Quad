@@ -114,111 +114,89 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: "char_crying_child_\u54ED\u6CE3 4_0"
+      name: char_crying_child_cry_00
       rect:
         serializedVersion: 2
-        x: 18
-        y: 45
-        width: 402
-        height: 826
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 0
+        y: 0
+        width: 444
+        height: 887
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 9bc9261e67a1f20f0800000000000000
-      internalID: -1139663082811646791
+      spriteID: 08540d34f627fe94f8d4ba083d6b9382
+      internalID: -1318949649
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: "char_crying_child_\u54ED\u6CE3 4_1"
+      name: char_crying_child_cry_01
       rect:
         serializedVersion: 2
-        x: 423
-        y: 23
-        width: 441
-        height: 851
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 444
+        y: 0
+        width: 443
+        height: 887
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: d468d80adb7ccd440800000000000000
-      internalID: 4962060506711819853
+      spriteID: c1b2be32355e25945b07d2b9ff1fa6ef
+      internalID: 560327857
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: "char_crying_child_\u54ED\u6CE3 4_2"
+      name: char_crying_child_cry_02
       rect:
         serializedVersion: 2
-        x: 871
-        y: 45
-        width: 446
-        height: 812
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 887
+        y: 0
+        width: 443
+        height: 887
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: a76bb8f9872cd39b0800000000000000
-      internalID: -5098705379784935814
+      spriteID: 51b654036f2ff694cb5c129f325947aa
+      internalID: -212912392
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: "char_crying_child_\u54ED\u6CE3 4_3"
+      name: char_crying_child_cry_03
       rect:
         serializedVersion: 2
-        x: 1328
-        y: 757
-        width: 12
-        height: 10
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 1330
+        y: 0
+        width: 444
+        height: 887
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 0a218cd0bcad38370800000000000000
-      internalID: 8323737101955240608
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: "char_crying_child_\u54ED\u6CE3 4_4"
-      rect:
-        serializedVersion: 2
-        x: 1338
-        y: 46
-        width: 395
-        height: 801
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 36019a1f5d54e32b0800000000000000
-      internalID: -5602964101217578909
+      spriteID: ae4c246f6f2b6154a84464e3d5f4ca4c
+      internalID: -655531925
       vertices: []
       indices: 
       edges: []
@@ -227,7 +205,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: fe957d619855a6242a3bc43fe2d73c6f
     internalID: 0
     vertices: []
     indices: 
@@ -237,11 +215,10 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      "char_crying_child_\u54ED\u6CE3 4_0": -1139663082811646791
-      "char_crying_child_\u54ED\u6CE3 4_1": 4962060506711819853
-      "char_crying_child_\u54ED\u6CE3 4_2": -5098705379784935814
-      "char_crying_child_\u54ED\u6CE3 4_3": 8323737101955240608
-      "char_crying_child_\u54ED\u6CE3 4_4": -5602964101217578909
+      char_crying_child_cry_00: -1318949649
+      char_crying_child_cry_01: 560327857
+      char_crying_child_cry_02: -212912392
+      char_crying_child_cry_03: -655531925
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

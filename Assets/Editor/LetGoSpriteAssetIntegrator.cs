@@ -16,11 +16,16 @@ public static class LetGoSpriteAssetIntegrator
     private const string TeenWalkSheet = "Assets/Sprites/char_teen/char_teen_Walk 6.png";
     private const string TeenBreathSheet = "Assets/Sprites/char_teen/char_teen_手按胸口呼吸 4.png";
     private const string TeenControllerPath = GeneratedRoot + "/char_teen_controller.controller";
+    private const string AdultIdleSheet = "Assets/Sprites/char_adult/char_adult_Idle 4.png";
+    private const string AdultWalkSheet = "Assets/Sprites/char_adult/char_adult_Walk 6.png";
+    private const string AdultControllerPath = GeneratedRoot + "/char_adult_controller.controller";
 
     public static void BuildAvailableControllers()
     {
+        PrepareSupplementalSprites();
         BuildChildController();
         BuildTeenController();
+        BuildAdultController();
     }
 
     public static AnimatorController BuildChildController()
@@ -140,6 +145,66 @@ public static class LetGoSpriteAssetIntegrator
         return controller;
     }
 
+    public static AnimatorController BuildAdultController()
+    {
+        if (!File.Exists(AdultIdleSheet) || !File.Exists(AdultWalkSheet)) return null;
+        Directory.CreateDirectory(GeneratedRoot);
+        EnsureGridSlices(AdultIdleSheet, "char_adult_idle", 4);
+        EnsureGridSlices(AdultWalkSheet, "char_adult_walk", 6);
+
+        var idleSprites = LoadSprites(AdultIdleSheet);
+        var walkSprites = LoadSprites(AdultWalkSheet);
+        if (idleSprites.Length != 4 || walkSprites.Length != 6) return null;
+
+        var existingController = AssetDatabase.LoadAssetAtPath<AnimatorController>(AdultControllerPath);
+        if (existingController != null &&
+            UsesCharacterVisual(AssetDatabase.LoadAssetAtPath<AnimationClip>(GeneratedRoot + "/char_adult_idle.anim")) &&
+            UsesCharacterVisual(AssetDatabase.LoadAssetAtPath<AnimationClip>(GeneratedRoot + "/char_adult_walk.anim")))
+            return existingController;
+
+        DeleteGeneratedAsset("char_adult_idle.anim");
+        DeleteGeneratedAsset("char_adult_walk.anim");
+        AssetDatabase.DeleteAsset(AdultControllerPath);
+
+        var idleClip = CreateClip("char_adult_idle.anim", idleSprites, 4f, true);
+        var walkClip = CreateClip("char_adult_walk.anim", walkSprites, 8f, true);
+        var controller = AnimatorController.CreateAnimatorControllerAtPath(AdultControllerPath);
+        controller.AddParameter("Speed", AnimatorControllerParameterType.Float);
+        var machine = controller.layers[0].stateMachine;
+        var idle = machine.AddState("Idle");
+        var walk = machine.AddState("Walk");
+        idle.motion = idleClip;
+        walk.motion = walkClip;
+        machine.defaultState = idle;
+        AddCondition(idle, walk, AnimatorConditionMode.Greater, 0.05f, "Speed");
+        AddCondition(walk, idle, AnimatorConditionMode.Less, 0.05f, "Speed");
+
+        EditorUtility.SetDirty(controller);
+        AssetDatabase.SaveAssets();
+        return controller;
+    }
+
+    private static void PrepareSupplementalSprites()
+    {
+        EnsureGridSlices("Assets/Sprites/char_child/char_child_递玩具 3.png", "char_child_give_toy", 3);
+        EnsureGridSlices("Assets/Sprites/char_teen/char_teen_舞台动作 3.png", "char_teen_stage", 3);
+        EnsureGridSlices("Assets/Sprites/char_adult/char_adult_伸手 3.png", "char_adult_reach", 3);
+        EnsureGridSlices("Assets/Sprites/char_adult/char_adult_按胸口 3.png", "char_adult_chest", 3);
+        EnsureGridSlices("Assets/Sprites/char_adult/char_adult_推门 4.png", "char_adult_push_door", 4);
+        EnsureGridSlices("Assets/Sprites/char_crying_child/char_crying_child_哭泣 4.png", "char_crying_child_cry", 4);
+        EnsureGridSlices("Assets/Sprites/char_crying_child/char_crying_child_接过玩具 3.png", "char_crying_child_receive", 3);
+        EnsureGridSlices("Assets/Sprites/char_parent/char_parent_Idle 4.png", "char_parent_idle", 4);
+
+        EnsureSingleSprite("Assets/Sprites/char_adult/char_adult_持报告 1.png", SpriteAlignment.BottomCenter);
+        EnsureSingleSprite("Assets/Sprites/char_parent/char_parent_手放肩膀 1.png", SpriteAlignment.BottomCenter);
+        EnsureSingleSprite("Assets/Sprites/char_parent/char_parent_牵手 1.png", SpriteAlignment.BottomCenter);
+        EnsureSingleSprite("Assets/Sprites/char_parent/char_parent_门口等待 1.png", SpriteAlignment.BottomCenter);
+        EnsureSingleSprite("Assets/Sprites/char_teacher/char_teacher 侧面站立 1.png", SpriteAlignment.BottomCenter);
+        EnsureSingleSprite("Assets/Sprites/char_mentor/char_mentor  侧面站立 1.png", SpriteAlignment.BottomCenter);
+        EnsureSingleSprite("Assets/Sprites/audience_eyes.png", SpriteAlignment.Center);
+        EnsureSingleSprite("Assets/Sprites/fx_shadow_blob.png", SpriteAlignment.Center);
+    }
+
     private static void EnsureGridSlices(string path, string prefix, int frameCount)
     {
         var importer = AssetImporter.GetAtPath(path) as TextureImporter;
@@ -182,6 +247,32 @@ public static class LetGoSpriteAssetIntegrator
         var names = provider.GetDataProvider<ISpriteNameFileIdDataProvider>();
         names?.SetNameFileIdPairs(pairs);
         provider.Apply();
+        importer.SaveAndReimport();
+    }
+
+    private static void EnsureSingleSprite(string path, SpriteAlignment alignment)
+    {
+        if (!File.Exists(path)) return;
+        var importer = AssetImporter.GetAtPath(path) as TextureImporter;
+        if (importer == null) return;
+        var pivot = alignment == SpriteAlignment.BottomCenter ? new Vector2(0.5f, 0f) : new Vector2(0.5f, 0.5f);
+        var settings = new TextureImporterSettings();
+        importer.ReadTextureSettings(settings);
+        if (importer.textureType == TextureImporterType.Sprite &&
+            settings.spriteMode == (int)SpriteImportMode.Single &&
+            settings.spriteAlignment == (int)alignment &&
+            Vector2.Distance(settings.spritePivot, pivot) < 0.001f)
+            return;
+
+        importer.textureType = TextureImporterType.Sprite;
+        importer.spritePixelsPerUnit = 100f;
+        settings.spriteMode = (int)SpriteImportMode.Single;
+        settings.spriteAlignment = (int)alignment;
+        settings.spritePivot = pivot;
+        settings.spriteMeshType = SpriteMeshType.FullRect;
+        importer.SetTextureSettings(settings);
+        importer.alphaIsTransparency = true;
+        importer.mipmapEnabled = false;
         importer.SaveAndReimport();
     }
 
