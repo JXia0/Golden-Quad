@@ -170,7 +170,7 @@ namespace LetGo
 
             var notebook = GameObject.Find("Archive Notebook")?.GetComponent<SpriteRenderer>();
             if (notebook != null && notebook.sprite != null)
-                notebook.transform.position += Vector3.up * (-0.18f - notebook.bounds.min.y);
+                notebook.transform.position += Vector3.up * (-0.26f - notebook.bounds.min.y);
 
             var plate = GameObject.Find("Pressure Plate")?.GetComponent<SpriteRenderer>();
             if (plate != null)
@@ -211,10 +211,12 @@ namespace LetGo
         {
             var shelf = GameObject.Find("Archive Shelf")?.GetComponent<SpriteRenderer>();
             if (shelf == null || shelf.sprite == null || shelf.transform.Find("Left Archive Upright") != null) return;
-            ShelfPiece(shelf, "Left Archive Upright", new Vector3(-3.25f, -1.61f, 0f), new Vector2(2.12f, 0.2f), true);
-            ShelfPiece(shelf, "Right Archive Upright", new Vector3(-0.75f, -1.61f, 0f), new Vector2(2.12f, 0.2f), true);
+            ShelfPiece(shelf, "Archive Full Top", new Vector3(-2f, -0.35f, 0f), new Vector2(3.2f, 0.3f), false);
+            ShelfPiece(shelf, "Left Archive Upright", new Vector3(-3.25f, -1.46f, 0f), new Vector2(2.45f, 0.2f), true);
+            ShelfPiece(shelf, "Right Archive Upright", new Vector3(-0.75f, -1.46f, 0f), new Vector2(2.45f, 0.2f), true);
             ShelfPiece(shelf, "Archive Middle Shelf", new Vector3(-2f, -1.58f, 0f), new Vector2(2.7f, 0.16f), false);
             ShelfPiece(shelf, "Archive Cabinet Base", new Vector3(-2f, -2.61f, 0f), new Vector2(2.85f, 0.18f), false);
+            shelf.enabled = false;
         }
 
         private static void ShelfPiece(SpriteRenderer source, string name, Vector3 position, Vector2 size, bool vertical)
