@@ -60,6 +60,43 @@ public sealed class JourneyPlaythroughDriver : MonoBehaviour
     private IEnumerator Run()
     {
         yield return new WaitForSeconds(1.4f);
+        if (SessionState.GetBool("LetGo.QA.SceneStaging", false))
+        {
+            SessionState.EraseBool("LetGo.QA.SceneStaging");
+            yield return ReviewContinuousKindergarten();
+            if (finished) yield break;
+            yield return ReviewSceneStaging();
+            if (finished) yield break;
+            if (SessionState.GetBool("LetGo.QA.StagingOnly", false))
+            {
+                SessionState.EraseBool("LetGo.QA.StagingOnly");
+                Finish("ALL PLAYTHROUGH CHECKS PASSED for the final authored scene presentation.");
+                yield break;
+            }
+            yield return ReviewLearnedHabits();
+            if (finished) yield break;
+            yield return ReviewEndingBoundaries();
+            if (finished) yield break;
+            Finish("ALL PLAYTHROUGH CHECKS PASSED for staging, visible learning trials, reteaching, music and the final farewell.");
+            yield break;
+        }
+        if (SessionState.GetBool("LetGo.QA.LearnedHabits", false))
+        {
+            SessionState.EraseBool("LetGo.QA.LearnedHabits");
+            yield return ReviewLearnedHabits();
+            if (finished) yield break;
+            yield return ReviewEndingBoundaries();
+            if (finished) yield break;
+            if (!SessionState.GetBool("LetGo.QA.FullAfterHabits", false))
+            {
+                Finish("ALL PLAYTHROUGH CHECKS PASSED for demonstrated habits, meaningful reteaching, music, and the authored farewell.");
+                yield break;
+            }
+            SessionState.EraseBool("LetGo.QA.FullAfterHabits");
+            JourneyChoices.Reset();
+            SceneManager.LoadScene("00_Prologue");
+            yield return Keys(1.4f);
+        }
         if (SessionState.GetBool("LetGo.QA.HandPassages", false))
         {
             SessionState.EraseBool("LetGo.QA.HandPassages");
@@ -329,7 +366,7 @@ public sealed class JourneyPlaythroughDriver : MonoBehaviour
         yield return Keys(0.25f);
         var recipient = EmotionalJourney.Target("young-presenter");
         var initialX = recipient.transform.position.x;
-        yield return Keys(0.2f);
+        for (var i = 0; i < 50 && recipient.transform.position.x <= initialX; i++) yield return Keys(0.1f);
         if (!Check(recipient.transform.position.x > initialX, "recipient walks away after release")) yield break;
         yield return Walk(recipient.transform.position.x - 0.6f);
         yield return Keys(0.3f, Key.E);
@@ -339,14 +376,14 @@ public sealed class JourneyPlaythroughDriver : MonoBehaviour
             "reaching back pauses departure without resetting the goodbye")) yield break;
         yield return Walk(recipient.transform.position.x + 2.25f, true);
         var waitingX = Player.transform.position.x;
-        yield return Keys(3f);
+        for (var i = 0; i < 100 && !ending.HasEnteredDoor; i++) yield return Keys(0.1f);
         if (!Check(ending.HasEnteredDoor, "the second release lets the recipient finish entering the door")) yield break;
         if (!Check(Player.ControlsEnabled, "the ending waits for the player's own last step")) yield break;
         if (!Check(ending.OnwardPositionX >= waitingX + 0.75f, "walking ahead before goodbye cannot skip the final step with empty hands")) yield break;
         yield return Walk(ending.OnwardPositionX + 0.2f);
-        yield return Keys(0.5f);
+        for (var i = 0; i < 30 && Player.ControlsEnabled; i++) yield return Keys(0.1f);
         if (!Check(!Player.ControlsEnabled, "walking onward triggers the final fade")) yield break;
-        yield return Keys(3.5f);
+        for (var i = 0; i < 100 && !StorySceneDirector.Instance.ReplayAvailable; i++) yield return Keys(0.1f);
         yield return Keys(0.2f, Key.Enter);
         yield return Keys(1f);
         if (!Check(SceneManager.GetActiveScene().name == "00_Prologue" && !JourneyChoices.HasStageRhythm &&
@@ -573,8 +610,10 @@ public sealed class JourneyPlaythroughDriver : MonoBehaviour
             var coverage = coverageObject == null ? null : coverageObject.GetComponent<LineRenderer>();
             var tether = GameObject.Find("Hand Connection Light")?.GetComponent<LineRenderer>();
             if (!Check(tether != null && !tether.enabled, "carrying a lamp does not draw a second hand-to-object rope")) yield break;
-            if (!Check(coverage != null && coverage.gameObject.activeInHierarchy && coverage.startWidth > 0f && coverage.startColor.a > 0f && FindAnyObjectByType<ResearchExpedition>().ShowingLampRange && coverage.positionCount == 4,
-                "carrying the lamp shows a floor-level reach marker instead of a screen-sized circle")) yield break;
+            var glow = GameObject.Find("Workshop Lamp Glow")?.GetComponent<SpriteRenderer>();
+            if (!Check(coverage != null && !coverage.enabled && glow != null &&
+                glow.enabled && glow.color.a > 0f && !FindAnyObjectByType<ResearchExpedition>().ShowingLampRange,
+                "carrying the lamp shows actual soft light with no developer range diagram")) yield break;
             Capture("05-lamp-placement");
         }
         yield return Walk(dropX - item.CarryOffset.x, true);
@@ -585,6 +624,8 @@ public sealed class JourneyPlaythroughDriver : MonoBehaviour
 
     private IEnumerator ReturnReport(ResearchExpedition research)
     {
+        // ResearchGuide publishes the arrival message in LateUpdate, after the learner ticks.
+        yield return new WaitForEndOfFrame();
         if (!Check(FindAnyObjectByType<ResearchGuide>().GoalText.Contains("报告"), "arrival visibly replaces the crossing goal with returning the report")) yield break;
         yield return Walk(22.6f);
         yield return Keys(0.2f, Key.E);
@@ -712,6 +753,181 @@ public sealed class JourneyPlaythroughDriver : MonoBehaviour
         yield return null;
         yield return new WaitForSeconds(seconds);
     }
+    private IEnumerator ReviewLearnedHabits()
+    {
+        JourneyChoices.Reset();
+        phase = "learning from a real carried-light demonstration";
+        SceneManager.LoadScene("05_Research");
+        yield return Keys(1.4f);
+        var research = FindAnyObjectByType<ResearchExpedition>();
+        var audio = FindAnyObjectByType<SceneAudio>();
+        if (!Check(audio.MusicClip != null && audio.MusicClip.name.Contains("v3_剩余关卡") && audio.IsMusicPlaying,
+            "the delivered journey music plays as a loop in the research scene")) yield break;
+        yield return Walk(3.1f);
+        yield return Keys(0.2f, Key.E);
+        yield return Walk(5.3f, true);
+        yield return Keys(0.25f);
+        yield return Keys(0.5f, Key.D, Key.Space);
+        yield return Walk(10.5f);
+        yield return Keys(0.2f, Key.F);
+        yield return Walk(21f);
+        if (research.WindActive) yield return Keys(0.2f, Key.F);
+        yield return Walk(13.2f);
+        yield return Keys(0.2f, Key.E);
+        if (!Check(Hand.CurrentTarget == research.Lamp, "the player can choose to demonstrate with a carried lamp")) yield break;
+        yield return Keys(0.2f, Key.E, Key.H);
+        var lampGlow = GameObject.Find("Workshop Lamp Glow")?.GetComponent<SpriteRenderer>();
+        if (!Check(lampGlow != null && lampGlow.enabled && lampGlow.color.a > 0f && ResearchDiagramsHidden(),
+            "carrying a lamp with hints open keeps soft light visible and every research diagram hidden")) yield break;
+        Capture("05-lamp-without-diagrams");
+        yield return Keys(0.2f, Key.E);
+        yield return Keys(0.2f, Key.E, Key.H);
+        yield return Keys(0.2f, Key.E);
+        yield return Keys(0.2f, Key.E, Key.T);
+        if (!Check(research.IsDemonstrating, "T starts an observed demonstration while carrying a tool")) yield break;
+        yield return Walk(14.9f, true);
+        yield return Keys(0.62f, Key.D, Key.Space, Key.E);
+        yield return Walk(18.6f, true);
+        yield return Keys(0.4f, Key.E);
+        yield return Keys(0.2f, Key.E, Key.T);
+        if (!Check(research.HasDemonstration && research.Demonstrations == 1 && !research.IsDemonstrating,
+            "a real demonstration records a lesson for the learner's next turn")) yield break;
+        yield return Keys(0.8f, Key.E);
+        if (!Check(research.State == LearnerState.Waiting && Mathf.Abs(research.Learner.transform.position.x - 12f) < 0.05f,
+            "finishing far from the learner never starts its first imitation outside the player's view")) yield break;
+        var recordedJump = false;
+        var recordedHelp = false;
+        foreach (var action in research.DemonstratedActions)
+        {
+            recordedJump |= action.CrossesGap;
+            recordedHelp |= action.Kind == LearnedHabitKind.SeekHelp && action.Help == "lamp";
+        }
+        if (!Check(recordedJump && recordedHelp, "actual takeoff, landing and carried light become separate learned actions")) yield break;
+        yield return Walk(10f, true);
+        yield return Keys(0.2f);
+        yield return Walk(12f);
+        yield return Keys(0.2f, Key.F);
+        for (var i = 0; i < 100 && research.State != LearnerState.NeedsComfort; i++) yield return Keys(0.1f);
+        if (!Check(research.State == LearnerState.NeedsComfort && !research.ShortcutOpen && research.Learner.transform.position.x > 17f,
+            "the learned jump solves the empty gap, but removing the demonstrated lamp exposes dependence on light")) yield break;
+        yield return Walk(17f);
+        Capture("05-learned-lamp-dependence");
+        yield return Keys(0.2f, Key.Q);
+        for (var i = 0; i < 80 && research.State != LearnerState.Waiting; i++) yield return Keys(0.1f);
+        yield return Walk(12f);
+        yield return Keys(0.2f, Key.T);
+        if (!Check(research.IsDemonstrating, "recall returns the learner so its previous lesson can be rewritten")) yield break;
+        yield return Walk(14.9f);
+        yield return Keys(0.62f, Key.D, Key.Space);
+        yield return Walk(18.4f);
+        yield return Keys(0.25f);
+        yield return Keys(1.8f, Key.E);
+        if (!Check(Hand.IsSelfAnchoring && Hand.SelfChargeNormalized > 0.98f,
+            "the replacement demonstration includes a deliberate completed calming breath")) yield break;
+        yield return Keys(0.2f);
+        yield return Keys(0.2f, Key.T);
+        yield return Walk(12f);
+        yield return Keys(0.2f, Key.F);
+        var sawJump = false;
+        var sawPause = false;
+        for (var i = 0; i < 130 && !research.ShortcutOpen; i++)
+        {
+            yield return Keys(0.1f);
+            if (research.LearnerHeight > 0.12f && !sawJump)
+            {
+                sawJump = true;
+                var viewport = Camera.main.WorldToViewportPoint(research.Learner.transform.position);
+                if (!Check(viewport.x > 0.03f && viewport.x < 0.97f && viewport.y > 0f && viewport.y < 1f,
+                    "the learned jump is actually inside the game camera when the player starts the trial beside the learner")) yield break;
+                Capture("05-learned-jump");
+                yield return Walk(16.3f);
+            }
+            if (research.State == LearnerState.Pausing && !sawPause)
+            {
+                sawPause = true;
+                Capture("05-learned-breath");
+            }
+        }
+        if (!Check(sawJump && sawPause && research.ShortcutOpen && research.Demonstrations == 2 &&
+            JourneyChoices.CrossingTool == "jump" && JourneyChoices.TestedResearchModel == "breath" &&
+            JourneyChoices.LearnedHabit.Kind == LearnedHabitKind.Jump,
+            "rewriting the lesson creates a real jump-and-breath route with no bridge, lamp or hand")) yield break;
+        yield return ReturnReport(research);
+        if (finished) yield break;
+        phase = "the next generation repeats the taught jump";
+        var recipient = EmotionalJourney.Target("young-presenter");
+        var ending = FindAnyObjectByType<ReleaseEndingGoal>();
+        yield return Walk(recipient.transform.position.x - 1.8f);
+        if (!Check(ending.ReplayedHabitKind == LearnedHabitKind.Jump,
+            "the final person receives the habit actually used in the committed successful trial")) yield break;
+        yield return Keys(1f);
+        Capture("06-learned-habit-echo");
+        for (var i = 0; i < 100 && !ending.HasEnteredDoor; i++) yield return Keys(0.1f);
+        var farewell = recipient.GetComponent<FinalFarewellPresentation>();
+        if (!Check(ending.HasReplayedHabit && ending.HasEnteredDoor && farewell.DoorEntryComplete && !farewell.CharacterRenderer.enabled,
+            "the person repeats the learned habit, walks through the door and stays hidden")) yield break;
+        yield return Keys(0.5f);
+        if (!Check(!farewell.CharacterRenderer.enabled && Player.ControlsEnabled,
+            "scene presentation cannot resurrect the departed person and the last step stays with the player")) yield break;
+        Capture("06-doorway-empty");
+        yield return Walk(ending.OnwardPositionX + 0.2f);
+        for (var i = 0; i < 100 && !StorySceneDirector.Instance.ReplayAvailable; i++) yield return Keys(0.1f);
+        var title = GameObject.Find("Closing Title")?.GetComponent<UnityEngine.UI.Text>();
+        var replay = GameObject.Find("Closing Replay")?.GetComponent<UnityEngine.UI.Text>();
+        if (!Check(title != null && replay != null && title.font == StoryTypography.BodyFont &&
+            title.fontSize > replay.fontSize && title.text == "放开我的手" && title.color.a > 0.99f,
+            "the closing title and delayed replay control use separate readable typography")) yield break;
+        Capture("06-refined-closing-title");
+        yield return Keys(0.2f, Key.Enter);
+        yield return Keys(1.4f);
+        if (!Check(SceneManager.GetActiveScene().name == "00_Prologue" && JourneyChoices.LearnedHabit.Kind == LearnedHabitKind.None,
+            "replay clears the taught habit and starts a new journey")) yield break;
+        SceneManager.LoadScene("01_Kindergarten");
+        yield return Keys(1.2f);
+        audio = FindAnyObjectByType<SceneAudio>();
+        var prompt = GameObject.Find("Prompt")?.GetComponent<UnityEngine.UI.Text>();
+        if (!Check(audio.MusicClip != null && audio.MusicClip.name.Contains("v2_幼儿园关卡") && audio.IsMusicPlaying &&
+            prompt != null && prompt.fontSize == 22 && prompt.font == StoryTypography.BodyFont,
+            "kindergarten selects its own delivered music and shares the refined Chinese prompt style")) yield break;
+        Capture("01-refined-prompt-and-music");
+    }
+
+    private IEnumerator ReviewEndingBoundaries()
+    {
+        phase = "reholding a taught hop at the doorway";
+        JourneyChoices.Reset();
+        JourneyChoices.RememberWorkshop("hand", "jump", false);
+        JourneyChoices.RememberLearnedHabit(new LearnedHabitSnapshot(LearnedHabitKind.Jump, 0f, 15f, "", 1));
+        SceneManager.LoadScene("06_FinalWalk");
+        yield return Keys(1.4f);
+        var recipient = EmotionalJourney.Target("young-presenter");
+        var ending = FindAnyObjectByType<ReleaseEndingGoal>();
+        var farewell = recipient.GetComponent<FinalFarewellPresentation>();
+        var door = GameObject.Find("Unknown Door").transform;
+        yield return Walk(recipient.transform.position.x - 0.8f);
+        yield return Keys(1.8f, Key.E);
+        yield return Walk(door.position.x + 0.8f, true);
+        yield return Keys(0.2f, Key.E);
+        yield return Keys(1.05f);
+        if (!Check(ending.IsReplayingHabit && !ending.IsEnteringDoor && !ending.HasEnteredDoor &&
+            farewell.CharacterRenderer.bounds.min.y > -2.62f,
+            "a taught hop at the doorway remains visible and cannot be cut short by entering")) yield break;
+        yield return Keys(0.8f, Key.E);
+        if (!Check(Hand.CurrentTarget == recipient && !ending.HasEnteredDoor && ending.TimesReheld > 0 &&
+            Mathf.Abs(farewell.CharacterRenderer.bounds.min.y + 2.72f) < 0.02f,
+            "reaching back during a hop lets it land naturally and pauses the next step")) yield break;
+        Capture("06-reheld-habit-at-door");
+        for (var i = 0; i < 80 && !ending.IsEnteringDoor; i++) yield return Keys(0.05f);
+        yield return Keys(0.15f);
+        Capture("06-door-entry-opening");
+        yield return Keys(0.23f);
+        Capture("06-door-entry-depth");
+        for (var i = 0; i < 40 && !ending.HasEnteredDoor; i++) yield return Keys(0.1f);
+        if (!Check(ending.HasReplayedHabit && ending.HasEnteredDoor && farewell.DoorEntryComplete &&
+            !farewell.CharacterRenderer.enabled && Player.ControlsEnabled && ending.OnwardPositionX > Player.transform.position.x + 0.7f,
+            "releasing again completes the remembered action and doorway exit, with a fresh final step ahead")) yield break;
+    }
+
     private IEnumerator ReviewContinuousKindergarten()
     {
         JourneyChoices.Reset();
@@ -766,6 +982,92 @@ public sealed class JourneyPlaythroughDriver : MonoBehaviour
         if (!Check(StorySceneDirector.Instance.CompletedObjectives == 2 && VisibleObject(bag.gameObject) && PassageAlpha() == 0f,
             "returning with the backpack still completes the chair task without a camera transition")) yield break;
         Capture("01-continuous-bag-placed");
+    }
+
+    private IEnumerator ReviewSceneStaging()
+    {
+        phase = "stage backstage support and curtains";
+        SceneManager.LoadScene("03_Stage");
+        yield return Keys(1.4f);
+        var parent = EmotionalJourney.Target("stage-parent");
+        if (!Check(parent != null && VisibleObject(parent.gameObject), "the parent is visible and reachable in the stage waiting area")) yield break;
+        if (!Check(FindAnyObjectByType<PromptKeyIcon>()?.IsVisible == true,
+            "the newly delivered E icon appears beside the actual backstage hand prompt")) yield break;
+        var fold = GameObject.Find("Stage Left Foreground Fold")?.GetComponent<SpriteRenderer>();
+        if (!Check(VisibleObject(GameObject.Find("Curtain Left")) && VisibleObject(GameObject.Find("Curtain Right")) &&
+            fold != null && fold.enabled && fold.sortingOrder > Player.CharacterRenderer.sortingOrder && fold.bounds.max.x < -1f,
+            "both authored curtains are restored, with a foreground wing that ends before the first speaking mark")) yield break;
+        Capture("03-backstage-arrival");
+        yield return Keys(0.3f, Key.E);
+        if (!Check(Hand.CurrentTarget == parent, "the player can take the parent's hand before going on stage")) yield break;
+        yield return Walk(-3.6f, true);
+        yield return Keys(0.3f, Key.E);
+        if (!Check(parent.transform.position.x <= -4.49f, "the parent stays at the backstage boundary when the player steps toward the lights")) yield break;
+        Capture("03-backstage-parent-waits");
+        yield return Keys(0.2f);
+        yield return Walk(0f);
+        yield return Keys(1.4f, Key.E);
+        yield return Keys(0.4f);
+        if (!Check(StorySceneDirector.Instance.CompletedObjectives == 1 &&
+            Player.GetComponent<CharacterAnimationDriver>().StageGesturesPlayed > 0,
+            "after leaving the parent, a full breath plays the supplied stage gesture and opens the performance")) yield break;
+        Capture("03-curtain-to-first-phrase");
+        yield return Walk(5f);
+        yield return Note(false, false);
+        yield return Note(true, true);
+        yield return Keys(0.2f, Key.F);
+        yield return Keys(3f);
+        yield return Keys(0.2f, Key.F);
+        yield return Keys(0.2f);
+        if (!Check(StorySceneDirector.Instance.ObjectivesComplete, "the restored curtains leave audience response and the player's bow playable")) yield break;
+        yield return Walk(15f);
+        Capture("03-curtain-exit-approach");
+        yield return UseDoor("Back Curtain", "04_Interlude_Growing");
+        if (finished) yield break;
+        phase = "research removes retired character and keeps learning readable";
+        SceneManager.LoadScene("05_Research");
+        yield return Keys(1.4f);
+        if (!Check(GameObject.Find("Mentor") == null && FindAnyObjectByType<ResearchExpedition>()?.Learner != null,
+            "the retired noninteractive mentor is absent while the actual learner remains available")) yield break;
+        var wall = GameObject.Find("Research Background").GetComponent<SpriteRenderer>();
+        var extension = GameObject.Find("Mentor Hallway").GetComponent<SpriteRenderer>();
+        if (!Check(extension.sprite == wall.sprite && extension.flipX != wall.flipX &&
+            Mathf.Abs(extension.bounds.min.y - wall.bounds.min.y) < 0.01f &&
+            Mathf.Abs(extension.bounds.max.x - wall.bounds.min.x) < 0.1f,
+            "the entrance extends the same painted wall with a continuous floor instead of an unrelated office panel")) yield break;
+        Capture("05-workshop-clear-arrival");
+        if (!Check(FindAnyObjectByType<PromptKeyIcon>()?.IsVisible == false,
+            "the E icon stays hidden when there is no nearby E action prompt")) yield break;
+        yield return Walk(3.1f);
+        var research = FindAnyObjectByType<ResearchExpedition>();
+        var crateArt = research.Crate.transform.Find("Presentation Visual")?.GetComponent<SpriteRenderer>();
+        if (!Check(crateArt != null && Mathf.Abs(crateArt.bounds.min.y + 2.72f) < 0.04f &&
+            crateArt.sprite.rect.width < crateArt.sprite.texture.width * 0.9f && ResearchDiagramsHidden(),
+            "the crate's visible image is cropped to its body and rests on the floor without interaction diagrams")) yield break;
+        Capture("05-crate-on-floor");
+        yield return Keys(0.2f, Key.E);
+        yield return Walk(4.5f, true);
+        yield return Keys(0.25f);
+        if (!Check(Mathf.Abs(crateArt.bounds.min.y + 2.72f) < 0.04f,
+            "putting the crate down returns the actual visible base to the floor")) yield break;
+        Capture("05-crate-after-drop");
+        var prompt = GameObject.Find("Prompt")?.GetComponent<UnityEngine.UI.Text>();
+        if (!Check(prompt != null && prompt.font == StoryTypography.BodyFont && prompt.fontSize == 22 &&
+            prompt.rectTransform.anchorMin == Vector2.zero && prompt.rectTransform.pivot == Vector2.zero,
+            "the shared action text uses the readable left margin instead of covering the character")) yield break;
+    }
+
+    private static bool ResearchDiagramsHidden()
+    {
+        foreach (var name in new[] { "Plate to shutter circuit", "Learner crossing gap", "Draft through the window",
+            "Workshop route sketch", "Portable lamp coverage", "Familiar toy sound range", "Nearest usable tool" })
+        {
+            var line = GameObject.Find(name)?.GetComponent<LineRenderer>();
+            if (line != null && line.enabled && line.startWidth > 0f) return false;
+        }
+        foreach (var name in new[] { "Current destination", "Nearby reusable object" })
+            if (GameObject.Find(name) != null) return false;
+        return true;
     }
 
     private bool CheckHandThread(string moment)
@@ -883,11 +1185,11 @@ public sealed class JourneyPlaythroughDriver : MonoBehaviour
         yield return new WaitForEndOfFrame();
         if (!CheckHandThread("between the adult and final recipient")) yield break;
         Capture("06-hand-thread-reassurance");
-        yield return Keys(4f);
+        for (var i = 0; i < 100 && !ending.HasEnteredDoor; i++) yield return Keys(0.1f);
         if (!Check(ending.HasEnteredDoor && Player.ControlsEnabled,
             "the relocated goodbye reaches its actual door and waits for the player's last step")) yield break;
         yield return Walk(ending.OnwardPositionX + 0.2f);
-        yield return Keys(0.3f);
+        for (var i = 0; i < 30 && Player.ControlsEnabled; i++) yield return Keys(0.1f);
         if (!Check(!Player.ControlsEnabled,
             "the expanded memory floor and camera still allow the player to complete the ending")) yield break;
     }

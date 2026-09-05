@@ -26,6 +26,8 @@ namespace LetGo
         private int completedObjectives;
         private Coroutine narrationRoutine;
         private bool transitioning;
+        public bool EndingVisible { get; private set; }
+        public bool ReplayAvailable { get; private set; }
         public bool NarrationEnabled { get; set; } = true;
         public Transform Player => player;
 
@@ -49,6 +51,16 @@ namespace LetGo
 
         private void Start()
         {
+            if (gameObject.scene.name == "00_Prologue")
+                foreach (var label in FindObjectsByType<TextMesh>())
+                    if (label.name.StartsWith("Label -")) label.gameObject.SetActive(false);
+            StoryTypography.Apply(narrationText, 22);
+            if (narrationText != null)
+            {
+                narrationText.rectTransform.anchorMin = narrationText.rectTransform.anchorMax = new Vector2(0.5f, 0.5f);
+                narrationText.rectTransform.anchoredPosition = new Vector2(0f, 234f);
+                narrationText.rectTransform.sizeDelta = new Vector2(960f, 104f);
+            }
             // Keep restored transitions authoritative even in older, manually laid out scenes.
             if (gameObject.scene.name == "01_Kindergarten") nextScene = "02_Interlude_Firsts";
             if (gameObject.scene.name == "03_Stage") nextScene = "04_Interlude_Growing";
@@ -74,6 +86,7 @@ namespace LetGo
 
         public void ShowPrompt(string text)
         {
+            if (transitioning) return;
             if (promptText != null) promptText.text = text;
         }
 
@@ -179,18 +192,56 @@ namespace LetGo
         private IEnumerator OpenEndingRoutine()
         {
             transitioning = true;
-            if (player != null) player.GetComponent<PlayerController2D>().ControlsEnabled = false;
-            SceneAudio.Instance?.PlayFinal();
-            yield return new WaitForSeconds(2.2f);
-            yield return FadeToBlack(1.2f);
-            if (endingTitle != null)
+            if (player != null)
             {
-                endingTitle.gameObject.SetActive(true);
-                endingTitle.text = "《放开我的手》\n\n谢谢你，陪我走到这里。\n\nEnter · 再走一次";
+                player.GetComponent<PlayerController2D>().ControlsEnabled = false;
+                player.GetComponent<HandConnection>()?.CancelConnection();
             }
-            while (!GameInput.ConfirmPressed) yield return null;
+            if (narrationRoutine != null) StopCoroutine(narrationRoutine);
+            if (promptText != null) promptText.text = string.Empty;
+            if (narrationText != null) narrationText.text = string.Empty;
+            if (endingTitle != null) endingTitle.gameObject.SetActive(false);
+            SceneAudio.Instance?.PlayFinal();
+            yield return new WaitForSeconds(0.8f);
+            yield return FadeToBlack(1.6f);
+            yield return new WaitForSeconds(0.65f);
+            var closing = JourneyOverlay.Create("Closing Credits");
+            closing.GetComponent<Canvas>().sortingOrder = 32760;
+            var title = closing.Label("Closing Title", new Vector2(0f, 28f), new Vector2(800f, 86f), 40);
+            StoryTypography.ApplyTitle(title, 40);
+            title.text = "放开我的手";
+            var thanks = closing.Label("Closing Thanks", new Vector2(0f, -52f), new Vector2(760f, 42f), 19);
+            thanks.text = "谢谢你，陪我们走到这里。";
+            var replay = closing.Label("Closing Replay", new Vector2(0f, -260f), new Vector2(480f, 36f), 16);
+            replay.text = "Enter　再走一次";
+            replay.gameObject.SetActive(false);
+            title.color = new Color(0.94f, 0.91f, 0.85f, 0f);
+            thanks.color = new Color(0.7f, 0.7f, 0.69f, 0f);
+            replay.color = new Color(0.6f, 0.62f, 0.62f, 0f);
+            EndingVisible = true;
+            for (var t = 0f; t < 2.8f; t += Time.deltaTime)
+            {
+                SetTextAlpha(title, Mathf.SmoothStep(0f, 1f, t / 1.2f));
+                SetTextAlpha(thanks, Mathf.SmoothStep(0f, 1f, (t - 0.8f) / 1.2f));
+                SetTextAlpha(replay, Mathf.SmoothStep(0f, 1f, (t - 1.8f)));
+                yield return null;
+            }
+            SetTextAlpha(title, 1f);
+            SetTextAlpha(thanks, 1f);
+            SetTextAlpha(replay, 1f);
+            replay.gameObject.SetActive(true);
+            ReplayAvailable = true;
+            while (UnityEngine.InputSystem.Keyboard.current == null ||
+                !UnityEngine.InputSystem.Keyboard.current.enterKey.wasPressedThisFrame) yield return null;
             JourneyChoices.Reset();
             SceneManager.LoadScene("00_Prologue");
+        }
+
+        private static void SetTextAlpha(Text text, float alpha)
+        {
+            var color = text.color;
+            color.a = Mathf.Clamp01(alpha);
+            text.color = color;
         }
 
         private void UpdateObjectiveText()

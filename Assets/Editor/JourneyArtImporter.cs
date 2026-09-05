@@ -15,7 +15,7 @@ public sealed class JourneyArtImporter : AssetPostprocessor
         "workshop-shutter_locked", "workshop-shutter_unlocked", "workshop-latch",
         "workshop-window", "workshop-report", "workshop-desk"
         , "prop_researchnote", "montage01_stayupwithfriends", "montage02_takebus", "montage03_parentstired",
-        "montage04_firstraisehand", "montage_growth_rejected", "montage_growth_conflict", "bg_research_room"
+        "montage04_firstraisehand", "montage_growth_rejected", "montage_growth_conflict", "bg_research_room", "ui_interact_e"
     };
     private static readonly Dictionary<string, string> Fallbacks = new()
     {
@@ -35,7 +35,7 @@ public sealed class JourneyArtImporter : AssetPostprocessor
     private void OnPreprocessTexture()
     {
         var file = Path.GetFileNameWithoutExtension(assetPath);
-        if (file != "prop_research_crate" && !file.StartsWith("workshop-")) return;
+        if (file != "prop_research_crate" && file != "ui_interact_e" && !file.StartsWith("workshop-")) return;
         var importer = (TextureImporter)assetImporter;
         importer.textureType = TextureImporterType.Sprite;
         importer.spriteImportMode = SpriteImportMode.Single;

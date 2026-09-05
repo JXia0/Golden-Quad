@@ -18,6 +18,7 @@ namespace LetGo
         private bool wasCurrent;
 
         public string ArtSlotId => artSlotId;
+        public RuntimeAnimatorController TransitionController => transitionController;
         public bool IsCurrentAge { get; private set; }
         public int Applications { get; private set; }
 

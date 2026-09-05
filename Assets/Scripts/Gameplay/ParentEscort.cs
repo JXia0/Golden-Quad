@@ -28,7 +28,7 @@ namespace LetGo
             if (parent == null || gate == null) { enabled = false; return; }
             doorwayX = gate.transform.position.x - 0.3f;
             parent.ExternallyGuided = true;
-            parent.Configure("parent", HoldTargetMode.Companion, "按住 E · 让父母带你走", 2.1f, 2.3f);
+            parent.Configure("parent", HoldTargetMode.Companion, "按住 E · 牵住父母的手", 2.1f, 2.3f);
         }
 
         private void FixedUpdate()
@@ -74,10 +74,10 @@ namespace LetGo
             if (prompt != null) director.ClearPrompt(prompt);
             prompt = null;
             if (hand.CurrentTarget == parent)
-                prompt = WaitingAtDoor ? "父母停在门外。松开 E · 自己走进去" : "父母正带着你走 · 松开 E 可以停下 · A 可以回头";
+                prompt = WaitingAtDoor ? "到门口了。\n松开 E · 自己走进去" : "松开 E · 自己走　A · 回头";
             else if (HasBeenSupported && director.CompletedObjectives == 0 &&
                      Mathf.Abs(player.transform.position.x - parent.transform.position.x) < 2.1f)
-                prompt = "D · 自己往前走　E · 再牵一会儿";
+                prompt = "D · 往前走　按住 E · 再牵一会儿";
             if (prompt != null) director.ShowPrompt(prompt);
         }
 

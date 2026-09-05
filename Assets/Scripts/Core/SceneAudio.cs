@@ -27,10 +27,17 @@ namespace LetGo
         private bool alternateFootstep;
         public AudioClip AmbienceClip => ambience;
         public bool IsAmbiencePlaying => ambienceSource != null && ambienceSource.isPlaying && ambienceSource.loop;
+        public AudioClip MusicClip => music;
+        public bool IsMusicPlaying => musicSource != null && musicSource.isPlaying && musicSource.loop;
 
         public void SetFallbackAmbience(AudioClip clip)
         {
             if (ambience == null && clip != null) ambience = clip;
+        }
+
+        public void SetFallbackMusic(AudioClip clip)
+        {
+            if (music == null && clip != null) music = clip;
         }
 
         public void ConfigureSources(AudioSource effects, AudioSource ambienceLoop, AudioSource musicLoop,

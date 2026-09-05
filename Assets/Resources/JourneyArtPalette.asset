@@ -16,7 +16,7 @@ MonoBehaviour:
   - id: prop_child_backpack
     sprite: {fileID: 872123929, guid: e90f2de1fcdb59b46ba44ee9cc821f43, type: 3}
   - id: prop_research_model
-    sprite: {fileID: -4694568971126195842, guid: 364c8b579fee614499bdc6c6154b87f3, type: 3}
+    sprite: {fileID: 4464182519705312368, guid: 364c8b579fee614499bdc6c6154b87f3, type: 3}
   - id: prop_research_crate
     sprite: {fileID: 21300000, guid: 0e74be713ebabd3498415a6b5a13a657, type: 3}
   - id: prop_research_bridge
@@ -71,3 +71,5 @@ MonoBehaviour:
     sprite: {fileID: 142250809, guid: 7db026b974be3c74fa3b50b8c94cca85, type: 3}
   - id: bg_research_room
     sprite: {fileID: -6751144742328248299, guid: ca9dc9f4508bb2f4d835f6a82e326535, type: 3}
+  - id: ui_interact_e
+    sprite: {fileID: 21300000, guid: 09734219bfb7c334abbd4e37d2f21376, type: 3}

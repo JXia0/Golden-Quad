@@ -11,7 +11,7 @@ namespace LetGo
         private ResearchExpedition chapter;
         private HandConnection hand;
         private JourneyOverlay ui;
-        private Text goal, situation, focus, tool, help, helpControl;
+        private Text goal, situation, focus, tool, help, helpControl, lesson;
         private Image helpPanel;
         private LineRenderer reachable;
         private bool expanded;
@@ -29,6 +29,7 @@ namespace LetGo
             ui = JourneyOverlay.Create("Research Goals And Object Guide");
             ui.Picture("Goal background", new Vector2(-225, 321), new Vector2(720, 54), null, new Color(0.025f, 0.04f, 0.055f, 0.72f));
             goal = ui.Label("Persistent research goal", new Vector2(-225, 321), new Vector2(680, 36), 20, TextAnchor.MiddleLeft);
+            lesson = ui.Label("What the learner remembers", new Vector2(-225, 275), new Vector2(720, 34), 18, TextAnchor.MiddleLeft);
             situation = ui.Label("What is happening", Vector2.zero, new Vector2(1, 1), 1);
             situation.gameObject.SetActive(false);
             helpControl = ui.Label("Optional hint key", new Vector2(535, 321), new Vector2(130, 34), 17);
@@ -36,8 +37,8 @@ namespace LetGo
             focus.gameObject.SetActive(false);
             tool = ui.Label("Nearby reusable object", Vector2.zero, new Vector2(290, 40), 20);
             tool.gameObject.SetActive(false);
-            helpPanel = ui.Picture("Optional hint background", new Vector2(0, 184), new Vector2(1200, 104), null, new Color(0.025f, 0.04f, 0.055f, 0.93f));
-            help = ui.Label("Available approaches", new Vector2(0, 184), new Vector2(1140, 96), 19, TextAnchor.MiddleLeft);
+            helpPanel = ui.Picture("Optional hint background", new Vector2(0, 177), new Vector2(1200, 152), null, new Color(0.025f, 0.04f, 0.055f, 0.93f));
+            help = ui.Label("Available approaches", new Vector2(0, 177), new Vector2(1140, 136), 19, TextAnchor.MiddleLeft);
             Draw();
         }
 
@@ -72,35 +73,35 @@ namespace LetGo
                     hint = "试试把箱子留在压力板上，再跳过箱子进门。也可以去左侧上层档案找另一件工具。";
                     break;
                 case ResearchGuideStep.StartTrial:
-                    goal.text = "靠近实验小人 · F 让它试走，E 牵手";
-                    situation.text = "实验小人在等你。先让它试走，看看哪里走不过去。";
-                    focus.text = "实验小人\nF 试走 · 按住 E 牵手";
-                    hint = chapter.Rehearsals > 0 ? "它记住了上次被陪着走过的暗处。可以撤掉帮助，观察这次它能独自走多远。" : "可以先观察它停在哪里，再搬工具；也可以牵着一起试。空手按 Q 召回，它会记住被陪着走过的路。";
+                    goal.text = chapter.HasDemonstration ? "它记住了 · 回到它身边，F 看它试走" : "它在等你 · T 示范，F 让它自己试走";
+                    situation.text = chapter.HasDemonstration ? "它会在起点等你回来，再试试你教它的办法。" : "你可以替它铺好路，也可以让它学会你的办法。";
+                    focus.text = chapter.HasDemonstration ? "F · 看它试走\nT · 重新示范   按住 E · 牵手" : "T · 走一遍给它看\nF · 试走   按住 E · 牵手";
+                    hint = chapter.HasDemonstration ? "回到小人身边按 F，让它在你眼前试走；也可以先换好工具，再观察结果。T 可以重新示范。" : "T 开始示范：从缺口前起跳；到暗处前空手按住 E 稳住自己，或带着灯走。再按 T 收尾，回到它身边按 F 看它试走。";
                     break;
                 case ResearchGuideStep.Bridge:
-                    goal.text = "小人停在缺口前 · 找一件能垫脚的工具";
+                    goal.text = "它停在缺口前 · 搭一条路，或回来教它跳";
                     situation.text = "小人停在缺口前：这里没有落脚点。";
                     destination = new Vector3(16f, -2.2f);
                     focus.text = "缺口 · 需要落脚点";
-                    hint = "把箱子或折叠板搬到缺口中央，松开 E 放下。门闩打开后，原来压门的工具可以拿回来。";
+                    hint = "箱子和折叠板都能当落脚点。也可空手 Q 召回，在起点按 T，从缺口左边起跳并落到另一边给它看。";
                     break;
                 case ResearchGuideStep.Comfort:
                     var blownOut = !chapter.LampWorking;
-                    goal.text = blownOut ? "灯被风吹灭 · 到右侧窗口按 F 关窗" : "它不敢走进暗处 · 光或陪伴能让它前进";
+                    goal.text = blownOut ? "灯被风吹灭了 · F 关窗，或教它另一种办法" : chapter.HasDemonstration ? "它还在等帮助 · 让它看见光，或回来重新教" : "它停在暗处前 · 光或陪伴能让它前进";
                     situation.text = blownOut ? "灯被风吹灭了，小人退回了亮处。右侧窗户还开着。" : "小人不敢独自进入暗处，需要看得见或感到有人陪伴。";
                     destination = blownOut ? new Vector3(21f, -1.5f) : chapter.Learner.transform.position;
                     focus.text = blownOut ? "漏风的窗 · F 关窗" : "暗区前的小人 · E 可以牵住";
-                    hint = "可以搬灯照路、牵手陪它走；带来了童年玩具，也可以上弦后留在暗区。灯怕这里的风。";
+                    hint = "可以搬灯、牵手或留下上弦的玩具。也可 Q 召回再示范：在暗处前空手按住 E 约两秒，教它先稳住自己。";
                     break;
                 case ResearchGuideStep.Moving:
-                    goal.text = "它在试走 · 可调整工具，空手 Q 召回再试";
+                    goal.text = chapter.HasDemonstration ? "它在照着你做 · 留意它在哪里停下" : "它在试走 · 可调整工具，空手 Q 召回再试";
                     situation.text = "它正在往出口走。留意前方，也可以随时调整工具和帮助方式。";
                     destination = new Vector3(23f, -2.1f);
                     focus.text = "小人的目的地 →";
-                    hint = "牵着时要等小人真正走出暗区；放手后，环境中的灯或玩具可以继续提供帮助。";
+                    hint = chapter.HasDemonstration ? "跳过缺口、停下来安定自己、等待帮助，都会影响这次能走多远。空手 Q 召回，回到起点按 T 可以重新教。" : "牵着时要等它真正走出暗处。灯和玩具可以留下来，继续陪它走一段。";
                     break;
                 case ResearchGuideStep.BringReport:
-                    goal.text = "已到出口 · E 拿报告 / F 返回 / Q 召回重试";
+                    goal.text = "它到出口了 · 把报告带回工作台";
                     situation.text = "小人到了！拿起新出现的报告，把这次的办法带回工作台。";
                     destination = chapter.Report.transform.position;
                     focus.text = "报告 · 按住 E 拿起\n旁边 F 可走回程通道";
@@ -119,7 +120,7 @@ namespace LetGo
                     situation.text = "准备好后，在工作台按 F 去汇报。";
                     destination = new Vector3(1f, -1.9f);
                     focus.text = "工作台 · F 继续";
-                    hint = "这次选择的工具和陪伴方式，会带到最后的告别。";
+                    hint = "桌上的报告留下了这一次的办法。准备好了，就带着它继续往前。";
                     break;
             }
             if (chapter.State == LearnerState.Recalling)
@@ -127,6 +128,18 @@ namespace LetGo
                 goal.text = "它正在回到起点 · 可以重新摆放工具";
                 situation.text = "走过的经验会保留，实验结果可以重新改变。";
             }
+            if (chapter.State == LearnerState.Pausing)
+            {
+                goal.text = "它也停了下来 · 像你刚才那样";
+                situation.text = "它记住了你的停顿，正在按自己的节奏继续。";
+            }
+            if (chapter.IsDemonstrating)
+            {
+                goal.text = "它在看你 · 走过缺口后，T 示范到这里";
+                situation.text = "这次，让它看你怎样走过这段路。";
+                hint = "从缺口左边起跳并落到另一边。在暗处前空手按住 E 约两秒，它会学着安定自己。Q 可以取消这次示范。";
+            }
+            DrawLesson();
             DrawTool();
             var show = expanded;
             HelpVisible = show;
@@ -136,6 +149,30 @@ namespace LetGo
             var note = JourneyChoices.RepairedNoteDestination == "home" ? "回信上的图：开窗的风会让灯熄灭，关窗后灯会重新亮起来。" :
                 JourneyChoices.RepairedNoteDestination == "notebook" ? "你留下的笔记：同一个箱子可以垫脚、压住机关，也可以搭落脚点。" : "左侧上层档案可以调查，那里有一块折叠板。";
             help.text = situation.text + "\n" + hint + "\n" + note;
+        }
+
+        private void DrawLesson()
+        {
+            lesson.gameObject.SetActive(chapter.GateLatched && !chapter.ReportReturned && !chapter.IsDemonstrating);
+            if (!chapter.HasDemonstration)
+            {
+                lesson.text = "T · 走一遍给它看";
+                return;
+            }
+            var jump = false;
+            var calm = false;
+            var pause = false;
+            var source = "";
+            foreach (var action in chapter.DemonstratedActions)
+            {
+                jump |= action.CrossesGap;
+                calm |= action.SteadiesInDark;
+                pause |= action.Kind == LearnedHabitKind.Pause;
+                if (action.Kind == LearnedHabitKind.SeekHelp) source = action.Help;
+            }
+            var words = jump ? "跳过缺口" : "寻找落脚点";
+            words += calm ? " · 先稳住自己" : source == "lamp" ? " · 等待灯光" : source == "toy" ? " · 等待熟悉的声音" : pause ? " · 停一会儿" : " · 暗处仍需照应";
+            lesson.text = "它记住了：" + words;
         }
 
         private void DrawTool()

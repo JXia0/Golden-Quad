@@ -12,6 +12,7 @@ namespace LetGo
         private PlayerController2D player;
         private JourneyVisuals visuals;
         private readonly ExpeditionLearner learner = new();
+        private readonly WorkshopDemonstration demonstration = new();
         private HoldTarget crate, plank, lamp, toy, actor, report;
         private HoldSocket desk;
         private BoxCollider2D crateCollider, shutter;
@@ -39,6 +40,14 @@ namespace LetGo
         public LearnerState State => learner.State;
         public float LearnedUntil => learner.LearnedUntil;
         public int Rehearsals => learner.Rehearsals;
+        public bool IsDemonstrating => demonstration.Recording;
+        public bool HasDemonstration => learner.HasDemonstration;
+        public int Demonstrations => learner.Demonstrations;
+        public System.Collections.Generic.IReadOnlyList<DemonstratedAction> DemonstratedActions => learner.Lesson;
+        public float DemonstrationProgress => Mathf.InverseLerp(12f, 23f, demonstration.FurthestX);
+        public float LearnerHeight => learner.Height;
+        public float HabitPauseRemaining => learner.PauseRemaining;
+        public LearnedHabitSnapshot ExecutedHabit => learner.ExecutedHabit;
         public HoldTarget Crate => crate;
         public HoldTarget Plank => plank;
         public HoldTarget Lamp => lamp;
@@ -63,13 +72,15 @@ namespace LetGo
             player = owner.Player.GetComponent<PlayerController2D>();
             player.SetJumpForce(9.2f);
             hand = owner.Player.GetComponent<HandConnection>();
+            hand.SetSelfAnchorEnabled(true);
             director.SetRequiredObjectives(2);
             // Retire the delivery chain, including its invisible socket acceptance rules.
             foreach (var old in FindObjectsByType<HoldTarget>()) old.gameObject.SetActive(false);
             foreach (var old in FindObjectsByType<HoldSocket>()) old.gameObject.SetActive(false);
             // These belonged to the retired card-delivery puzzle and suggest false interactions.
             foreach (var item in FindObjectsByType<Transform>())
-                if (item.name == "Pinned Draft" || item.name == "Desk Lamp" || item.name == "Research Notes" || item.name == "Research Desk")
+                if (item.name == "Pinned Draft" || item.name == "Desk Lamp" || item.name == "Research Notes" ||
+                    item.name == "Research Desk" || item.name == "Mentor")
                     item.gameObject.SetActive(false);
             WindActive = JourneyChoices.BeginWorkshop() % 2 == 1;
 
@@ -172,7 +183,8 @@ namespace LetGo
             if (player == null) return;
             if (!string.IsNullOrEmpty(activePrompt)) director.ClearPrompt(activePrompt);
             activePrompt = null;
-            if (GameInput.ReconsiderPressed && GateLatched && player.ControlsEnabled && hand.CurrentTarget == null && !ReportReturned)
+            UpdateDemonstration();
+            if (!demonstration.Recording && GameInput.ReconsiderPressed && GateLatched && player.ControlsEnabled && hand.CurrentTarget == null && !ReportReturned)
             {
                 var before = learner.Rehearsals;
                 learner.Recall();
@@ -182,6 +194,7 @@ namespace LetGo
                     report.gameObject.SetActive(false);
                     actor.ReopenInteraction();
                     director.SetCompletedObjectives(0);
+                    JourneyChoices.RememberLearnedHabit(default);
                     SceneAudio.Instance?.PlayInteract();
                 }
             }
@@ -218,18 +231,20 @@ namespace LetGo
                 activePrompt = "F · 翻看旧实验本";
                 if (GameInput.UsePressed && !archiveRead) { archiveRead = true; ReadClue("同一个箱子：垫脚、压住机关，也能做落脚点。灯旁画着一扇关上的窗。", 1); }
             }
-            if (At(learner.X) && !learner.Running)
+            if (At(learner.X) && !learner.Running && !demonstration.Recording)
             {
-                activePrompt = "F · 让它试走   E · 牵着试走";
+                activePrompt = learner.HasDemonstration
+                    ? "F · 看它试走   T · 重新示范   按住 E · 牵手"
+                    : "T · 走一遍给它看   F · 让它试走   按住 E · 牵手";
                 if (GameInput.UsePressed) learner.Start();
             }
-            if (player.ControlsEnabled && !arrived)
+            if (player.ControlsEnabled && !arrived && !demonstration.Recording)
             {
                 var support = OnFloorAt(plank, ExpeditionLearner.GapX, 0.8f) ? "plank" : OnFloorAt(crate, ExpeditionLearner.GapX, 0.8f) ? "crate" : "";
                 var light = LampWorking && Mathf.Abs(lamp.transform.position.x - learner.X) < 3.6f;
                 var familiar = toy != null && Time.time < toyUntil && Mathf.Abs(toy.transform.position.x - learner.X) < 3.5f;
                 learner.Tick(Time.deltaTime, support, hand.CurrentTarget == actor, player.transform.position.x, light, familiar);
-                actor.transform.position = new Vector3(learner.X, -2.25f);
+                actor.transform.position = new Vector3(learner.X, -2.25f + learner.Height);
                 if (previous != learner.State) { previous = learner.State; LearnerChanged?.Invoke(previous); }
                 if (learner.State == LearnerState.Arrived) Arrive();
             }
@@ -249,9 +264,66 @@ namespace LetGo
                 if (ReportReturned && GameInput.UsePressed) director.LoadNextScene();
             }
             if (hand.CurrentTarget == toy && toy != null) activePrompt = "按住 E 上弦 · 松开后它会继续发声一阵子";
+            if (demonstration.Recording) activePrompt = "它在看你怎么走。跳跃、停顿和带着的帮助都会被记住。\nT · 示范到这里   Q · 取消";
             if (Time.time < clueUntil) activePrompt = clueText;
             if (activePrompt != null) director.ShowPrompt(activePrompt);
             DrawFeedback();
+        }
+
+        private void UpdateDemonstration()
+        {
+            if (!player.ControlsEnabled || ReportReturned) return;
+            if (demonstration.Recording)
+            {
+                if (GameInput.ReconsiderPressed || GameInput.RestartPressed)
+                {
+                    demonstration.Cancel();
+                    actor.ReopenInteraction();
+                    ReadDemonstrationNote("这次先不教。原来学会的动作还在。 ", 2.5f);
+                    return;
+                }
+                var support = hand.CurrentTarget == lamp ? "lamp" : toy != null && hand.CurrentTarget == toy ? "toy" : "";
+                demonstration.Sample(Time.deltaTime, player.transform.position, player.Velocity,
+                    GameInput.JumpPressed && player.Velocity.y > 1f, support,
+                    hand.IsSelfAnchoring && hand.SelfChargeNormalized >= 0.98f);
+                if (UnityEngine.InputSystem.Keyboard.current != null && UnityEngine.InputSystem.Keyboard.current.tKey.wasPressedThisFrame ||
+                    player.transform.position.x >= 22.8f && Mathf.Abs(player.Velocity.y) < 0.15f)
+                {
+                    var complete = demonstration.Finish();
+                    actor.ReopenInteraction();
+                    if (complete)
+                    {
+                        learner.Teach(demonstration.Actions);
+                        // Keep the first attempt in view: the player starts it from beside the learner.
+                        ReadDemonstrationNote("它记住了。回到它身边，按 F 看它试走。", 2f);
+                        SceneAudio.Instance?.PlayInteract();
+                    }
+                    else ReadDemonstrationNote("还没看清你怎样过缺口。回到它身边按 T，再走一遍。", 4f);
+                }
+                return;
+            }
+            if (UnityEngine.InputSystem.Keyboard.current == null || !UnityEngine.InputSystem.Keyboard.current.tKey.wasPressedThisFrame) return;
+            if (!GateLatched) return;
+            if (learner.State != LearnerState.Waiting || learner.X > 12.05f || !At(12f, 1.8f))
+            {
+                ReadDemonstrationNote("先空手按 Q 叫它回来，再回到起点教它。", 3f);
+                return;
+            }
+            if (hand.CurrentTarget != null && hand.CurrentTarget.Mode != HoldTargetMode.Carryable)
+            {
+                ReadDemonstrationNote("先松开手，让它看着你走。", 2.5f);
+                return;
+            }
+            demonstration.Begin(player.transform.position);
+            actor.MarkPlaced(actor.transform.position);
+            clueUntil = 0f;
+            SceneAudio.Instance?.PlayInteract();
+        }
+
+        private void ReadDemonstrationNote(string text, float seconds)
+        {
+            clueText = text;
+            clueUntil = Time.time + seconds;
         }
 
         private void ReadClue(string text, int index)
@@ -276,49 +348,21 @@ namespace LetGo
             report.gameObject.SetActive(true);
             director.CompleteObjective();
             JourneyChoices.RememberWorkshop(learner.Support, learner.Crossing, learner.Independent);
+            JourneyChoices.RememberLearnedHabit(learner.ExecutedHabit);
             JourneyChoices.Record("research", learner.Independent ? "我留下了帮助，让他自己走过去。" : "我陪他一起走过了黑暗。", false);
             ShortcutOpened?.Invoke();
         }
 
         private void DrawFeedback()
         {
-            var hints = guide != null && guide.HelpVisible;
-            wire.enabled = !GateLatched && (At(6.5f, 4f) || hints);
-            wire.positionCount = 3;
-            wire.SetPosition(0, new Vector3(6.5f, -2.6f));
-            wire.SetPosition(1, new Vector3(9f, -2.6f));
-            wire.SetPosition(2, new Vector3(9f, 1.2f));
-            wire.startColor = wire.endColor = GateOpen ? JourneyVisuals.Warm : JourneyVisuals.Cool;
-            gap.positionCount = 4;
-            gap.enabled = !arrived && (At(16f, 4f) || hints);
-            gap.SetPosition(0, new Vector3(15.35f, -2.6f));
-            gap.SetPosition(1, new Vector3(15.35f, -2.95f));
-            gap.SetPosition(2, new Vector3(16.65f, -2.95f));
-            gap.SetPosition(3, new Vector3(16.65f, -2.6f));
-            // Show usable reach at floor level only while placing the tool or asking for help.
-            comfort.enabled = !arrived && (hand.CurrentTarget == lamp || hints && At(lamp.transform.position.x, 4f));
-            DrawRange(comfort, lamp.transform.position.x, LampWorking ? 3.6f : 0.2f);
-            wind.enabled = WindActive && !arrived && (At(21f, 3f) || hints);
-            wind.positionCount = 3;
-            wind.SetPosition(0, new Vector3(22f, -0.6f));
-            wind.SetPosition(1, new Vector3(20f, -0.9f));
-            wind.SetPosition(2, new Vector3(18.5f, -0.6f));
-            map.enabled = false;
-            toySound.enabled = !arrived && toy != null && ToySoundRemaining > 0f && (hand.CurrentTarget == toy || hints);
-            if (toySound.enabled) DrawRange(toySound, toy.transform.position.x, 3.5f);
+            // The lamp's real light and the toy's pulse communicate their state in the scene.
+            // Developer diagrams must not reappear while carrying an object or opening H.
             HideDebugLine(wire);
             HideDebugLine(gap);
             HideDebugLine(wind);
             HideDebugLine(map);
-        }
-
-        private static void DrawRange(LineRenderer line, float x, float radius)
-        {
-            line.positionCount = 4;
-            line.SetPosition(0, new Vector3(x - radius, -2.48f));
-            line.SetPosition(1, new Vector3(x - radius, -2.62f));
-            line.SetPosition(2, new Vector3(x + radius, -2.62f));
-            line.SetPosition(3, new Vector3(x + radius, -2.48f));
+            HideDebugLine(comfort);
+            HideDebugLine(toySound);
         }
 
         private void PreparePressurePlateSprites()
@@ -407,6 +451,7 @@ namespace LetGo
         private static void HideDebugLine(LineRenderer line)
         {
             if (line == null) return;
+            line.enabled = false;
             line.startWidth = 0f;
             line.endWidth = 0f;
         }

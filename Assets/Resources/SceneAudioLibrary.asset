@@ -25,3 +25,5 @@ MonoBehaviour:
   paperRustle: {fileID: 8300000, guid: 9e339daf90f99ac48bd84c3accc00cab, type: 3}
   finalLight: {fileID: 8300000, guid: 6fcc9a920f790554eab346de3d0b2031, type: 3}
   ambience: {fileID: 8300000, guid: 9437a7da6b0b1c342beb9f1a50e38231, type: 3}
+  kindergartenMusic: {fileID: 8300000, guid: ad69e0c495324227b928ccf570f781d6, type: 3}
+  journeyMusic: {fileID: 8300000, guid: 35ba425cff624d5ca57828dd5bfbdac0, type: 3}

@@ -49,6 +49,12 @@ namespace LetGo
             if (tether != null) tether.enabled = false;
         }
 
+        public void SetSelfAnchorEnabled(bool value)
+        {
+            selfAnchorEnabled = value;
+            if (!value) StopSelfAnchor(false);
+        }
+
         private void Awake()
         {
             player = GetComponent<PlayerController2D>();

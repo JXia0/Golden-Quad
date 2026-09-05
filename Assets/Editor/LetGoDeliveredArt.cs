@@ -81,8 +81,6 @@ public static class LetGoDeliveredArt
                 Add(wall, "Wall Rainbow", "deco_kindergarden_pattern:patterns_03", new Vector2(9.5f, 1.6f), new Vector2(0.8f, 0.6f), -2);
                 break;
             case "03_Stage":
-                HideRecursive("Curtain Left");
-                HideRecursive("Curtain Right");
                 Replace("Forward Platform", "prop_stage_box", true);
                 // Layered planks make the raised gameplay platform read as a solid stage riser.
                 var platform = Find("Forward Platform");

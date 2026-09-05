@@ -19,7 +19,7 @@ namespace LetGo
         private readonly Image[] sockets = new Image[3];
         private readonly Text[] pieceLabels = new Text[3];
         private Image fullLetter;
-        private Text addresses;
+        private Text homeAddress, notebookAddress;
         private Texture2D repairPaperTexture;
         private Sprite repairPaperSprite;
         private bool growing, leaving;
@@ -52,9 +52,11 @@ namespace LetGo
             illustrationFit.aspectMode = AspectRatioFitter.AspectMode.EnvelopeParent;
             topShade = ui.Picture("Top cinematic shade", new Vector2(0, 310), new Vector2(1280, 100), null, new Color(0.01f, 0.015f, 0.022f, 0.82f));
             bottomShade = ui.Picture("Bottom cinematic shade", new Vector2(0, -255), new Vector2(1280, 210), null, new Color(0.01f, 0.015f, 0.022f, 0.88f));
-            title = ui.Label("Moment title", new Vector2(0, 310), new Vector2(1000, 48), 27, TextAnchor.MiddleLeft);
+            title = ui.Label("Moment title", new Vector2(0, 310), new Vector2(1120, 48), 30, TextAnchor.MiddleLeft);
+            StoryTypography.ApplyTitle(title, 30);
             status = ui.Label("Moment state", new Vector2(0, -277), new Vector2(1120, 42), 21);
-            instruction = ui.Label("Moment controls", new Vector2(0, -326), new Vector2(1160, 42), 20);
+            instruction = ui.Label("Moment controls", new Vector2(0, -326), new Vector2(1120, 42), 20);
+            instruction.color = StoryTypography.Secondary;
             if (growing) BuildRepair(); else BuildRide();
             Draw();
         }
@@ -99,7 +101,8 @@ namespace LetGo
             }
             fullLetter = ui.Picture("Repaired letter", new Vector2(0, -100), new Vector2(480, 240), repairPaperSprite, Color.white);
             fullLetter.gameObject.SetActive(false);
-            addresses = ui.Label("Where the page goes", new Vector2(0, -220), new Vector2(1000, 40), 24);
+            homeAddress = ui.Label("Send the page home", new Vector2(PaperAlong(0.2f), -224), new Vector2(280, 40), 22);
+            notebookAddress = ui.Label("Keep the page", new Vector2(PaperAlong(0.8f), -224), new Vector2(280, 40), 22);
         }
 
         private static Texture2D CreateRepairPaper()
@@ -180,18 +183,18 @@ namespace LetGo
                 handFill.rectTransform.sizeDelta = new Vector2(240f * Firsts.RaisedHand, 10);
                 if (Firsts.Phase == FirstsPhase.Riding)
                 {
-                    status.text = Firsts.RequestedStop < 0 ? "目的地：学校。车会继续开，按铃才会在下一站停下。" : "已按铃：下一站 " + StopNames[Firsts.RequestedStop];
-                    instruction.text = Firsts.RequestedStop < 0 ? "看站牌 · F 按铃，在下一站下车" : "F 再按一次可取消下车";
+                    status.text = Firsts.RequestedStop < 0 ? "去学校的车，还在向前开。" : "下一站：" + StopNames[Firsts.RequestedStop];
+                    instruction.text = Firsts.RequestedStop < 0 ? "F · 按铃，在下一站下车" : "F · 取消下车";
                 }
                 else if (Firsts.Phase == FirstsPhase.Walking)
                 {
-                    status.text = Firsts.ExitStop == 0 ? "在朋友家这站下了车。学校在右边，可以自己走过去。" : "坐到了家门口。家里的人睡着了，学校还在左边。";
-                    instruction.text = "A / D 或方向键 · 沿路线走到学校";
+                    status.text = Firsts.ExitStop == 0 ? "提前下车了。学校在右边。" : "坐过站了。学校在左边。";
+                    instruction.text = "A D 或方向键 · 走到学校";
                 }
                 else
                 {
-                    status.text = Firsts.Phase == FirstsPhase.Ready ? "你的手举起来了。" : "教室里，老师还在等有人举手。";
-                    instruction.text = Firsts.Phase == FirstsPhase.Ready ? "F · 走向舞台" : Firsts.RaisedHand >= 0.98f ? "松开 E · 把手举出去" : "按住 E · 慢慢举起手";
+                    status.text = Firsts.Phase == FirstsPhase.Ready ? "轮到你了。" : "老师在等一个举起的手。";
+                    instruction.text = Firsts.Phase == FirstsPhase.Ready ? "F · 继续" : Firsts.RaisedHand >= 0.98f ? "松开 E · 举起手" : "按住 E · 慢慢抬起手";
                 }
             }
             else
@@ -210,12 +213,14 @@ namespace LetGo
                 }
                 fullLetter.gameObject.SetActive(Repair.RepairedCount == 3);
                 fullLetter.rectTransform.anchoredPosition = new Vector2(PaperAlong(Repair.LetterPosition), -100);
-                addresses.text = Repair.RepairedCount == 3 ? "寄回家里                                        留进自己的笔记" : "";
-                status.text = Repair.Ready ? Repair.Destination == "home" ? "纸寄出去了。家里回了一张画着窗与灯的小图。" : "修补过的这一页，留在了自己的笔记里。" :
-                    Repair.RepairedCount == 3 ? "这一页已经完整。决定把它留在哪里。" : "对照浅色轮廓，把三片纸拼回原位。已拼好 " + Repair.RepairedCount + " / 3";
-                instruction.text = Repair.Ready ? "F · 带着它继续，进入研究室" :
-                    Repair.RepairedCount == 3 ? "按住 E 拿起整页 · A / D 移到左侧或右侧 · 松开 E 放下" :
-                    Repair.Holding ? "A / D 移动纸片 · 对齐对应轮廓后松开 E" : "A / D 选纸片 · 按住 E 拿起，再用 A / D 移动";
+                homeAddress.text = Repair.RepairedCount == 3 ? "寄回家里" : "";
+                notebookAddress.text = Repair.RepairedCount == 3 ? "留在笔记里" : "";
+                status.text = Repair.Ready ? Repair.Destination == "home" ? "回信里，画着一扇窗和一盏灯。" : "这一页，留在了笔记里。" :
+                    Repair.RepairedCount == 3 ? "拼好的这一页，你想放在哪里？" :
+                    Repair.RepairedCount == 0 ? "把这一页拼回去。" : Repair.RepairedCount == 1 ? "还差两片。" : "还差一片。";
+                instruction.text = Repair.Ready ? "F · 继续" :
+                    Repair.RepairedCount == 3 ? "按住 E · 拿起　A D · 移到一侧　松开 E · 放下" :
+                    Repair.Holding ? "A D · 移动纸片　松开 E · 放进浅色轮廓" : "A D · 选纸片　按住 E · 拿起";
             }
             illustration.sprite = Art(art);
             if (illustration.sprite != null && illustrationFit != null)

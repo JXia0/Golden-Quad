@@ -132,6 +132,7 @@ public static class JourneyRegressionChecks
                 "independent entry is possible without a parental hand checklist and counts only once");
             results.Add("PASS: parental help is optional and independent entry counts once.");
             ValidateExperiments(results);
+            results.AddRange(LearnedHabitChecks.RunChecks());
             ValidateDeliveredAudio(results);
             ValidateInterludes(results);
             ValidateScenes(results);

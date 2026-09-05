@@ -116,6 +116,32 @@ public static class JourneyPlaythroughChecks
         RunBatch();
     }
 
+    public static void ValidateLearnedHabitsBatch()
+    {
+        SessionState.SetBool("LetGo.QA.LearnedHabits", true);
+        RunBatch();
+    }
+
+    public static void ValidateSceneStagingAndBuildWindowsBatch()
+    {
+        SessionState.SetBool(BuildAfterKey, true);
+        SessionState.SetBool("LetGo.QA.SceneStaging", true);
+        RunBatch();
+    }
+
+    public static void ValidateFinalPresentationAndBuildWindowsBatch()
+    {
+        SessionState.SetBool("LetGo.QA.StagingOnly", true);
+        ValidateSceneStagingAndBuildWindowsBatch();
+    }
+
+    public static void ValidateHabitsAndFullBuildWindowsBatch()
+    {
+        SessionState.SetBool(BuildAfterKey, true);
+        SessionState.SetBool("LetGo.QA.FullAfterHabits", true);
+        ValidateLearnedHabitsBatch();
+    }
+
     public static void BuildWindowsBatch()
     {
         LetGoSpriteAssetIntegrator.BuildAvailableControllers();

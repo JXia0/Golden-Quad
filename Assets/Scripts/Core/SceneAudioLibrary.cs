@@ -17,12 +17,16 @@ namespace LetGo
         public AudioClip paperRustle;
         public AudioClip finalLight;
         public AudioClip ambience;
+        public AudioClip kindergartenMusic;
+        public AudioClip journeyMusic;
         public void Apply(SceneAudio target)
         {
             if (target == null) return;
             target.SetEffects(footstepOne, footstepTwo, interact, itemMove, objectiveLight, doorOpen,
                 handRelease, heartbeat, calmBreath, applause, paperRustle, finalLight);
             target.SetFallbackAmbience(ambience);
+            var sceneName = target.gameObject.scene.name;
+            target.SetFallbackMusic(sceneName == "01_Kindergarten" ? kindergartenMusic : journeyMusic);
         }
     }
 }

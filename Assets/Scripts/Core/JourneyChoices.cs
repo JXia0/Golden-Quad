@@ -15,6 +15,8 @@ namespace LetGo
         public static int WorkshopVisits { get; private set; }
         public static int BusExitStop { get; private set; } = -1;
         public static string RepairedNoteDestination { get; private set; }
+        public static LearnedHabitSnapshot LearnedHabit { get; private set; }
+        public static void RememberLearnedHabit(LearnedHabitSnapshot habit) => LearnedHabit = habit;
         public static void RememberBusStop(int stop) => BusExitStop = stop;
         public static void RememberRepairedNote(string destination) => RepairedNoteDestination = destination;
         public static int BeginWorkshop() => ++WorkshopVisits;
@@ -47,6 +49,7 @@ namespace LetGo
             CrossingTool = string.Empty;
             BusExitStop = -1;
             RepairedNoteDestination = string.Empty;
+            LearnedHabit = default;
         }
 
         public static void Record(string category, string value, bool onlyIfEmpty)

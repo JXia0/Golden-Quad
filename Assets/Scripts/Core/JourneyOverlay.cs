@@ -6,7 +6,6 @@ namespace LetGo
     // Functional, replaceable UI. Its canvas stays below the existing scene fade.
     public sealed class JourneyOverlay : MonoBehaviour
     {
-        private Font font;
         public static JourneyOverlay Create(string name)
         {
             var go = new GameObject(name, typeof(RectTransform), typeof(Canvas), typeof(CanvasScaler));
@@ -18,7 +17,6 @@ namespace LetGo
             scaler.referenceResolution = new Vector2(1280, 720);
             scaler.matchWidthOrHeight = 0.5f;
             var ui = go.AddComponent<JourneyOverlay>();
-            ui.font = Font.CreateDynamicFontFromOSFont(new[] { "Microsoft YaHei", "Noto Sans CJK SC", "Arial" }, 24);
             return ui;
         }
 
@@ -45,13 +43,7 @@ namespace LetGo
         public Text Label(string name, Vector2 position, Vector2 size, int fontSize, TextAnchor alignment = TextAnchor.MiddleCenter)
         {
             var text = Rect(name, position, size).gameObject.AddComponent<Text>();
-            text.font = font;
-            text.fontSize = fontSize;
-            text.color = Color.white;
-            text.alignment = alignment;
-            text.horizontalOverflow = HorizontalWrapMode.Wrap;
-            text.verticalOverflow = VerticalWrapMode.Truncate;
-            text.raycastTarget = false;
+            StoryTypography.Apply(text, fontSize, alignment);
             return text;
         }
 
@@ -61,6 +53,5 @@ namespace LetGo
             return new Vector2((point.x - 0.5f) * 1280f, (point.y - 0.5f) * 720f);
         }
 
-        private void OnDestroy() { if (font != null) Destroy(font); }
     }
 }

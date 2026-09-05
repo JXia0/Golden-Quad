@@ -178,16 +178,17 @@ namespace LetGo
 
         private string PromptForStep()
         {
-            if (AudienceLeading) return "他们正在接过你的节奏 · 可以等一会儿，也可以按 E 加入";
-            if (ReadyForCurtain) return "F · 谢幕　Q · 改写节奏　也可以换一个位置继续唱";
+            if (AudienceLeading) return "你的两拍，从观众席传回来。\nE · 一起唱";
+            if (ReadyForCurtain) return "这一句唱完了。\nF · 谢幕　Q · 改写　按住 E · 再唱一次";
             if (ActiveStep == 0)
                 return hand.SelfChargeNormalized >= 0.98f ? ReleasePrompt : BreathPrompt;
             if (ActiveStep == 1)
-                return composingBeat == 0 ? "按住 E · A / D 朝向一侧听众 · 松开发声" :
-                    "再发一拍 · 可以回应同一侧，也可以用 A / D 转向另一侧";
+                return (composingBeat == 0 ? "第一拍，唱给谁听？" : "第二拍，留在这一侧，或转向另一侧。") +
+                    "\n按住 E · 吸气　A D · 转向　松开 E · 唱出短音或长音";
             var score = ScoreNote(0) + "  " + ScoreNote(1);
-            return (Time.time < retryUntil ? "再来一次 · " : "你的节奏 · ") + score +
-                (repriseBeat == 0 ? "  |  第一拍" : "  |  第二拍") + "  E 演唱 / F 请观众接唱 / Q 改写";
+            return (Time.time < retryUntil ? "再来一次：" : "你的两拍：") + score +
+                (repriseBeat == 0 ? "　从第一拍开始" : "　接上第二拍") +
+                "\n按住 E · 重唱　A D · 转向　F · 请观众接唱　Q · 改写";
         }
 
         private void ReleaseNote(Transform mark)

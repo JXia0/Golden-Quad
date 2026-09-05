@@ -1,6 +1,6 @@
 # 《放开我的手》基础音频资产清单
 
-> 当前：12 个新 SFX 已通过 `Assets/Resources/SceneAudioLibrary.asset` 在 `SceneAudio.Start` 接入，原文件位于 `Assets/Audio/SFX/SFX`。环境声 `Assets/Audio/LoopAudio/amb_indoor_loop.WAV` 已交付并接入默认循环；配乐 `bgm_growth_theme_loop` 尚缺，已交 5.6 跟进。音效库覆盖 SFX，仅在场景未设置环境声时补入默认底声，保留场景内已有音乐与环境声；无需为了启用这批音效重新执行全场景美术绑定。
+> 当前：12 个 SFX、室内环境循环和两版成长主题配乐均已通过 `Assets/Resources/SceneAudioLibrary.asset` 接入。音频库只在场景没有单独指定环境声或音乐时提供默认音轨，因此不会覆盖场景已有配置。
 
 ## 交付规格
 
@@ -33,13 +33,14 @@ P0 音效共 **12 个文件**，其中脚步占两个文件。
 | 文件名 | 数量 | 建议时长 | 使用位置 |
 |---|---:|---:|---|
 | `amb_indoor_loop` | 1 | 20–30 秒 Loop | 全游戏复用的安静室内底噪，各场景调整音量 |
-| `bgm_growth_theme_loop` | 1 | 60–90 秒 Loop | 全游戏复用的克制主旋律，场景间只调整音量 |
+| `bgm_growth_theme_loop_v2_幼儿园关卡` | 1 | 72 秒 Loop | 幼儿园章节，较轻的成长主题 |
+| `bgm_growth_theme_loop_v3_剩余关卡` | 1 | 87.27 秒 Loop | 序章、舞台、研究与最终回忆章节 |
 
-环境与音乐共 **2 个文件**。最终基础交付总计 **14 个文件**。
+环境与音乐共 **3 个文件**。最终基础交付总计 **15 个文件**。
 
 ## Unity 接入
 
-将下表音频直接放入 `Assets/Audio/Final`，文件名保持一致，然后执行 `Tools > Let Go > Apply Final Art By Filename`。工具会自动把音频写入五个场景；无需逐个拖到 AudioSource。
+循环音频位于 `Assets/Audio/LoopAudio`，SFX 位于 `Assets/Audio/SFX/SFX`。`SceneAudioLibrary` 会在运行时按场景选择配乐，无需逐个拖到 AudioSource。
 
 当前已接入的反馈包括：交替脚步、抓住、松手、呼吸完成、资料放下、目标完成、开门、舞台掌声、紧张心跳、结尾白光、环境循环和主旋律。
 
