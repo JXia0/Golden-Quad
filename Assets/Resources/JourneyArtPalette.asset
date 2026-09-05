@@ -16,7 +16,7 @@ MonoBehaviour:
   - id: prop_child_backpack
     sprite: {fileID: 872123929, guid: e90f2de1fcdb59b46ba44ee9cc821f43, type: 3}
   - id: prop_research_model
-    sprite: {fileID: 4464182519705312368, guid: 364c8b579fee614499bdc6c6154b87f3, type: 3}
+    sprite: {fileID: -4694568971126195842, guid: 364c8b579fee614499bdc6c6154b87f3, type: 3}
   - id: prop_research_crate
     sprite: {fileID: 21300000, guid: 0e74be713ebabd3498415a6b5a13a657, type: 3}
   - id: prop_research_bridge

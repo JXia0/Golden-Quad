@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: be88dd30dad76cc478c3760aefc61931
+guid: 7a48008eb2e4333499bfca02fed095de
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -7738917083981762615
-    second: workshop-shutter_locked_0
+      213: -3021180038640751382
+    second: montage_growth__0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -46,7 +46,7 @@ TextureImporter:
   nPOTScale: 0
   lightmap: 0
   compressionQuality: 50
-  spriteMode: 1
+  spriteMode: 2
   spriteExtrude: 1
   spriteMeshType: 1
   alignment: 0
@@ -74,10 +74,10 @@ TextureImporter:
   platformSettings:
   - serializedVersion: 4
     buildTarget: DefaultTexturePlatform
-    maxTextureSize: 4096
+    maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
-    textureCompression: 0
+    textureCompression: 1
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
@@ -100,10 +100,10 @@ TextureImporter:
     forceMaximumCompressionQuality_BC6H_BC7: 0
   - serializedVersion: 4
     buildTarget: WebGL
-    maxTextureSize: 4096
+    maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
-    textureCompression: 0
+    textureCompression: 1
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
@@ -115,13 +115,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: workshop-shutter_locked_0
+      name: montage_growth__0
       rect:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 1122
-        height: 1402
+        width: 3400
+        height: 550
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -130,8 +130,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 9cfa0172ae7d99490800000000000000
-      internalID: -7738917083981762615
+      spriteID: aec215203cc9216d0800000000000000
+      internalID: -3021180038640751382
       vertices: []
       indices: 
       edges: []
@@ -140,7 +140,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 5e97eb03825dee720800000000000000
+    spriteID: 
     internalID: 0
     vertices: []
     indices: 
@@ -150,7 +150,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      workshop-shutter_locked_0: -7738917083981762615
+      montage_growth__0: -3021180038640751382
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
