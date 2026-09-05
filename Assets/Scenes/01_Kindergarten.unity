@@ -4082,7 +4082,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d820af735b157b4b9466ac7a5c8f82a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LetGo.StorySceneDirector
-  nextScene: 03_Stage
+  nextScene: 02_Interlude_Firsts
   player: {fileID: 505418141}
   initialCheckpoint: {fileID: 729552180}
   requiredObjectives: 4

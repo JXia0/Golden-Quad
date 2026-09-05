@@ -101,6 +101,7 @@ namespace LetGo
             wind = visuals.GameplayLine("Draft through the window", JourneyVisuals.Cool, 0.045f);
             map = visuals.GameplayLine("Workshop route sketch", JourneyVisuals.Warm, 0.04f);
             toySound = visuals.GameplayLine("Familiar toy sound range", JourneyVisuals.Warm, 0.025f);
+            gameObject.AddComponent<ResearchGuide>().Initialize(this, hand);
         }
 
         private HoldTarget Tool(string name, string id, Vector3 position, Vector2 size, string slot, string prompt)

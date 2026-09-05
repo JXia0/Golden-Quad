@@ -45,3 +45,17 @@ MonoBehaviour:
     sprite: {fileID: 0}
   - id: workshop-desk
     sprite: {fileID: 0}
+  - id: prop_researchnote
+    sprite: {fileID: -376304895, guid: c9a17482fbbaf1a4ea4396b813d29e73, type: 3}
+  - id: montage01_stayupwithfriends
+    sprite: {fileID: 1953963851, guid: 1f8c7a8c99223c6498156540c18755f7, type: 3}
+  - id: montage02_takebus
+    sprite: {fileID: -1174279628, guid: 331b32dd62285de45b8800d73ca23f2f, type: 3}
+  - id: montage03_parentstired
+    sprite: {fileID: -1593526372, guid: 540f29dfda6f3cb44ac0db677fd463bc, type: 3}
+  - id: montage04_firstraisehand
+    sprite: {fileID: -1261813584, guid: 49df5399e008b8b41a68100aea3daa48, type: 3}
+  - id: montage_growth_rejected
+    sprite: {fileID: -787814576, guid: 6d7e29097d0a91e4d930a57079477079, type: 3}
+  - id: montage_growth_conflict
+    sprite: {fileID: 142250809, guid: 7db026b974be3c74fa3b50b8c94cca85, type: 3}

@@ -13,6 +13,10 @@ namespace LetGo
         public static bool LearnedIndependentDeparture { get; private set; }
         public static string CrossingTool { get; private set; }
         public static int WorkshopVisits { get; private set; }
+        public static int BusExitStop { get; private set; } = -1;
+        public static string RepairedNoteDestination { get; private set; }
+        public static void RememberBusStop(int stop) => BusExitStop = stop;
+        public static void RememberRepairedNote(string destination) => RepairedNoteDestination = destination;
         public static int BeginWorkshop() => ++WorkshopVisits;
         public static void TakeChildhoodToy(bool taken) => TookChildhoodToy = taken;
         public static void RememberWorkshop(string support, string crossing, bool independent)
@@ -41,6 +45,8 @@ namespace LetGo
             TestedResearchModel = string.Empty;
             TookChildhoodToy = LearnedIndependentDeparture = false;
             CrossingTool = string.Empty;
+            BusExitStop = -1;
+            RepairedNoteDestination = string.Empty;
         }
 
         public static void Record(string category, string value, bool onlyIfEmpty)

@@ -121,6 +121,7 @@ public static class JourneyRegressionChecks
                 "reset cannot play a charged stage note");
             results.Add("PASS: cancelling a full breath emits no note or rhythm progress.");
             ValidateExperiments(results);
+            ValidateInterludes(results);
             ValidateScenes(results);
             results.Add("ALL CHECKS PASSED. Editor logic/topology checks; manual playthrough still required.");
         }
@@ -177,6 +178,58 @@ public static class JourneyRegressionChecks
         for (var i = 0; i < 200; i++) walker.Tick(0.05f, "crate", false, 24f, false, true);
         Require(walker.State == LearnerState.Arrived && walker.Independent && walker.Support == "toy", "a remembered toy substitutes for light");
         results.Add("PASS: the childhood toy is a functional substitute for the lamp.");
+    }
+
+    private static void ValidateInterludes(List<string> results)
+    {
+        var bus = new FirstsJourney();
+        for (var i = 0; i < 500; i++) bus.Tick(0.1f, 0f, false, false);
+        Require(bus.Phase == FirstsPhase.Riding, "waiting alone cannot complete a journey");
+        bus = new FirstsJourney(); bus.Bell(); bus.Bell();
+        Require(bus.RequestedStop == -1, "a stop request can be reconsidered");
+        bus.Bell();
+        for (var i = 0; i < 30; i++) bus.Tick(0.1f, 0f, false, false);
+        Require(bus.ExitStop == 0 && bus.Phase == FirstsPhase.Walking, "early stop creates a walk to school");
+        for (var i = 0; i < 15; i++) bus.Tick(0.1f, 1f, false, false);
+        Require(bus.Phase == FirstsPhase.RaisingHand, "walking reaches the classroom");
+        bus.Tick(1.3f, 0, true, false); bus.Tick(0.01f, 0, false, true);
+        Require(bus.Phase == FirstsPhase.Ready, "raising then releasing a hand finishes the first transition");
+        bus = new FirstsJourney(); bus.Tick(6f, 0, false, false); bus.Bell();
+        for (var i = 0; i < 30; i++) bus.Tick(0.1f, 0, false, false);
+        Require(bus.ExitStop == 2, "a later bell results in a different stop");
+        for (var i = 0; i < 15; i++) bus.Tick(0.1f, -1f, false, false);
+        Require(bus.Phase == FirstsPhase.RaisingHand, "a late stop remains recoverable by walking back");
+        results.Add("PASS: the bus waits for an intentional bell, supports cancellation and different stops, and requires walking and hand release.");
+        foreach (var friend in new[] { true, false })
+        {
+            var paper = new RepairJourney();
+            paper.Tick(0f, 0, 0, true, true, false);
+            paper.Tick(0f, 0, 0, false, false, true);
+            Require(paper.RepairedCount == 0 && !paper.Ready, "dropping a misaligned fragment is not completion");
+            for (var i = 0; i < 3; i++)
+            {
+                if (i > 0) paper.Tick(0, 0, 1, false, false, false);
+                paper.Tick(0, 0, 0, true, true, false);
+                var delta = RepairJourney.Target(i) - paper.Pieces[i];
+                paper.Tick(Mathf.Abs(delta) / 0.35f, Mathf.Sign(delta), 0, false, true, false);
+                paper.Tick(0, 0, 0, false, false, true);
+            }
+            Require(paper.RepairedCount == 3 && !paper.Ready, "repairing leaves the destination undecided");
+            paper.Tick(0, 0, 0, true, true, false);
+            paper.Tick(0.3f / 0.35f, friend ? -1 : 1, 0, false, true, false);
+            paper.Tick(0, 0, 0, false, false, true);
+            Require(paper.Ready && paper.Destination == (friend ? "home" : "notebook"), "the final placement determines where the note goes");
+        }
+        results.Add("PASS: fragments require alignment; the repaired page can be sent or retained through different placements.");
+        var scenes = EditorBuildSettings.scenes.Where(x => x.enabled).Select(x => Path.GetFileNameWithoutExtension(x.path)).ToArray();
+        Require(scenes.SequenceEqual(new[] { "00_Prologue", "01_Kindergarten", "02_Interlude_Firsts", "03_Stage", "04_Interlude_Growing", "05_Research", "06_FinalWalk" }), "both transitions belong in the shipped scene order");
+        foreach (var name in new[] { "02_Interlude_Firsts", "04_Interlude_Growing" })
+        {
+            var preview = EditorSceneManager.OpenPreviewScene("Assets/Scenes/" + name + ".unity");
+            try { Require(preview.GetRootGameObjects().Any(x => x.GetComponent<InterludeController>() != null), name + " needs its playable controller"); }
+            finally { EditorSceneManager.ClosePreviewScene(preview); }
+        }
+        results.Add("PASS: all seven scenes are shipped in order and both interludes retain playable controllers.");
     }
 
     private static void ValidateScenes(List<string> results)

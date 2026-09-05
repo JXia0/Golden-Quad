@@ -13,6 +13,8 @@ public sealed class JourneyArtImporter : AssetPostprocessor
         "prop_child_backpack", "prop_research_model", "prop_research_bridge", "prop_toy", "prop_researchlight", "prop_stage_box", "prop_research_report", "prop_research_book",
         "workshop-platform", "workshop-notebook", "workshop-plate", "workshop-shutter", "workshop-latch",
         "workshop-window", "workshop-report", "workshop-desk"
+        , "prop_researchnote", "montage01_stayupwithfriends", "montage02_takebus", "montage03_parentstired",
+        "montage04_firstraisehand", "montage_growth_rejected", "montage_growth_conflict"
     };
     private static bool queued;
 

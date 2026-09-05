@@ -10,7 +10,7 @@
 - 核心规则：**按住维持连接，松开才能继续前进**
 - 失败：没有死亡、战斗、计时或 Game Over
 
-正式 Build 只包含五个场景。两段成长蒙太奇已从 Build 移除，人生跨度改由最终长廊中的 GameObject 回放承担。
+当前正式 Build 恢复七个场景。两段成长过渡已经接回主线并加入主动操作，见 [恢复说明](RestoredInterludesAndResearchGuide.md)。下文为早期章节描述。
 
 ## 00_Prologue — 会议室门外（约 30 秒）
 

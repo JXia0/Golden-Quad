@@ -36,7 +36,9 @@ public static class LetGoSceneBuilder
         glowSprite = EnsureGlowSprite();
         BuildPrologue();
         BuildKindergarten();
+        BuildInterludeOne();
         BuildStage();
+        BuildInterludeTwo();
         BuildResearch();
         BuildFinalWalk();
 
@@ -44,7 +46,9 @@ public static class LetGoSceneBuilder
         {
             "Assets/Scenes/00_Prologue.unity",
             "Assets/Scenes/01_Kindergarten.unity",
+            "Assets/Scenes/02_Interlude_Firsts.unity",
             "Assets/Scenes/03_Stage.unity",
+            "Assets/Scenes/04_Interlude_Growing.unity",
             "Assets/Scenes/05_Research.unity",
             "Assets/Scenes/06_FinalWalk.unity"
         };
@@ -54,7 +58,7 @@ public static class LetGoSceneBuilder
         AssetDatabase.Refresh();
         EditorSceneManager.OpenScene(paths[0]);
         LetGoArtBinder.ApplyFinalArt();
-        Debug.Log("[LetGo] Built the five-scene hold-and-release playable flow.");
+        Debug.Log("[LetGo] Built the seven-scene hold-and-release playable flow.");
     }
 
     private static void BuildPrologue()
@@ -84,7 +88,7 @@ public static class LetGoSceneBuilder
 
     private static void BuildKindergarten()
     {
-        var setup = CreateBase("03_Stage", new Vector2(-8f, -2.1f), 4, 50f, new Color(0.11f, 0.09f, 0.16f));
+        var setup = CreateBase("02_Interlude_Firsts", new Vector2(-8f, -2.1f), 4, 50f, new Color(0.11f, 0.09f, 0.16f));
         SetPlayerArtSlot(setup.Player, "char_child");
         var hand = AddHandConnection(setup.Player, false);
         var courage = setup.Player.GetComponent<CourageSystem>();
@@ -175,7 +179,7 @@ public static class LetGoSceneBuilder
 
     private static void BuildStage()
     {
-        var setup = CreateBase("05_Research", new Vector2(-8f, -2.1f), 3, 48f, new Color(0.07f, 0.05f, 0.12f));
+        var setup = CreateBase("04_Interlude_Growing", new Vector2(-8f, -2.1f), 3, 48f, new Color(0.07f, 0.05f, 0.12f));
         SetPlayerArtSlot(setup.Player, "char_teen");
         var hand = AddHandConnection(setup.Player, true);
         var backstageParent = CreateCoreHoldTarget("Parent Backstage", new Vector2(-9f, -1.7f), new Vector2(1f, 2.2f),

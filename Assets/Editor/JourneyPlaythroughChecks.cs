@@ -70,6 +70,12 @@ public static class JourneyPlaythroughChecks
         RunBatch();
     }
 
+    public static void ValidateTransitionsBatch()
+    {
+        SessionState.SetBool("LetGo.QA.TransitionsOnly", true);
+        RunBatch();
+    }
+
     public static void BuildWindowsBatch()
     {
         JourneyArtImporter.Refresh();

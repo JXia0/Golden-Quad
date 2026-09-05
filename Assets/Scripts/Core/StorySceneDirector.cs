@@ -44,6 +44,9 @@ namespace LetGo
 
         private void Start()
         {
+            // Keep restored transitions authoritative even in older, manually laid out scenes.
+            if (gameObject.scene.name == "01_Kindergarten") nextScene = "02_Interlude_Firsts";
+            if (gameObject.scene.name == "03_Stage") nextScene = "04_Interlude_Growing";
             EmotionalJourney.Install(this);
             if (fadeImage != null) StartCoroutine(FadeFromBlack());
         }
