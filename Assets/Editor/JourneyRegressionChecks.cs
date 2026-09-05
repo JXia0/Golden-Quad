@@ -129,6 +129,7 @@ public static class JourneyRegressionChecks
                 "independent entry is possible without a parental hand checklist and counts only once");
             results.Add("PASS: parental help is optional and independent entry counts once.");
             ValidateExperiments(results);
+            ValidateDeliveredAudio(results);
             ValidateInterludes(results);
             ValidateScenes(results);
             results.Add("ALL CHECKS PASSED. Editor logic/topology checks; manual playthrough still required.");
@@ -153,6 +154,26 @@ public static class JourneyRegressionChecks
             File.WriteAllLines(ResultPath, results);
             Debug.Log("[LetGo] " + string.Join("\n", results));
         }
+    }
+
+    private static void ValidateDeliveredAudio(List<string> results)
+    {
+        var library = Resources.Load<SceneAudioLibrary>("SceneAudioLibrary");
+        Require(library != null, "the delivered SFX library is included in Resources");
+        var owner = new GameObject("Audio library regression");
+        var music = AudioClip.Create("Keep authored music", 441, 1, 44100, false);
+        var ambience = AudioClip.Create("Keep authored ambience", 441, 1, 44100, false);
+        try
+        {
+            var target = owner.AddComponent<SceneAudio>();
+            target.SetClips(null, null, null, null, null, null, null, null, null, null, null, null, ambience, music);
+            library.Apply(target);
+            Require(typeof(SceneAudio).GetField("music", Private).GetValue(target) == music &&
+                typeof(SceneAudio).GetField("ambience", Private).GetValue(target) == ambience,
+                "applying delivered effects preserves the scene's authored music and ambience");
+            results.Add("PASS: applying new sound effects cannot erase authored music or ambience.");
+        }
+        finally { Object.DestroyImmediate(owner); Object.DestroyImmediate(music); Object.DestroyImmediate(ambience); }
     }
 
     private static void ValidateExperiments(List<string> results)

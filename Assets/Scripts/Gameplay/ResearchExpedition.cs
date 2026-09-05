@@ -76,7 +76,7 @@ namespace LetGo
             toolSurface = new PhysicsMaterial2D("Workshop smooth tool edges") { friction = 0f, bounciness = 0f };
             crateCollider.sharedMaterial = toolSurface;
             Platform("Archive Shelf", new Vector3(-2f, -0.35f), new Vector2(3.2f, 0.3f));
-            plank = Tool("Folding Plank", "workshop-plank", new Vector3(-2f, 0.8f), new Vector2(1.6f, 0.18f), "prop_research_bridge", "E · 拿折叠板");
+            plank = Tool("Folding Plank", "workshop-plank", new Vector3(-2f, -0.12f), new Vector2(1.6f, 0.18f), "prop_research_bridge", "E · 拿折叠板");
             plank.Configure("workshop-plank", HoldTargetMode.Carryable, "E · 拿折叠板", 1f, 3f);
             plank.DropFloorY = -2.5f;
             lamp = Tool("Portable Lamp", "workshop-lamp", new Vector3(12.6f, -2.2f), new Vector2(0.55f, 0.7f), "prop_researchlight", "E · 拿灯");

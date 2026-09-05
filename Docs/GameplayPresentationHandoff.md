@@ -60,7 +60,7 @@
 |---|---|---|
 | Workshop Crate | 4,-2.1 | prop_stage_box；实体 1.1×1.3 箱，可踩、搬、压机关、搭落脚点 |
 | Archive Shelf / Archive Notebook | -2,-0.35 / -3,0.3 | workshop-platform / prop_research_book；可选上层探索 |
-| Folding Plank | -2,0.8 | prop_research_bridge；可搬运并反复放置 |
+| Folding Plank | -2,-0.12 | prop_research_bridge；初始搁在档案台面，可搬运并反复放置 |
 | Pressure Plate / Workshop Shutter | 6.5,-2.68 / 9,-0.75 | workshop-plate / workshop-shutter；地面机关与实体门 |
 | Inside Shutter Latch | 10.5,-1.5 | workshop-latch；永久开启返程 |
 | Workshop Learner | 12,-2.25 | prop_research_model；移动由程序控制，只在子物件做姿态 |

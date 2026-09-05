@@ -410,6 +410,19 @@ public sealed class JourneyPlaythroughDriver : MonoBehaviour
     {
         var research = FindAnyObjectByType<ResearchExpedition>();
         var guide = FindAnyObjectByType<ResearchGuide>();
+        var audioLibrary = Resources.Load<SceneAudioLibrary>("SceneAudioLibrary");
+        var audio = FindAnyObjectByType<SceneAudio>();
+        var deliveredAudio = audioLibrary != null && audio != null;
+        foreach (var name in new[] { "footstepOne", "footstepTwo", "interact", "itemMove", "objectiveLight", "doorOpen",
+            "handRelease", "heartbeat", "calmBreath", "applause", "paperRustle", "finalLight" })
+        {
+            var expected = audioLibrary == null ? null : typeof(SceneAudioLibrary).GetField(name).GetValue(audioLibrary) as AudioClip;
+            var actual = audio == null ? null : typeof(SceneAudio).GetField(name,
+                System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic).GetValue(audio) as AudioClip;
+            deliveredAudio &= expected != null && expected.length > 0f && expected == actual &&
+                AssetDatabase.GetAssetPath(expected).StartsWith("Assets/Audio/SFX/SFX/", StringComparison.Ordinal);
+        }
+        if (!Check(deliveredAudio, "all twelve delivered SFX are loaded and bound in the running scene")) yield break;
         Capture("05-lab-entry");
         if (!Check(guide != null && guide.GoalText.Contains("实验小人") && guide.SituationText.Contains("压力板"), "research shows its goal and the first obstacle immediately on entry")) yield break;
         yield return Keys(0.15f, Key.H);
