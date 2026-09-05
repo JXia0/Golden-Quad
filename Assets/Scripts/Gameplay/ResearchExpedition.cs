@@ -16,9 +16,12 @@ namespace LetGo
         private HoldSocket desk;
         private BoxCollider2D crateCollider, shutter;
         private Transform shutterVisual;
+        private SpriteRenderer shutterDoorVisual, plateVisual, latchLockedVisual, latchUnlockedVisual;
+        private Sprite plateRaisedSprite, platePressedSprite;
+        private readonly System.Collections.Generic.Dictionary<Texture, Material> blackKeyMaterials = new();
         private LineRenderer wire, gap, comfort, wind, map, toySound;
         private ResearchGuide guide;
-        public bool ShowingLampRange => comfort != null && comfort.enabled;
+        public bool ShowingLampRange => comfort != null && comfort.enabled && comfort.gameObject.activeInHierarchy && comfort.startWidth > 0f;
         private float gateGrace, toyUntil;
         private string activePrompt;
         private bool arrived, gateWasOpen, clearingShutter;
@@ -31,6 +34,8 @@ namespace LetGo
         public bool ReportReturned => desk != null && desk.Completed;
         public int CluesFound { get; private set; }
         public LearnerState State => learner.State;
+        public float LearnedUntil => learner.LearnedUntil;
+        public int Rehearsals => learner.Rehearsals;
         public HoldTarget Crate => crate;
         public HoldTarget Plank => plank;
         public HoldTarget Lamp => lamp;
@@ -93,14 +98,32 @@ namespace LetGo
             desk = bench.gameObject.AddComponent<HoldSocket>();
             desk.Configure("workshop-report", "", 1.5f, 1, "");
             desk.Acceptance = target => arrived;
-            var gate = visuals.Prop("Workshop Shutter", new Vector3(9f, -0.75f), new Vector2(0.6f, 4f), JourneyVisuals.Cool, "workshop-shutter");
+            var shutterFrame = visuals.Prop("Workshop Shutter Frame", new Vector3(9f, -0.7f), new Vector2(3.15f, 4.35f), Color.white, "workshop-shutter_frame");
+            KeyBlack(shutterFrame);
+            var gate = visuals.Prop("Workshop Shutter Door", new Vector3(9f, -0.75f), new Vector2(2.8f, 3.75f), Color.white, "workshop-shutter_door");
             shutterVisual = gate.transform;
-            shutter = Box(gate.transform, new Vector2(0.6f, 4f));
+            shutterDoorVisual = gate;
+            KeyBlack(shutterDoorVisual);
+            shutter = Box(gate.transform, new Vector2(0.75f, 4f));
             shutter.sharedMaterial = toolSurface;
-            visuals.Prop("Pressure Plate", new Vector3(6.5f, -2.68f), new Vector2(1.5f, 0.12f), JourneyVisuals.Warm, "workshop-plate");
-            visuals.Prop("Inside Shutter Latch", new Vector3(10.5f, -1.5f), new Vector2(0.25f, 0.65f), JourneyVisuals.Warm, "workshop-latch");
+            plateVisual = visuals.Prop("Pressure Plate", new Vector3(6.5f, -2.61f), new Vector2(1.5f, 0.2f), Color.white, "workshop-plate");
+            PreparePressurePlateSprites();
+            latchLockedVisual = visuals.Prop("Inside Shutter Latch Locked", new Vector3(10.5f, -1.5f), new Vector2(0.3f, 0.72f), Color.white, "workshop-shutter_locked");
+            latchUnlockedVisual = visuals.Prop("Inside Shutter Latch Open", new Vector3(10.5f, -1.5f), new Vector2(0.3f, 0.72f), Color.white, "workshop-shutter_unlocked");
+            KeyBlack(latchLockedVisual);
+            KeyBlack(latchUnlockedVisual);
+            latchUnlockedVisual.enabled = false;
+            var learnerBase = visuals.Prop("Learner Model Base", new Vector3(12f, -2.67f), new Vector2(0.65f, 0.1f), Color.white, "workshop-plate");
+            if (platePressedSprite != null)
+            {
+                learnerBase.sprite = platePressedSprite;
+                FitSprite(learnerBase, new Vector2(0.65f, 0.1f));
+                KeyBlack(learnerBase);
+            }
+            var gapShadow = visuals.Prop("Workshop Gap", new Vector3(16f, -2.72f), new Vector2(1.3f, 0.28f), Color.black, "workshop-gap-shadow");
+            gapShadow.sortingOrder = 7;
             visuals.Prop("Draft Window Handle", new Vector3(21f, -1.5f), new Vector2(0.5f, 0.65f), JourneyVisuals.Cool, "workshop-window");
-            visuals.Prop("Archive Notebook", new Vector3(-3f, 0.3f), new Vector2(0.4f, 0.35f), JourneyVisuals.Warm, "prop_research_book");
+            visuals.Prop("Archive Notebook", new Vector3(-2.7f, 0.3f), new Vector2(0.4f, 0.35f), JourneyVisuals.Warm, "prop_research_book");
             wire = visuals.GameplayLine("Plate to shutter circuit", JourneyVisuals.Warm, 0.045f);
             gap = visuals.GameplayLine("Learner crossing gap", JourneyVisuals.Cool);
             comfort = visuals.GameplayLine("Portable lamp coverage", JourneyVisuals.Warm, 0.025f);
@@ -144,6 +167,19 @@ namespace LetGo
             if (player == null) return;
             if (!string.IsNullOrEmpty(activePrompt)) director.ClearPrompt(activePrompt);
             activePrompt = null;
+            if (GameInput.ReconsiderPressed && GateLatched && player.ControlsEnabled && hand.CurrentTarget == null && !ReportReturned)
+            {
+                var before = learner.Rehearsals;
+                learner.Recall();
+                if (learner.Rehearsals != before)
+                {
+                    arrived = false;
+                    report.gameObject.SetActive(false);
+                    actor.ReopenInteraction();
+                    director.SetCompletedObjectives(0);
+                    SceneAudio.Instance?.PlayInteract();
+                }
+            }
             crateCollider.enabled = !crate.IsHeld;
             var pressed = At(6.5f, 0.7f) && player.transform.position.y < -1.8f || OnFloorAt(crate, 6.5f, 0.8f) || OnFloorAt(plank, 6.5f, 0.8f);
             gateGrace = pressed ? 0.12f : Mathf.Max(0f, gateGrace - Time.deltaTime);
@@ -152,7 +188,11 @@ namespace LetGo
             if (!At(9f, 0.8f)) clearingShutter = false;
             shutter.enabled = !GateOpen && !clearingShutter;
             gateWasOpen = GateOpen;
-            shutterVisual.GetComponent<SpriteRenderer>().color = GateOpen ? new Color(0.5f, 0.8f, 1f, 0.15f) : JourneyVisuals.Cool;
+            if (shutterDoorVisual != null) shutterDoorVisual.enabled = !GateOpen;
+            if (plateVisual != null && plateRaisedSprite != null)
+                plateVisual.sprite = pressed ? platePressedSprite : plateRaisedSprite;
+            if (latchLockedVisual != null) latchLockedVisual.enabled = !GateLatched;
+            if (latchUnlockedVisual != null) latchUnlockedVisual.enabled = GateLatched;
             if (At(10.5f) && player.transform.position.x > 9.3f && !GateLatched)
             {
                 activePrompt = "F · 拉开内侧门闩";
@@ -190,7 +230,7 @@ namespace LetGo
             }
             if (arrived && At(23f))
             {
-                activePrompt = "E · 拿报告   F · 走新打开的回程通道";
+                activePrompt = "E · 拿报告   F · 返回工作台   空手 Q · 召回重试";
                 if (GameInput.UsePressed)
                 {
                     player.transform.position = new Vector3(-0.4f, -2.1f);
@@ -227,6 +267,7 @@ namespace LetGo
         {
             arrived = true;
             actor.MarkPlaced(actor.transform.position);
+            report.transform.position = new Vector3(22f, -2.1f);
             report.gameObject.SetActive(true);
             director.CompleteObjective();
             JourneyChoices.RememberWorkshop(learner.Support, learner.Crossing, learner.Independent);
@@ -260,6 +301,10 @@ namespace LetGo
             map.enabled = false;
             toySound.enabled = !arrived && toy != null && ToySoundRemaining > 0f && (hand.CurrentTarget == toy || hints);
             if (toySound.enabled) DrawRange(toySound, toy.transform.position.x, 3.5f);
+            HideDebugLine(wire);
+            HideDebugLine(gap);
+            HideDebugLine(wind);
+            HideDebugLine(map);
         }
 
         private static void DrawRange(LineRenderer line, float x, float radius)
@@ -271,9 +316,56 @@ namespace LetGo
             line.SetPosition(3, new Vector3(x + radius, -2.48f));
         }
 
+        private void PreparePressurePlateSprites()
+        {
+            if (plateVisual == null || plateVisual.sprite == null) return;
+            var texture = plateVisual.sprite.texture;
+            // The delivered sheet contains raised and pressed states side by side.
+            // Current delivered sheet is 1448 x 1086; crop both complete plates at the same baseline.
+            var cropScale = new Vector2(texture.width / 1448f, texture.height / 1086f);
+            plateRaisedSprite = Sprite.Create(texture, new Rect(40f * cropScale.x, 400f * cropScale.y, 665f * cropScale.x, 165f * cropScale.y), Vector2.one * 0.5f, 100f);
+            platePressedSprite = Sprite.Create(texture, new Rect(745f * cropScale.x, 400f * cropScale.y, 665f * cropScale.x, 165f * cropScale.y), Vector2.one * 0.5f, 100f);
+            plateRaisedSprite.name = "Workshop Plate Raised";
+            platePressedSprite.name = "Workshop Plate Pressed";
+            plateVisual.sprite = plateRaisedSprite;
+            FitSprite(plateVisual, new Vector2(1.5f, 0.2f));
+            KeyBlack(plateVisual);
+        }
+
+        private static void FitSprite(SpriteRenderer renderer, Vector2 size)
+        {
+            if (renderer == null || renderer.sprite == null) return;
+            var scale = Mathf.Min(size.x / renderer.sprite.bounds.size.x, size.y / renderer.sprite.bounds.size.y);
+            renderer.transform.localScale = Vector3.one * scale;
+        }
+
+        private void KeyBlack(SpriteRenderer renderer)
+        {
+            if (renderer == null || renderer.sprite == null) return;
+            var texture = renderer.sprite.texture;
+            if (!blackKeyMaterials.TryGetValue(texture, out var material))
+            {
+                var shader = Resources.Load<Shader>("BlackKeySprite");
+                if (shader == null) return;
+                material = new Material(shader) { mainTexture = texture };
+                blackKeyMaterials.Add(texture, material);
+            }
+            renderer.sharedMaterial = material;
+        }
+
+        private static void HideDebugLine(LineRenderer line)
+        {
+            if (line == null) return;
+            line.startWidth = 0f;
+            line.endWidth = 0f;
+        }
+
         private void OnDestroy()
         {
             if (toolSurface != null) Destroy(toolSurface);
+            if (plateRaisedSprite != null) Destroy(plateRaisedSprite);
+            if (platePressedSprite != null) Destroy(platePressedSprite);
+            foreach (var material in blackKeyMaterials.Values) Destroy(material);
         }
     }
 }

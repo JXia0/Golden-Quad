@@ -171,6 +171,8 @@ namespace LetGo
             transform.position = restPosition;
         }
 
+        public void ReopenInteraction() => placed = false;
+
         public void WalkAway(Vector3 destination)
         {
             placed = true;

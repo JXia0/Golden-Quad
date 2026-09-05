@@ -10,6 +10,16 @@ namespace LetGo
         private static readonly int VerticalSpeedId = Animator.StringToHash("VerticalSpeed");
         private static readonly int CarryingId = Animator.StringToHash("Carrying");
         private static readonly int SelfAnchoringId = Animator.StringToHash("SelfAnchoring");
+        private static readonly int PerformId = Animator.StringToHash("Perform");
+        private bool hasPerform;
+        public int StageGesturesPlayed { get; private set; }
+
+        public void PlayStageGesture()
+        {
+            if (!hasPerform || animator == null) return;
+            animator.SetTrigger(PerformId);
+            StageGesturesPlayed++;
+        }
 
         private Animator animator;
         private PlayerController2D player;
@@ -35,6 +45,7 @@ namespace LetGo
                 if (parameter.nameHash == VerticalSpeedId && parameter.type == AnimatorControllerParameterType.Float) hasVerticalSpeed = true;
                 if (parameter.nameHash == CarryingId && parameter.type == AnimatorControllerParameterType.Bool) hasCarrying = true;
                 if (parameter.nameHash == SelfAnchoringId && parameter.type == AnimatorControllerParameterType.Bool) hasSelfAnchoring = true;
+                if (parameter.nameHash == PerformId && parameter.type == AnimatorControllerParameterType.Trigger) hasPerform = true;
             }
         }
 

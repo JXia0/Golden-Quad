@@ -15,6 +15,7 @@ public static class LetGoSpriteAssetIntegrator
     private const string TeenIdleSheet = "Assets/Sprites/char_teen/char_teen_Idle 4.png";
     private const string TeenWalkSheet = "Assets/Sprites/char_teen/char_teen_Walk 6.png";
     private const string TeenBreathSheet = "Assets/Sprites/char_teen/char_teen_手按胸口呼吸 4.png";
+    private const string TeenStageSheet = "Assets/Sprites/char_teen/char_teen_舞台动作 3.png";
     private const string TeenControllerPath = GeneratedRoot + "/char_teen_controller.controller";
     private const string AdultIdleSheet = "Assets/Sprites/char_adult/char_adult_Idle 4.png";
     private const string AdultWalkSheet = "Assets/Sprites/char_adult/char_adult_Walk 6.png";
@@ -112,7 +113,10 @@ public static class LetGoSpriteAssetIntegrator
             UsesCharacterVisual(AssetDatabase.LoadAssetAtPath<AnimationClip>(GeneratedRoot + "/char_teen_idle.anim")) &&
             UsesCharacterVisual(AssetDatabase.LoadAssetAtPath<AnimationClip>(GeneratedRoot + "/char_teen_walk.anim")) &&
             UsesCharacterVisual(AssetDatabase.LoadAssetAtPath<AnimationClip>(GeneratedRoot + "/char_teen_breath.anim")))
+        {
+            EnsureStageGesture(existingController);
             return existingController;
+        }
 
         DeleteGeneratedAsset("char_teen_idle.anim");
         DeleteGeneratedAsset("char_teen_walk.anim");
@@ -139,10 +143,44 @@ public static class LetGoSpriteAssetIntegrator
         AddCondition(idle, breath, AnimatorConditionMode.If, 0f, "SelfAnchoring");
         AddCondition(walk, breath, AnimatorConditionMode.If, 0f, "SelfAnchoring");
         AddCondition(breath, idle, AnimatorConditionMode.IfNot, 0f, "SelfAnchoring");
+        EnsureStageGesture(controller);
 
         EditorUtility.SetDirty(controller);
         AssetDatabase.SaveAssets();
         return controller;
+    }
+
+    [InitializeOnLoadMethod]
+    private static void QueueStageGestureUpgrade() => EditorApplication.delayCall += () =>
+    {
+        if (!EditorApplication.isPlayingOrWillChangePlaymode) BuildTeenController();
+    };
+
+    private static void EnsureStageGesture(AnimatorController controller)
+    {
+        if (!File.Exists(TeenStageSheet)) return;
+        EnsureGridSlices(TeenStageSheet, "char_teen_stage", 3);
+        var machine = controller.layers[0].stateMachine;
+        if (machine.states.Any(item => item.state.name == "Stage Gesture" && item.state.motion != null) &&
+            controller.parameters.Any(item => item.name == "Perform")) return;
+        var sprites = LoadSprites(TeenStageSheet);
+        if (sprites.Length != 3) return;
+        var clip = AssetDatabase.LoadAssetAtPath<AnimationClip>(GeneratedRoot + "/char_teen_stage.anim");
+        if (clip == null) clip = CreateClip("char_teen_stage.anim", sprites, 3f, false);
+        if (!controller.parameters.Any(item => item.name == "Perform")) controller.AddParameter("Perform", AnimatorControllerParameterType.Trigger);
+        var gesture = machine.states.Select(item => item.state).FirstOrDefault(item => item.name == "Stage Gesture") ?? machine.AddState("Stage Gesture");
+        gesture.motion = clip;
+        var enter = machine.AddAnyStateTransition(gesture);
+        enter.hasExitTime = false;
+        enter.duration = 0f;
+        enter.canTransitionToSelf = true;
+        enter.AddCondition(AnimatorConditionMode.If, 0f, "Perform");
+        var leave = gesture.AddTransition(machine.defaultState);
+        leave.hasExitTime = true;
+        leave.exitTime = 1f;
+        leave.duration = 0f;
+        EditorUtility.SetDirty(controller);
+        AssetDatabase.SaveAssetIfDirty(controller);
     }
 
     public static AnimatorController BuildAdultController()

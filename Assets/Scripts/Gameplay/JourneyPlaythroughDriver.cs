@@ -185,6 +185,10 @@ public sealed class JourneyPlaythroughDriver : MonoBehaviour
         yield return Keys(1.4f, Key.E);
         yield return Keys(0.2f);
         if (!Check(StorySceneDirector.Instance.CompletedObjectives == 1, "first stage phrase requires a full breath and release")) yield break;
+        yield return Keys(0.25f);
+        if (!Check(Player.GetComponent<CharacterAnimationDriver>().StageGesturesPlayed > 0 &&
+            Player.CharacterRenderer.sprite.name.StartsWith("char_teen_stage"), "releasing a phrase actually displays the supplied stage gesture sprite")) yield break;
+        Capture("03-stage-open-arms");
         phase = "stage elevated route";
         yield return Walk(3.2f);
         yield return Keys(0.45f, Key.D, Key.Space);
@@ -192,9 +196,17 @@ public sealed class JourneyPlaythroughDriver : MonoBehaviour
         if (!Check(StorySceneDirector.Instance.CompletedObjectives == 1, "entering a stage route cannot complete its retired trigger")) yield break;
         yield return Note(false, false);
         var performance = FindAnyObjectByType<StagePerformance>();
+        var stageFeedback = FindAnyObjectByType<StageFeedbackPresentation>();
+        if (!Check(stageFeedback != null && stageFeedback.PlayedNotes == 1 && !stageFeedback.LastNoteLong &&
+            stageFeedback.IsPlayingNote && stageFeedback.PlayedAudienceAnswers > 0,
+            "the short note and its audience answer reach the actual audio presentation")) yield break;
+        Capture("03-stage-short-answer");
         if (!Check(performance.ComposedBeats == 1 && StorySceneDirector.Instance.CompletedObjectives == 1,
             "one short note starts a phrase without completing it")) yield break;
         yield return Note(true, true);
+        if (!Check(stageFeedback.PlayedNotes == 2 && stageFeedback.LastNoteLong && stageFeedback.IsPlayingNote,
+            "a long note plays the distinct sustained response")) yield break;
+        Capture("03-stage-long-answer");
         if (!Check(StorySceneDirector.Instance.CompletedObjectives == 2 && JourneyChoices.StageStyle.Contains("观众"),
             "high route supports composing an actual short-long phrase")) yield break;
         yield return Walk(10f);
@@ -203,6 +215,10 @@ public sealed class JourneyPlaythroughDriver : MonoBehaviour
             "a different rhythm retries the phrase without losing the performance")) yield break;
         yield return Note(false, false);
         yield return Note(true, true);
+        if (!Check(performance.ReadyForCurtain && !StorySceneDirector.Instance.ObjectivesComplete,
+            "finishing one's phrase leaves the decision to take a bow with the player")) yield break;
+        yield return Keys(0.2f, Key.F);
+        yield return Keys(0.2f);
         if (!Check(StorySceneDirector.Instance.ObjectivesComplete && JourneyChoices.HasStageRhythm &&
             !JourneyChoices.FirstBeatLong && JourneyChoices.SecondBeatLong, "the reprise remembers the player's own phrase")) yield break;
 
@@ -219,11 +235,30 @@ public sealed class JourneyPlaythroughDriver : MonoBehaviour
         yield return Walk(5f);
         yield return Note(true, true);
         yield return Note(false, false);
-        yield return Walk(10f);
-        yield return Note(true, true);
+        yield return Keys(0.2f, Key.Q);
+        yield return Keys(0.2f);
         yield return Note(false, false);
+        yield return Walk(0f);
+        yield return Note(true, false);
+        performance = FindAnyObjectByType<StagePerformance>();
+        if (!Check(performance.Revisions == 1 && performance.ComposedBeats == 2 &&
+            performance.AddressedListener(0) == 0 && performance.AddressedListener(1) == 0 &&
+            !JourneyChoices.FirstBeatLong && JourneyChoices.SecondBeatLong,
+            "rewriting can address the same audience twice and change position between notes")) yield break;
+        stageFeedback = FindAnyObjectByType<StageFeedbackPresentation>();
+        var answersBefore = stageFeedback.PlayedAudienceAnswers;
+        var notesBefore = stageFeedback.PlayedNotes;
+        yield return Keys(0.2f, Key.F);
+        if (!Check(performance.AudienceLeading, "F hands the player's rhythm to the audience")) yield break;
+        yield return Keys(3f);
+        if (!Check(performance.ReadyForCurtain && !StorySceneDirector.Instance.ObjectivesComplete,
+            "listening to the audience is a complete alternate performance and still waits for a bow")) yield break;
+        if (!Check(stageFeedback.PlayedNotes == notesBefore + 2 && stageFeedback.PlayedAudienceAnswers == answersBefore + 2,
+            "the audience-led phrase actually produces both remembered notes and responses")) yield break;
+        yield return Keys(0.2f, Key.F);
+        yield return Keys(0.2f);
         if (!Check(StorySceneDirector.Instance.ObjectivesComplete && JourneyChoices.StageStyle.Contains("幕布") &&
-            JourneyChoices.FirstBeatLong && !JourneyChoices.SecondBeatLong, "the lower route and long-short phrase are equally complete choices")) yield break;
+            !JourneyChoices.FirstBeatLong && JourneyChoices.SecondBeatLong, "the final revised phrase is retained after the audience-led performance")) yield break;
 
         phase = "workshop crate and held crossing";
         yield return UseDoor("Back Curtain", "04_Interlude_Growing");
@@ -269,19 +304,33 @@ public sealed class JourneyPlaythroughDriver : MonoBehaviour
             string.IsNullOrEmpty(JourneyChoices.TestedResearchModel), "replay starts a fresh journey without inherited experiment or rhythm state")) yield break;
         yield return ExploreAlternative();
         if (finished) yield break;
+        phase = "firsts home branch";
+        SceneManager.LoadScene("02_Interlude_Firsts");
+        yield return Keys(1.2f);
+        yield return PlayFirsts(2);
+        if (finished) yield break;
         Finish("ALL PLAYTHROUGH CHECKS PASSED using real keyboard events and Unity physics.");
     }
 
-    private IEnumerator PlayFirsts()
+    private IEnumerator PlayFirsts(int stop = 0)
     {
         phase = "firsts playable interlude";
         var moment = FindAnyObjectByType<InterludeController>();
         if (!Check(moment != null && moment.HasIllustration, "the first interlude displays existing montage artwork")) yield break;
+        if (!CheckInterludeText()) yield break;
+        if (stop == 2)
+        {
+            var waitForHome = Time.time + 10f;
+            while (moment.Firsts.Position < 0.60f && Time.time < waitForHome) yield return null;
+        }
+        Capture(stop == 2 ? "02-bus-home" : "02-bus-ride");
         yield return Keys(0.15f, Key.F);
         yield return Keys(0.15f);
         var until = Time.time + 12f;
         while (moment.Firsts.Phase == FirstsPhase.Riding && Time.time < until) yield return null;
         if (!Check(moment.Firsts.Phase == FirstsPhase.Walking, "ringing the bell actually stops the bus")) yield break;
+        if (stop == 2 && !Check(moment.Firsts.ExitStop == 2, "choosing the home stop reaches the tired-parent branch")) yield break;
+        Capture(stop == 2 ? "02-home-stop" : "02-friend-stop");
         until = Time.time + 7f;
         while (moment.Firsts.Phase == FirstsPhase.Walking && Time.time < until)
         {
@@ -290,7 +339,9 @@ public sealed class JourneyPlaythroughDriver : MonoBehaviour
         }
         yield return Keys(0.2f);
         if (!Check(moment.Firsts.Phase == FirstsPhase.RaisingHand, "the player walks from the chosen stop to school")) yield break;
-        yield return Keys(1.4f, Key.E);
+        yield return Keys(0.6f, Key.E);
+        Capture("02-raising-hand");
+        yield return Keys(0.8f, Key.E);
         yield return Keys(0.3f);
         if (!Check(moment.Ready && JourneyChoices.BusExitStop >= 0, "raising and releasing the hand completes the first transition and remembers the stop")) yield break;
         Capture("02-restored-firsts");
@@ -305,11 +356,14 @@ public sealed class JourneyPlaythroughDriver : MonoBehaviour
         phase = "growing playable interlude";
         var moment = FindAnyObjectByType<InterludeController>();
         if (!Check(moment != null && moment.HasIllustration, "the second interlude displays the rejected-work artwork")) yield break;
+        if (!CheckInterludeText()) yield break;
+        Capture("04-paper-before");
         for (var i = 0; i < 3; i++)
         {
             if (i > 0) { yield return Keys(0.12f, Key.D); yield return Keys(0.12f); }
             yield return Keys(0.12f, Key.E);
             if (!Check(moment.Repair.Holding && moment.Repair.Selected == i, "pick up paper fragment " + i)) yield break;
+            if (i == 1) Capture("04-paper-in-hand");
             yield return MovePaper(moment, RepairJourney.Target(i), false);
             yield return Keys(0.15f);
             if (!Check(moment.Repair.RepairedCount == i + 1, "align and release paper fragment " + i)) yield break;
@@ -324,6 +378,20 @@ public sealed class JourneyPlaythroughDriver : MonoBehaviour
         yield return Keys(0.15f, Key.F);
         yield return Keys(1.4f);
         Check(SceneManager.GetActiveScene().name == "05_Research", "the restored growing interlude leads into research");
+    }
+
+    private bool CheckInterludeText()
+    {
+        foreach (var name in new[] { "Moment title", "Moment state", "Moment controls" })
+        {
+            var label = GameObject.Find(name)?.GetComponent<UnityEngine.UI.Text>();
+            var corners = new Vector3[4];
+            if (label != null) label.rectTransform.GetWorldCorners(corners);
+            if (!Check(label != null && !string.IsNullOrEmpty(label.text) && corners[0].x >= -1f &&
+                corners[2].x <= Screen.width + 1f && corners[0].y >= -1f && corners[2].y <= Screen.height + 1f,
+                name + " stays inside the visible game view")) return false;
+        }
+        return true;
     }
 
     private IEnumerator MovePaper(InterludeController moment, float destination, bool whole)
@@ -342,6 +410,7 @@ public sealed class JourneyPlaythroughDriver : MonoBehaviour
     {
         var research = FindAnyObjectByType<ResearchExpedition>();
         var guide = FindAnyObjectByType<ResearchGuide>();
+        Capture("05-lab-entry");
         if (!Check(guide != null && guide.GoalText.Contains("实验小人") && guide.SituationText.Contains("压力板"), "research shows its goal and the first obstacle immediately on entry")) yield break;
         yield return Keys(0.15f, Key.H);
         yield return Keys(0.15f);
@@ -364,6 +433,7 @@ public sealed class JourneyPlaythroughDriver : MonoBehaviour
         yield return Walk(10.5f);
         yield return Keys(0.2f, Key.F);
         if (!Check(research.GateLatched, "the inside latch permanently opens the return route")) yield break;
+        Capture("05-shutter-latched");
         yield return Keys(0.2f);
         yield return Walk(11.6f);
         yield return Keys(0.2f, Key.F);
@@ -424,7 +494,9 @@ public sealed class JourneyPlaythroughDriver : MonoBehaviour
         {
             var coverageObject = GameObject.Find("Portable lamp coverage");
             var coverage = coverageObject == null ? null : coverageObject.GetComponent<LineRenderer>();
-            if (!Check(coverage != null && coverage.gameObject.activeInHierarchy && FindAnyObjectByType<ResearchExpedition>().ShowingLampRange && coverage.positionCount == 4,
+            var tether = GameObject.Find("Hand Connection Light")?.GetComponent<LineRenderer>();
+            if (!Check(tether != null && !tether.enabled, "carrying a lamp does not draw a second hand-to-object rope")) yield break;
+            if (!Check(coverage != null && coverage.gameObject.activeInHierarchy && coverage.startWidth > 0f && coverage.startColor.a > 0f && FindAnyObjectByType<ResearchExpedition>().ShowingLampRange && coverage.positionCount == 4,
                 "carrying the lamp shows a floor-level reach marker instead of a screen-sized circle")) yield break;
             Capture("05-lamp-placement");
         }
@@ -445,6 +517,10 @@ public sealed class JourneyPlaythroughDriver : MonoBehaviour
         yield return Keys(0.3f, Key.E);
         yield return Keys(0.3f);
         if (!Check(research.ReportReturned && StorySceneDirector.Instance.ObjectivesComplete, "returning to the workbench completes the loop")) yield break;
+        yield return Keys(0.2f, Key.Q);
+        if (!Check(research.ReportReturned && StorySceneDirector.Instance.ObjectivesComplete && research.State == LearnerState.Arrived,
+            "submitting the report commits the experiment and disables recall")) yield break;
+        yield return Keys(0.2f);
         yield return Walk(1f);
         yield return Keys(0.2f, Key.F);
         yield return Keys(1.4f);
@@ -473,6 +549,7 @@ public sealed class JourneyPlaythroughDriver : MonoBehaviour
         yield return Keys(0.1f, Key.Space);
         yield return Keys(0.8f);
         if (!Check(Player.transform.position.y > 0f, "a second jump reaches the optional archive")) yield break;
+        Capture("05-archive-top");
         yield return Walk(-2.7f);
         yield return Keys(0.2f, Key.F);
         if (!Check(research.CluesFound == 1, "exploration discovers the tool and window clue")) yield break;
@@ -507,6 +584,25 @@ public sealed class JourneyPlaythroughDriver : MonoBehaviour
         yield return Keys(0.2f, Key.F);
         yield return Keys(3.5f);
         if (!Check(research.ShortcutOpen && JourneyChoices.LearnedIndependentDeparture && JourneyChoices.TestedResearchModel == "lamp" && JourneyChoices.CrossingTool == "plank", "closing the window lets a prepared environment support an independent crossing")) yield break;
+        yield return Walk(22.6f);
+        yield return Keys(0.2f, Key.E);
+        if (!Check(Hand.CurrentTarget == research.Report, "a successful report can be inspected before committing the result")) yield break;
+        yield return Walk(20f, true);
+        yield return Keys(0.2f);
+        yield return Keys(0.2f, Key.Q);
+        if (!Check(!research.ShortcutOpen && research.State == LearnerState.Recalling && research.Rehearsals == 1,
+            "the player can recall a successful experiment before submitting the report")) yield break;
+        yield return Keys(3.5f);
+        yield return Carry(research.Lamp, 11f);
+        if (finished) yield break;
+        yield return Walk(11.6f);
+        yield return Keys(0.2f, Key.F);
+        yield return Keys(5.2f);
+        if (!Check(research.ShortcutOpen && JourneyChoices.TestedResearchModel == "learned" && JourneyChoices.LearnedIndependentDeparture,
+            "a rehearsed learner crosses without the removed lamp because previous help changed what it knows")) yield break;
+        if (!Check(Mathf.Abs(research.Report.transform.position.x - 22f) < 0.01f,
+            "retrying replaces the moved draft with a new report at the completed experiment")) yield break;
+        Capture("05-learned-independence");
         yield return ReturnReport(research);
         if (finished) yield break;
         yield return Walk(35.6f);

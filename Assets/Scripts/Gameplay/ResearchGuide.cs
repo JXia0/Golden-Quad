@@ -75,7 +75,7 @@ namespace LetGo
                     goal.text = "靠近实验小人 · F 让它试走，E 牵手";
                     situation.text = "实验小人在等你。先让它试走，看看哪里走不过去。";
                     focus.text = "实验小人\nF 试走 · 按住 E 牵手";
-                    hint = "可以先观察它停在哪里，再搬工具；也可以牵着一起试。成功没有唯一解法。";
+                    hint = chapter.Rehearsals > 0 ? "它记住了上次被陪着走过的暗处。可以撤掉帮助，观察这次它能独自走多远。" : "可以先观察它停在哪里，再搬工具；也可以牵着一起试。空手按 Q 召回，它会记住被陪着走过的路。";
                     break;
                 case ResearchGuideStep.Bridge:
                     goal.text = "小人停在缺口前 · 找一件能垫脚的工具";
@@ -93,18 +93,18 @@ namespace LetGo
                     hint = "可以搬灯照路、牵手陪它走；带来了童年玩具，也可以上弦后留在暗区。灯怕这里的风。";
                     break;
                 case ResearchGuideStep.Moving:
-                    goal.text = "帮助它走到右侧出口 · 可以随时调整帮助方式";
+                    goal.text = "它在试走 · 可调整工具，空手 Q 召回再试";
                     situation.text = "它正在往出口走。留意前方，也可以随时调整工具和帮助方式。";
                     destination = new Vector3(23f, -2.1f);
                     focus.text = "小人的目的地 →";
                     hint = "牵着时要等小人真正走出暗区；放手后，环境中的灯或玩具可以继续提供帮助。";
                     break;
                 case ResearchGuideStep.BringReport:
-                    goal.text = "小人到了 · 按住 E 拿报告，F 返回工作台";
+                    goal.text = "已到出口 · E 拿报告 / F 返回 / Q 召回重试";
                     situation.text = "小人到了！拿起新出现的报告，把这次的办法带回工作台。";
                     destination = chapter.Report.transform.position;
                     focus.text = "报告 · 按住 E 拿起\n旁边 F 可走回程通道";
-                    hint = "出口附近按 F 会回到入口工作台；忘带报告也能沿已打开的路回来取。";
+                    hint = "可以带报告回工作台。也可以空手按 Q，召回小人重新实验；它会记住上一轮走过的路。";
                     break;
                 case ResearchGuideStep.ReturnReport:
                     goal.text = "把报告带回左侧工作台 · 靠近后松开 E";
@@ -121,6 +121,11 @@ namespace LetGo
                     focus.text = "工作台 · F 继续";
                     hint = "这次选择的工具和陪伴方式，会带到最后的告别。";
                     break;
+            }
+            if (chapter.State == LearnerState.Recalling)
+            {
+                goal.text = "它正在回到起点 · 可以重新摆放工具";
+                situation.text = "走过的经验会保留，实验结果可以重新改变。";
             }
             DrawTool();
             var show = expanded;

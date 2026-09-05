@@ -24,6 +24,12 @@ namespace LetGo
         private int composingBeat;
         private int repriseBeat;
         private float retryUntil;
+        private bool revising;
+        private float audienceTime;
+        private int audienceBeat;
+        public bool AudienceLeading { get; private set; }
+        public bool ReadyForCurtain { get; private set; }
+        public int Revisions { get; private set; }
         private string activePrompt;
         public int SpokenPhrases => director == null ? 0 : director.CompletedObjectives;
         public int ComposedBeats => composingBeat;
@@ -32,8 +38,9 @@ namespace LetGo
         public bool SecondBeatLong => rhythm[1];
         public int RepriseRetries { get; private set; }
         public float VoiceAim => aim;
-        public int ExpectedListener => director.CompletedObjectives == 1 ? composingBeat == 0 ? -1 : 1 - addressedListeners[0] :
-            director.CompletedObjectives == 2 ? addressedListeners[repriseBeat] : -1;
+        private int ActiveStep => revising ? 1 : director.CompletedObjectives;
+        public int ExpectedListener => ActiveStep == 2 && repriseBeat < 2 ? addressedListeners[repriseBeat] : -1;
+        public int AddressedListener(int beat) => addressedListeners[Mathf.Clamp(beat, 0, 1)];
         public System.Action<int, Transform> PhraseSpoken;
         public System.Action<int, bool> NoteReleased;
         public System.Action RepriseMistimed;
@@ -77,20 +84,53 @@ namespace LetGo
 
         private Transform NearestMark()
         {
-            var step = director.CompletedObjectives;
-            if (step == 0) return Vector2.Distance(hand.transform.position, first.position) <= 1.7f ? first : null;
-            if (step == 2) return Vector2.Distance(hand.transform.position, final.position) <= 1.7f ? final : null;
-            if (step != 1) return null;
-            // Explicitly distinguish the low and high marks; crossing one never commits a choice.
-            var a = Vector2.Distance(hand.transform.position, steady.position);
-            var b = Vector2.Distance(hand.transform.position, forward.position);
-            return Mathf.Min(a, b) > 1.5f ? null : a <= b ? steady : forward;
+            if (director.ObjectivesComplete) return null;
+            Transform nearest = null;
+            var distance = 1.7f;
+            foreach (var mark in new[] { first, steady, forward, final })
+            {
+                var d = Vector2.Distance(hand.transform.position, mark.position);
+                if (d >= distance) continue;
+                distance = d; nearest = mark;
+            }
+            return nearest;
         }
 
         private void Update()
         {
             if (hand == null) return;
             var mark = NearestMark();
+            if (director.CompletedObjectives == 2 && mark != null)
+            {
+                if (GameInput.ReconsiderPressed)
+                {
+                    revising = true; composingBeat = repriseBeat = 0;
+                    ReadyForCurtain = AudienceLeading = false;
+                    Revisions++;
+                }
+                if (!revising && GameInput.UsePressed && !hand.IsSelfAnchoring)
+                {
+                    if (ReadyForCurtain) { Speak(mark); return; }
+                    if (!AudienceLeading) { AudienceLeading = true; audienceTime = Time.time; audienceBeat = 0; }
+                }
+            }
+            if (AudienceLeading)
+            {
+                if (GameInput.InteractPressed) { AudienceLeading = false; repriseBeat = 0; }
+                else
+                {
+                    var elapsedReply = Time.time - audienceTime;
+                    var secondAt = (rhythm[0] ? 0.85f : 0.45f) + 0.6f;
+                    if (audienceBeat == 0 || audienceBeat == 1 && elapsedReply >= secondAt)
+                    {
+                        var index = audienceBeat++;
+                        AudienceAnswered?.Invoke(addressedListeners[index], ListenerPosition(mark != null ? mark : final, addressedListeners[index]));
+                        NoteReleased?.Invoke(index, rhythm[index]);
+                    }
+                    if (elapsedReply >= secondAt + (rhythm[1] ? 0.85f : 0.45f) + 0.6f)
+                    { AudienceLeading = false; ReadyForCurtain = true; }
+                }
+            }
             var addressing = mark != null && director.CompletedObjectives > 0 && director.CompletedObjectives < 3;
             aimLine.enabled = addressing && hand.IsSelfAnchoring;
             for (var i = 0; i < listeners.Length; i++)
@@ -111,11 +151,6 @@ namespace LetGo
                 armedAt = null;
                 aim = 0f;
                 ClearPrompt();
-                if (director.CompletedObjectives == 1 && composingBeat < 2)
-                {
-                    composingBeat = 0;
-                    phrases[1].positionCount = 0;
-                }
             }
             else
             {
@@ -143,14 +178,16 @@ namespace LetGo
 
         private string PromptForStep()
         {
-            if (director.CompletedObjectives == 0)
+            if (AudienceLeading) return "他们正在接过你的节奏 · 可以等一会儿，也可以按 E 加入";
+            if (ReadyForCurtain) return "F · 谢幕　Q · 改写节奏　也可以换一个位置继续唱";
+            if (ActiveStep == 0)
                 return hand.SelfChargeNormalized >= 0.98f ? ReleasePrompt : BreathPrompt;
-            if (director.CompletedObjectives == 1)
+            if (ActiveStep == 1)
                 return composingBeat == 0 ? "按住 E · A / D 朝向一侧听众 · 松开发声" :
-                    "另一侧也在听 · 按住 E，用 A / D 朝向另一侧，再松开";
+                    "再发一拍 · 可以回应同一侧，也可以用 A / D 转向另一侧";
             var score = ScoreNote(0) + "  " + ScoreNote(1);
             return (Time.time < retryUntil ? "再来一次 · " : "你的节奏 · ") + score +
-                (repriseBeat == 0 ? "  |  第一拍" : "  |  第二拍") + "  A / D 朝向 · E 短 ● / 长 ━";
+                (repriseBeat == 0 ? "  |  第一拍" : "  |  第二拍") + "  E 演唱 / F 请观众接唱 / Q 改写";
         }
 
         private void ReleaseNote(Transform mark)
@@ -158,7 +195,8 @@ namespace LetGo
             consumedRelease = hand.LastSelfReleaseTime;
             armedAt = null;
             var duration = hand.LastSelfReleaseDuration;
-            var step = director.CompletedObjectives;
+            var step = ActiveStep;
+            if (duration >= 0.12f) director.Player.GetComponent<CharacterAnimationDriver>()?.PlayStageGesture();
             if (step == 0)
             {
                 if (duration >= 1.15f) Speak(mark);
@@ -166,6 +204,7 @@ namespace LetGo
             }
             // Ignore accidental taps. Long and short are broad gestures, not a metronome test.
             if (duration < 0.12f) return;
+            if (repriseBeat >= 2) repriseBeat = 0;
             var listener = aim < 0f ? 0 : 1;
             var received = Mathf.Abs(aim - (listener == 0 ? -0.65f : 0.65f)) <= 0.18f;
             aim = 0f;
@@ -181,7 +220,12 @@ namespace LetGo
                 DrawNotes(phrases[1], mark.position, composingBeat);
                 if (composingBeat < 2) return;
                 JourneyChoices.RememberRhythm(rhythm[0], rhythm[1]);
-                Speak(mark);
+                if (revising)
+                {
+                    revising = false; repriseBeat = 0;
+                    JourneyChoices.Record("stage", mark == forward ? "我选择向观众再靠近一步。" : "我选择了离幕布更近的位置。", false);
+                }
+                else Speak(mark);
             }
             else if (step == 2)
             {
@@ -198,7 +242,7 @@ namespace LetGo
                 NoteReleased?.Invoke(repriseBeat, rhythm[repriseBeat]);
                 repriseBeat++;
                 DrawNotes(phrases[2], mark.position, repriseBeat);
-                if (repriseBeat == 2) Speak(mark);
+                if (repriseBeat == 2) ReadyForCurtain = true;
             }
         }
 
@@ -236,7 +280,7 @@ namespace LetGo
             var step = director.CompletedObjectives;
             armedAt = null;
             if (step == 1)
-                JourneyChoices.Record("stage", mark == steady ? "我选择了离幕布更近的位置。" : "我选择向观众再靠近一步。", false);
+                JourneyChoices.Record("stage", mark == forward ? "我选择向观众再靠近一步。" : "我选择了离幕布更近的位置。", false);
             var phrase = phrases[step];
             if (step == 0)
             {

@@ -55,6 +55,7 @@ public static class JourneyPlaythroughChecks
 
     public static void RunBatch()
     {
+        LetGoSpriteAssetIntegrator.BuildTeenController();
         EditorSceneManager.OpenScene("Assets/Scenes/00_Prologue.unity");
         JourneyArtImporter.Refresh();
         JourneyRegressionChecks.Run();
@@ -84,6 +85,7 @@ public static class JourneyPlaythroughChecks
 
     public static void BuildWindowsBatch()
     {
+        LetGoSpriteAssetIntegrator.BuildTeenController();
         JourneyArtImporter.Refresh();
         const string output = "Builds/Windows/LetGo.exe";
         Directory.CreateDirectory(Path.GetDirectoryName(output));

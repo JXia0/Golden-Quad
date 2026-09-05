@@ -33,6 +33,11 @@ namespace LetGo
         public int CompletedObjectives => completedObjectives;
         public int RequiredObjectives => requiredObjectives;
         public void SetRequiredObjectives(int count) { requiredObjectives = count; UpdateObjectiveText(); }
+        public void SetCompletedObjectives(int count)
+        {
+            completedObjectives = Mathf.Clamp(count, 0, requiredObjectives);
+            UpdateObjectiveText();
+        }
 
         private void Awake()
         {

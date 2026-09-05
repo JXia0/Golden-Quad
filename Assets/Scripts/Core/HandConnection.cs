@@ -162,6 +162,9 @@ namespace LetGo
         private void UpdateTether()
         {
             if (tether == null || currentTarget == null) return;
+            // A carried object is already in the hand. Reserve the connection thread for people.
+            tether.enabled = currentTarget.Mode != HoldTargetMode.Carryable;
+            if (!tether.enabled) return;
             tether.positionCount = 12;
             var start = transform.position + new Vector3(0.25f, 0.35f, 0f);
             var end = currentTarget.transform.position + new Vector3(0f, 0.35f, 0f);

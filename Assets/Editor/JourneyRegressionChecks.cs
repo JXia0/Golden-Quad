@@ -186,6 +186,24 @@ public static class JourneyRegressionChecks
         for (var i = 0; i < 200; i++) walker.Tick(0.05f, "crate", false, 24f, false, true);
         Require(walker.State == LearnerState.Arrived && walker.Independent && walker.Support == "toy", "a remembered toy substitutes for light");
         results.Add("PASS: the childhood toy is a functional substitute for the lamp.");
+        walker.Recall();
+        for (var i = 0; i < 80; i++) walker.Tick(0.05f, "crate", false, 12f, false, false);
+        Require(walker.State == LearnerState.Waiting && walker.LearnedUntil >= 21.49f, "recall preserves the route learned with support");
+        walker.Start();
+        for (var i = 0; i < 120; i++) walker.Tick(0.05f, "crate", false, 12f, false, false);
+        Require(walker.State == LearnerState.Arrived && walker.Support == "learned" && walker.Independent,
+            "rehearsal enables independent traversal after removing support");
+        results.Add("PASS: help teaches the route; recalling and removing help changes the next experiment.");
+        walker = new ExpeditionLearner(); walker.Start();
+        while (walker.X < 19.2f) walker.Tick(0.017f, "plank", false, 24f, true, false);
+        walker.Recall();
+        var practiced = walker.LearnedUntil;
+        for (var i = 0; i < 300; i++) walker.Tick(0.017f, "plank", false, 12f, false, false);
+        walker.Start();
+        for (var i = 0; i < 500; i++) walker.Tick(0.017f, "plank", false, 12f, false, false);
+        Require(walker.State == LearnerState.NeedsComfort && Mathf.Abs(walker.X - practiced) < 0.02f && !walker.Independent,
+            "partial practice teaches only the supported distance and cannot manufacture full independence");
+        results.Add("PASS: partial practice leaves a stable, recoverable boundary in the remaining darkness.");
     }
 
     private static void ValidateInterludes(List<string> results)

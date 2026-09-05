@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace LetGo
 {
-    public enum LearnerState { Waiting, Walking, NeedsBridge, NeedsComfort, Returning, Arrived }
+    public enum LearnerState { Waiting, Walking, NeedsBridge, NeedsComfort, Returning, Arrived, Recalling }
 
     public sealed class ExpeditionLearner
     {
@@ -16,18 +16,42 @@ namespace LetGo
         public bool Independent { get; private set; }
         public int Retreats { get; private set; }
         private bool passedDark;
+        private float practicedUntil = 17.8f;
+        public float LearnedUntil { get; private set; } = 17.8f;
+        public int Rehearsals { get; private set; }
+        public void Recall()
+        {
+            if (State == LearnerState.Recalling || X <= 12.01f) return;
+            LearnedUntil = Mathf.Max(LearnedUntil, practicedUntil);
+            Rehearsals++;
+            passedDark = Independent = false;
+            Support = Crossing = "";
+            Running = true;
+            State = LearnerState.Recalling;
+        }
         public void Start() => Running = true;
 
         public void Tick(float dt, string bridge, bool held, float playerX, bool light, bool toy)
         {
+            if (State == LearnerState.Recalling)
+            {
+                X = Mathf.MoveTowards(X, 12f, dt * 3.5f);
+                if (X <= 12.01f) { X = 12f; State = LearnerState.Waiting; Running = false; }
+                return;
+            }
             if (held) Running = true;
             if (!Running || State == LearnerState.Arrived) return;
-            var comfortable = held || light || toy || passedDark;
+            var comfortable = held || light || toy || passedDark || LearnedUntil >= 21.5f || X < LearnedUntil - 0.01f;
             if (X >= 18f && X < 21.5f && !comfortable)
             {
-                if (State != LearnerState.Returning) Retreats++;
-                State = LearnerState.Returning;
-                X = Mathf.MoveTowards(X, 17.8f, dt * 1.7f);
+                var safeEdge = Mathf.Max(17.8f, LearnedUntil);
+                if (X > safeEdge + 0.01f)
+                {
+                    if (State != LearnerState.Returning) Retreats++;
+                    State = LearnerState.Returning;
+                    X = Mathf.MoveTowards(X, safeEdge, dt * 1.7f);
+                }
+                else { X = safeEdge; State = LearnerState.NeedsComfort; }
                 return;
             }
             var destination = held ? Mathf.Clamp(playerX - 0.8f, X, GoalX) : GoalX;
@@ -46,13 +70,14 @@ namespace LetGo
             // back on alternating frames while support is still missing.
             if (next >= 17.8f && X < 21.5f && !comfortable)
             {
-                X = 17.8f;
+                X = Mathf.Max(17.8f, LearnedUntil);
                 State = LearnerState.NeedsComfort;
                 return;
             }
             if (next >= 18f && X < 21.5f)
             {
-                Support = held ? "hand" : toy ? "toy" : "lamp";
+                Support = held ? "hand" : toy ? "toy" : light ? "lamp" : "learned";
+                if (held || light || toy) practicedUntil = Mathf.Max(practicedUntil, Mathf.Min(next, 21.5f));
                 if (next >= 21.5f) { passedDark = true; Independent = !held; }
             }
             X = next;

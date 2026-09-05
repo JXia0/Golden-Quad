@@ -23,6 +23,7 @@ namespace LetGo
         public static bool InteractPressed => Keyboard.current != null && Keyboard.current.eKey.wasPressedThisFrame;
         public static bool UsePressed => Keyboard.current != null && Keyboard.current.fKey.wasPressedThisFrame;
         public static bool HelpPressed => Keyboard.current != null && Keyboard.current.hKey.wasPressedThisFrame;
+        public static bool ReconsiderPressed => Keyboard.current != null && Keyboard.current.qKey.wasPressedThisFrame;
         public static int SelectionPressed => Keyboard.current == null ? 0 :
             (Keyboard.current.dKey.wasPressedThisFrame || Keyboard.current.rightArrowKey.wasPressedThisFrame ? 1 : 0) -
             (Keyboard.current.aKey.wasPressedThisFrame || Keyboard.current.leftArrowKey.wasPressedThisFrame ? 1 : 0);
