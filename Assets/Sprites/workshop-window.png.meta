@@ -1,0 +1,2044 @@
+fileFormatVersion: 2
+guid: 6a0bf447d6b51594c8336439b35aa602
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 7740023369056130016
+    second: workshop-window_0
+  - first:
+      213: 304055250038872295
+    second: workshop-window_1
+  - first:
+      213: 1664672515792213270
+    second: workshop-window_2
+  - first:
+      213: 3953286448824459432
+    second: workshop-window_3
+  - first:
+      213: -3359813320279999840
+    second: workshop-window_4
+  - first:
+      213: 6809573588951892650
+    second: workshop-window_5
+  - first:
+      213: 861452170742464254
+    second: workshop-window_6
+  - first:
+      213: 2040319332722569467
+    second: workshop-window_7
+  - first:
+      213: -7035780242255657282
+    second: workshop-window_8
+  - first:
+      213: -7713971622783923667
+    second: workshop-window_9
+  - first:
+      213: 8642176016967787605
+    second: workshop-window_10
+  - first:
+      213: 2036567763360549684
+    second: workshop-window_11
+  - first:
+      213: -1998345185419854985
+    second: workshop-window_12
+  - first:
+      213: -379842226749526491
+    second: workshop-window_13
+  - first:
+      213: -1872485050223794752
+    second: workshop-window_14
+  - first:
+      213: 4993470278166438840
+    second: workshop-window_15
+  - first:
+      213: 5714594469021459283
+    second: workshop-window_16
+  - first:
+      213: -2630495494324979407
+    second: workshop-window_17
+  - first:
+      213: 2969702497769840763
+    second: workshop-window_18
+  - first:
+      213: -3077491760995826749
+    second: workshop-window_19
+  - first:
+      213: -4395617065655038779
+    second: workshop-window_20
+  - first:
+      213: -6627861120868846971
+    second: workshop-window_21
+  - first:
+      213: -5734178440791558809
+    second: workshop-window_22
+  - first:
+      213: 7847548086395303814
+    second: workshop-window_23
+  - first:
+      213: 2551613193763598215
+    second: workshop-window_24
+  - first:
+      213: -5228076194095697487
+    second: workshop-window_25
+  - first:
+      213: 2587539852054135720
+    second: workshop-window_26
+  - first:
+      213: -5114541314134984813
+    second: workshop-window_27
+  - first:
+      213: 4881307604799119500
+    second: workshop-window_28
+  - first:
+      213: 1765608361322729135
+    second: workshop-window_29
+  - first:
+      213: -3424960288642941852
+    second: workshop-window_30
+  - first:
+      213: -5848385311410526281
+    second: workshop-window_31
+  - first:
+      213: 1294414467965782435
+    second: workshop-window_32
+  - first:
+      213: -1327391488129469504
+    second: workshop-window_33
+  - first:
+      213: 8136915636310300911
+    second: workshop-window_34
+  - first:
+      213: 949079687978809745
+    second: workshop-window_35
+  - first:
+      213: -5294059817123070727
+    second: workshop-window_36
+  - first:
+      213: -7927693742249064583
+    second: workshop-window_37
+  - first:
+      213: -5431982167276633759
+    second: workshop-window_38
+  - first:
+      213: -808591809810533349
+    second: workshop-window_39
+  - first:
+      213: -4582626511219267131
+    second: workshop-window_40
+  - first:
+      213: -3696116135868293858
+    second: workshop-window_41
+  - first:
+      213: -8938870025017212866
+    second: workshop-window_42
+  - first:
+      213: -8259354997290464600
+    second: workshop-window_43
+  - first:
+      213: -8128594316736742697
+    second: workshop-window_44
+  - first:
+      213: 4744111310762767191
+    second: workshop-window_45
+  - first:
+      213: 6632958075936277608
+    second: workshop-window_46
+  - first:
+      213: -3649272820762252027
+    second: workshop-window_47
+  - first:
+      213: 4725442735030960814
+    second: workshop-window_48
+  - first:
+      213: -5230010201560485233
+    second: workshop-window_49
+  - first:
+      213: 6008687012485407285
+    second: workshop-window_50
+  - first:
+      213: -6226905577790340417
+    second: workshop-window_51
+  - first:
+      213: 787052659889060862
+    second: workshop-window_52
+  - first:
+      213: 6499542191548788262
+    second: workshop-window_53
+  - first:
+      213: -8584893904826527156
+    second: workshop-window_54
+  - first:
+      213: 6202837628402805705
+    second: workshop-window_55
+  - first:
+      213: 5041878376621747113
+    second: workshop-window_56
+  - first:
+      213: 5823435917700446791
+    second: workshop-window_57
+  - first:
+      213: 8891959735719058313
+    second: workshop-window_58
+  - first:
+      213: -3922539311794645164
+    second: workshop-window_59
+  - first:
+      213: 3793008312211886740
+    second: workshop-window_60
+  - first:
+      213: -2794882267207534605
+    second: workshop-window_61
+  - first:
+      213: 6175114919813687776
+    second: workshop-window_62
+  - first:
+      213: 3962062482284140842
+    second: workshop-window_63
+  - first:
+      213: -4725786352356638953
+    second: workshop-window_64
+  - first:
+      213: -103976286526487688
+    second: workshop-window_65
+  - first:
+      213: 7077370947879855651
+    second: workshop-window_66
+  - first:
+      213: -4617499708624854755
+    second: workshop-window_67
+  - first:
+      213: 5486131476276641342
+    second: workshop-window_68
+  - first:
+      213: 2964441375125574881
+    second: workshop-window_69
+  - first:
+      213: -602233885174520384
+    second: workshop-window_70
+  - first:
+      213: -3570502752088666110
+    second: workshop-window_71
+  - first:
+      213: 5485042456892735362
+    second: workshop-window_72
+  - first:
+      213: 209523117082640184
+    second: workshop-window_73
+  - first:
+      213: 6414911654124357400
+    second: workshop-window_74
+  - first:
+      213: 5174759916480186351
+    second: workshop-window_75
+  - first:
+      213: -8280283099552090203
+    second: workshop-window_76
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 1
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationMethod: 0
+  spriteTessellationDetail: -1
+  spriteGeometrySubdivision: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 4096
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: workshop-window_0
+      rect:
+        serializedVersion: 2
+        x: 227
+        y: 1390
+        width: 16
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0e310d9ee361a6b60800000000000000
+      internalID: 7740023369056130016
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: workshop-window_1
+      rect:
+        serializedVersion: 2
+        x: 520
+        y: 1393
+        width: 42
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7e8d8a293a8383400800000000000000
+      internalID: 304055250038872295
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: workshop-window_2
+      rect:
+        serializedVersion: 2
+        x: 802
+        y: 1388
+        width: 27
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 615962355da1a1710800000000000000
+      internalID: 1664672515792213270
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: workshop-window_3
+      rect:
+        serializedVersion: 2
+        x: 868
+        y: 1390
+        width: 29
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8a02c8d6415ecd630800000000000000
+      internalID: 3953286448824459432
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: workshop-window_4
+      rect:
+        serializedVersion: 2
+        x: 980
+        y: 1365
+        width: 97
+        height: 37
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0aab515169b8f51d0800000000000000
+      internalID: -3359813320279999840
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: workshop-window_5
+      rect:
+        serializedVersion: 2
+        x: 248
+        y: 1357
+        width: 12
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: aa20c59b917708e50800000000000000
+      internalID: 6809573588951892650
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: workshop-window_6
+      rect:
+        serializedVersion: 2
+        x: 280
+        y: 1347
+        width: 56
+        height: 30
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: efef7146f2e74fb00800000000000000
+      internalID: 861452170742464254
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: workshop-window_7
+      rect:
+        serializedVersion: 2
+        x: 357
+        y: 1365
+        width: 26
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bf07a4f7f9ba05c10800000000000000
+      internalID: 2040319332722569467
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: workshop-window_8
+      rect:
+        serializedVersion: 2
+        x: 465
+        y: 1369
+        width: 61
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: eb6c3a69523eb5e90800000000000000
+      internalID: -7035780242255657282
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: workshop-window_9
+      rect:
+        serializedVersion: 2
+        x: 553
+        y: 1353
+        width: 25
+        height: 25
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d2a4580fda772f490800000000000000
+      internalID: -7713971622783923667
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: workshop-window_10
+      rect:
+        serializedVersion: 2
+        x: 593
+        y: 1354
+        width: 47
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 554e3c99c4d2fe770800000000000000
+      internalID: 8642176016967787605
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: workshop-window_11
+      rect:
+        serializedVersion: 2
+        x: 785
+        y: 1363
+        width: 24
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 43b0e103797534c10800000000000000
+      internalID: 2036567763360549684
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: workshop-window_12
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 8
+        width: 1095
+        height: 1358
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 77bff6c34a37444e0800000000000000
+      internalID: -1998345185419854985
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: workshop-window_13
+      rect:
+        serializedVersion: 2
+        x: 224
+        y: 1336
+        width: 16
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 52ea6ebd1878abaf0800000000000000
+      internalID: -379842226749526491
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: workshop-window_14
+      rect:
+        serializedVersion: 2
+        x: 505
+        y: 1332
+        width: 53
+        height: 29
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0c56e2684c89306e0800000000000000
+      internalID: -1872485050223794752
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: workshop-window_15
+      rect:
+        serializedVersion: 2
+        x: 611
+        y: 1341
+        width: 7
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8b3e49ee2ce5c4540800000000000000
+      internalID: 4993470278166438840
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: workshop-window_16
+      rect:
+        serializedVersion: 2
+        x: 641
+        y: 1336
+        width: 13
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 353af6174615e4f40800000000000000
+      internalID: 5714594469021459283
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: workshop-window_17
+      rect:
+        serializedVersion: 2
+        x: 697
+        y: 1343
+        width: 10
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1397e7de84a9e7bd0800000000000000
+      internalID: -2630495494324979407
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: workshop-window_18
+      rect:
+        serializedVersion: 2
+        x: 721
+        y: 1336
+        width: 15
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b70692400b0863920800000000000000
+      internalID: 2969702497769840763
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: workshop-window_19
+      rect:
+        serializedVersion: 2
+        x: 1050
+        y: 1347
+        width: 9
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3c307a27c8d8a45d0800000000000000
+      internalID: -3077491760995826749
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: workshop-window_20
+      rect:
+        serializedVersion: 2
+        x: 383
+        y: 1320
+        width: 19
+        height: 25
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5cc8cf85191aff2c0800000000000000
+      internalID: -4395617065655038779
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: workshop-window_21
+      rect:
+        serializedVersion: 2
+        x: 493
+        y: 1333
+        width: 7
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5827dfd2d6b1504a0800000000000000
+      internalID: -6627861120868846971
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: workshop-window_22
+      rect:
+        serializedVersion: 2
+        x: 679
+        y: 1304
+        width: 35
+        height: 42
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7657aedc61b1c60b0800000000000000
+      internalID: -5734178440791558809
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: workshop-window_23
+      rect:
+        serializedVersion: 2
+        x: 759
+        y: 1319
+        width: 23
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 687736f086718ec60800000000000000
+      internalID: 7847548086395303814
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: workshop-window_24
+      rect:
+        serializedVersion: 2
+        x: 511
+        y: 1318
+        width: 11
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 78faa724ea6296320800000000000000
+      internalID: 2551613193763598215
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: workshop-window_25
+      rect:
+        serializedVersion: 2
+        x: 549
+        y: 1322
+        width: 11
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1b1ff38a6642277b0800000000000000
+      internalID: -5228076194095697487
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: workshop-window_26
+      rect:
+        serializedVersion: 2
+        x: 807
+        y: 1320
+        width: 10
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8a38adb39c9c8e320800000000000000
+      internalID: 2587539852054135720
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: workshop-window_27
+      rect:
+        serializedVersion: 2
+        x: 214
+        y: 1302
+        width: 9
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 397bce5d5cf7509b0800000000000000
+      internalID: -5114541314134984813
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: workshop-window_28
+      rect:
+        serializedVersion: 2
+        x: 230
+        y: 1304
+        width: 10
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c80e67f7763edb340800000000000000
+      internalID: 4881307604799119500
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: workshop-window_29
+      rect:
+        serializedVersion: 2
+        x: 768
+        y: 1303
+        width: 8
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: faec9153373b08810800000000000000
+      internalID: 1765608361322729135
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: workshop-window_30
+      rect:
+        serializedVersion: 2
+        x: 831
+        y: 1292
+        width: 18
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 46c3e9183c81870d0800000000000000
+      internalID: -3424960288642941852
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: workshop-window_31
+      rect:
+        serializedVersion: 2
+        x: 251
+        y: 1293
+        width: 7
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7b763cb9b8c56dea0800000000000000
+      internalID: -5848385311410526281
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: workshop-window_32
+      rect:
+        serializedVersion: 2
+        x: 823
+        y: 1279
+        width: 18
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3a90a3bb91fa6f110800000000000000
+      internalID: 1294414467965782435
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: workshop-window_33
+      rect:
+        serializedVersion: 2
+        x: 511
+        y: 1274
+        width: 11
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0c37a207978249de0800000000000000
+      internalID: -1327391488129469504
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: workshop-window_34
+      rect:
+        serializedVersion: 2
+        x: 521
+        y: 1276
+        width: 6
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fe8d895f8a12ce070800000000000000
+      internalID: 8136915636310300911
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: workshop-window_35
+      rect:
+        serializedVersion: 2
+        x: 541
+        y: 1278
+        width: 13
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 199f381a2fecb2d00800000000000000
+      internalID: 949079687978809745
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: workshop-window_36
+      rect:
+        serializedVersion: 2
+        x: 839
+        y: 1280
+        width: 10
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9fcb5bc35a8b786b0800000000000000
+      internalID: -5294059817123070727
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: workshop-window_37
+      rect:
+        serializedVersion: 2
+        x: 887
+        y: 1272
+        width: 10
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 977482d4b8c2bf190800000000000000
+      internalID: -7927693742249064583
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: workshop-window_38
+      rect:
+        serializedVersion: 2
+        x: 270
+        y: 120
+        width: 9
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 161483daff8bd94b0800000000000000
+      internalID: -5431982167276633759
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: workshop-window_39
+      rect:
+        serializedVersion: 2
+        x: 613
+        y: 106
+        width: 13
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b14f3f7780e47c4f0800000000000000
+      internalID: -808591809810533349
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: workshop-window_40
+      rect:
+        serializedVersion: 2
+        x: 665
+        y: 118
+        width: 25
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5c9ec74c77d3760c0800000000000000
+      internalID: -4582626511219267131
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: workshop-window_41
+      rect:
+        serializedVersion: 2
+        x: 711
+        y: 102
+        width: 12
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e1d1bf015f1c4bcc0800000000000000
+      internalID: -3696116135868293858
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: workshop-window_42
+      rect:
+        serializedVersion: 2
+        x: 805
+        y: 110
+        width: 16
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e3046798211c2f380800000000000000
+      internalID: -8938870025017212866
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: workshop-window_43
+      rect:
+        serializedVersion: 2
+        x: 291
+        y: 104
+        width: 19
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8aa87a0d360e06d80800000000000000
+      internalID: -8259354997290464600
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: workshop-window_44
+      rect:
+        serializedVersion: 2
+        x: 477
+        y: 85
+        width: 19
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7dab5ab398e613f80800000000000000
+      internalID: -8128594316736742697
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: workshop-window_45
+      rect:
+        serializedVersion: 2
+        x: 313
+        y: 31
+        width: 33
+        height: 46
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7537dec0a1876d140800000000000000
+      internalID: 4744111310762767191
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: workshop-window_46
+      rect:
+        serializedVersion: 2
+        x: 382
+        y: 69
+        width: 18
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8648d362a300d0c50800000000000000
+      internalID: 6632958075936277608
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: workshop-window_47
+      rect:
+        serializedVersion: 2
+        x: 422
+        y: 80
+        width: 10
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 50d6af544bd2b5dc0800000000000000
+      internalID: -3649272820762252027
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: workshop-window_48
+      rect:
+        serializedVersion: 2
+        x: 455
+        y: 66
+        width: 11
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ea288fb8125249140800000000000000
+      internalID: 4725442735030960814
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: workshop-window_49
+      rect:
+        serializedVersion: 2
+        x: 697
+        y: 41
+        width: 45
+        height: 44
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f8271547e654b67b0800000000000000
+      internalID: -5230010201560485233
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: workshop-window_50
+      rect:
+        serializedVersion: 2
+        x: 729
+        y: 77
+        width: 17
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 53222b1a005236350800000000000000
+      internalID: 6008687012485407285
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: workshop-window_51
+      rect:
+        serializedVersion: 2
+        x: 737
+        y: 61
+        width: 9
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fb288e95e569599a0800000000000000
+      internalID: -6226905577790340417
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: workshop-window_52
+      rect:
+        serializedVersion: 2
+        x: 759
+        y: 47
+        width: 13
+        height: 30
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: efbb634693c2cea00800000000000000
+      internalID: 787052659889060862
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: workshop-window_53
+      rect:
+        serializedVersion: 2
+        x: 769
+        y: 73
+        width: 9
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 62eede9ef23033a50800000000000000
+      internalID: 6499542191548788262
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: workshop-window_54
+      rect:
+        serializedVersion: 2
+        x: 190
+        y: 47
+        width: 15
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c4216607a745cd880800000000000000
+      internalID: -8584893904826527156
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: workshop-window_55
+      rect:
+        serializedVersion: 2
+        x: 227
+        y: 45
+        width: 19
+        height: 22
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9cb206085f7e41650800000000000000
+      internalID: 6202837628402805705
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: workshop-window_56
+      rect:
+        serializedVersion: 2
+        x: 386
+        y: 65
+        width: 6
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9ab2347aba958f540800000000000000
+      internalID: 5041878376621747113
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: workshop-window_57
+      rect:
+        serializedVersion: 2
+        x: 583
+        y: 45
+        width: 29
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 74a39cefc1001d050800000000000000
+      internalID: 5823435917700446791
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: workshop-window_58
+      rect:
+        serializedVersion: 2
+        x: 611
+        y: 57
+        width: 7
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 98b5c9c9446966b70800000000000000
+      internalID: 8891959735719058313
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: workshop-window_59
+      rect:
+        serializedVersion: 2
+        x: 655
+        y: 53
+        width: 17
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 45799f647475099c0800000000000000
+      internalID: -3922539311794645164
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: workshop-window_60
+      rect:
+        serializedVersion: 2
+        x: 837
+        y: 37
+        width: 34
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4925e77b6f873a430800000000000000
+      internalID: 3793008312211886740
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: workshop-window_61
+      rect:
+        serializedVersion: 2
+        x: 162
+        y: 31
+        width: 29
+        height: 30
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3f77e0ac2659639d0800000000000000
+      internalID: -2794882267207534605
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: workshop-window_62
+      rect:
+        serializedVersion: 2
+        x: 224
+        y: 47
+        width: 11
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0e9a5ba6d4a62b550800000000000000
+      internalID: 6175114919813687776
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: workshop-window_63
+      rect:
+        serializedVersion: 2
+        x: 245
+        y: 42
+        width: 12
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a29d272f5d21cf630800000000000000
+      internalID: 3962062482284140842
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: workshop-window_64
+      rect:
+        serializedVersion: 2
+        x: 254
+        y: 37
+        width: 28
+        height: 22
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 71fb46fc952aa6eb0800000000000000
+      internalID: -4725786352356638953
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: workshop-window_65
+      rect:
+        serializedVersion: 2
+        x: 343
+        y: 53
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 87346884e1a9e8ef0800000000000000
+      internalID: -103976286526487688
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: workshop-window_66
+      rect:
+        serializedVersion: 2
+        x: 535
+        y: 29
+        width: 33
+        height: 33
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3266c0c216fd73260800000000000000
+      internalID: 7077370947879855651
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: workshop-window_67
+      rect:
+        serializedVersion: 2
+        x: 659
+        y: 43
+        width: 25
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d1122f4ca785befb0800000000000000
+      internalID: -4617499708624854755
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: workshop-window_68
+      rect:
+        serializedVersion: 2
+        x: 793
+        y: 57
+        width: 8
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e3efe8ac287a22c40800000000000000
+      internalID: 5486131476276641342
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: workshop-window_69
+      rect:
+        serializedVersion: 2
+        x: 799
+        y: 41
+        width: 38
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1e494d179bfc32920800000000000000
+      internalID: 2964441375125574881
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: workshop-window_70
+      rect:
+        serializedVersion: 2
+        x: 116
+        y: 23
+        width: 15
+        height: 21
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0c52872e87f64a7f0800000000000000
+      internalID: -602233885174520384
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: workshop-window_71
+      rect:
+        serializedVersion: 2
+        x: 563
+        y: 31
+        width: 7
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 20053301aa6037ec0800000000000000
+      internalID: -3570502752088666110
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: workshop-window_72
+      rect:
+        serializedVersion: 2
+        x: 567
+        y: 29
+        width: 16
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 28ff605bd09ce1c40800000000000000
+      internalID: 5485042456892735362
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: workshop-window_73
+      rect:
+        serializedVersion: 2
+        x: 729
+        y: 33
+        width: 7
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 83f71f53a2068e200800000000000000
+      internalID: 209523117082640184
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: workshop-window_74
+      rect:
+        serializedVersion: 2
+        x: 806
+        y: 29
+        width: 21
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 81788996928560950800000000000000
+      internalID: 6414911654124357400
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: workshop-window_75
+      rect:
+        serializedVersion: 2
+        x: 883
+        y: 30
+        width: 16
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fe74bbb1ab070d740800000000000000
+      internalID: 5174759916480186351
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: workshop-window_76
+      rect:
+        serializedVersion: 2
+        x: 904
+        y: 31
+        width: 9
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5a7f68b4466861d80800000000000000
+      internalID: -8280283099552090203
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    outline: []
+    customData:
+    physicsShape: []
+    bones: []
+    spriteID: 5e97eb03825dee720800000000000000
+    internalID: 0
+    vertices: []
+    indices:
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable: {}
+  mipmapLimitGroupName:
+  pSDRemoveMatte: 0
+  userData:
+  assetBundleName:
+  assetBundleVariant:

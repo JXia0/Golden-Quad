@@ -16,11 +16,13 @@ namespace LetGo
         public AudioClip applause;
         public AudioClip paperRustle;
         public AudioClip finalLight;
+        public AudioClip ambience;
         public void Apply(SceneAudio target)
         {
             if (target == null) return;
             target.SetEffects(footstepOne, footstepTwo, interact, itemMove, objectiveLight, doorOpen,
                 handRelease, heartbeat, calmBreath, applause, paperRustle, finalLight);
+            target.SetFallbackAmbience(ambience);
         }
     }
 }

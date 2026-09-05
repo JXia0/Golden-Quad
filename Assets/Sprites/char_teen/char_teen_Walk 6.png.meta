@@ -89,10 +89,10 @@ TextureImporter:
   platformSettings:
   - serializedVersion: 4
     buildTarget: DefaultTexturePlatform
-    maxTextureSize: 2048
+    maxTextureSize: 4096
     resizeAlgorithm: 0
     textureFormat: -1
-    textureCompression: 1
+    textureCompression: 0
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
@@ -122,12 +122,12 @@ TextureImporter:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 341
-        height: 683
+        width: 362
+        height: 724
       alignment: 7
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
+      customData:
       outline: []
       physicsShape: []
       tessellationDetail: 0
@@ -135,21 +135,21 @@ TextureImporter:
       spriteID: 5705b131898ef7543bd74c5961b6f9d0
       internalID: 1389464760
       vertices: []
-      indices: 
+      indices:
       edges: []
       weights: []
     - serializedVersion: 2
       name: char_teen_walk_01
       rect:
         serializedVersion: 2
-        x: 341
+        x: 362
         y: 0
-        width: 342
-        height: 683
+        width: 362
+        height: 724
       alignment: 7
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
+      customData:
       outline: []
       physicsShape: []
       tessellationDetail: 0
@@ -157,21 +157,21 @@ TextureImporter:
       spriteID: a38d8288e73207247ac5b0e07f6a2c01
       internalID: -557501944
       vertices: []
-      indices: 
+      indices:
       edges: []
       weights: []
     - serializedVersion: 2
       name: char_teen_walk_02
       rect:
         serializedVersion: 2
-        x: 683
+        x: 724
         y: 0
-        width: 341
-        height: 683
+        width: 362
+        height: 724
       alignment: 7
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
+      customData:
       outline: []
       physicsShape: []
       tessellationDetail: 0
@@ -179,21 +179,21 @@ TextureImporter:
       spriteID: 0d753f024833e744db9b154c6b9e7266
       internalID: -242654381
       vertices: []
-      indices: 
+      indices:
       edges: []
       weights: []
     - serializedVersion: 2
       name: char_teen_walk_03
       rect:
         serializedVersion: 2
-        x: 1024
+        x: 1086
         y: 0
-        width: 341
-        height: 683
+        width: 361
+        height: 724
       alignment: 7
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
+      customData:
       outline: []
       physicsShape: []
       tessellationDetail: 0
@@ -201,21 +201,21 @@ TextureImporter:
       spriteID: 15f28b4d2c1a4fe458cd61f2e1be005c
       internalID: 1447083200
       vertices: []
-      indices: 
+      indices:
       edges: []
       weights: []
     - serializedVersion: 2
       name: char_teen_walk_04
       rect:
         serializedVersion: 2
-        x: 1365
+        x: 1447
         y: 0
-        width: 342
-        height: 683
+        width: 362
+        height: 724
       alignment: 7
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
+      customData:
       outline: []
       physicsShape: []
       tessellationDetail: 0
@@ -223,21 +223,21 @@ TextureImporter:
       spriteID: a505d790d28d0c447936f9de15ca71b6
       internalID: 1910429189
       vertices: []
-      indices: 
+      indices:
       edges: []
       weights: []
     - serializedVersion: 2
       name: char_teen_walk_05
       rect:
         serializedVersion: 2
-        x: 1707
+        x: 1809
         y: 0
-        width: 341
-        height: 683
+        width: 362
+        height: 724
       alignment: 7
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
+      customData:
       outline: []
       physicsShape: []
       tessellationDetail: 0
@@ -245,17 +245,17 @@ TextureImporter:
       spriteID: fc0d7573c39462c40a2ea8e967381cad
       internalID: -1526014207
       vertices: []
-      indices: 
+      indices:
       edges: []
       weights: []
     outline: []
-    customData: 
+    customData:
     physicsShape: []
     bones: []
     spriteID: a7d78e25cf0082745b62d012f7253562
     internalID: 0
     vertices: []
-    indices: 
+    indices:
     edges: []
     weights: []
     secondaryTextures: []
@@ -268,8 +268,8 @@ TextureImporter:
       char_teen_walk_03: 1447083200
       char_teen_walk_04: 1910429189
       char_teen_walk_05: -1526014207
-  mipmapLimitGroupName: 
+  mipmapLimitGroupName:
   pSDRemoveMatte: 0
-  userData: 
-  assetBundleName: 
-  assetBundleVariant: 
+  userData:
+  assetBundleName:
+  assetBundleVariant:

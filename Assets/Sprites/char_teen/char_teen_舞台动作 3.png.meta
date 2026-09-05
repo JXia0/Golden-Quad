@@ -230,10 +230,10 @@ TextureImporter:
   platformSettings:
   - serializedVersion: 4
     buildTarget: DefaultTexturePlatform
-    maxTextureSize: 2048
+    maxTextureSize: 4096
     resizeAlgorithm: 0
     textureFormat: -1
-    textureCompression: 1
+    textureCompression: 0
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
@@ -263,12 +263,12 @@ TextureImporter:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 683
-        height: 683
+        width: 724
+        height: 724
       alignment: 7
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
+      customData:
       outline: []
       physicsShape: []
       tessellationDetail: 0
@@ -276,21 +276,21 @@ TextureImporter:
       spriteID: d68be3efd546d0c48a6e846e0b468b02
       internalID: 1052543564
       vertices: []
-      indices: 
+      indices:
       edges: []
       weights: []
     - serializedVersion: 2
       name: char_teen_stage_01
       rect:
         serializedVersion: 2
-        x: 683
+        x: 724
         y: 0
-        width: 682
-        height: 683
+        width: 724
+        height: 724
       alignment: 7
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
+      customData:
       outline: []
       physicsShape: []
       tessellationDetail: 0
@@ -298,21 +298,21 @@ TextureImporter:
       spriteID: 1ec8b093970bbfc4e905a236a2e7e833
       internalID: -1106174088
       vertices: []
-      indices: 
+      indices:
       edges: []
       weights: []
     - serializedVersion: 2
       name: char_teen_stage_02
       rect:
         serializedVersion: 2
-        x: 1365
+        x: 1448
         y: 0
-        width: 683
-        height: 683
+        width: 724
+        height: 724
       alignment: 7
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
+      customData:
       outline: []
       physicsShape: []
       tessellationDetail: 0
@@ -320,17 +320,17 @@ TextureImporter:
       spriteID: a771f8d677b1a814c8dad6aa4589d686
       internalID: 1793549821
       vertices: []
-      indices: 
+      indices:
       edges: []
       weights: []
     outline: []
-    customData: 
+    customData:
     physicsShape: []
     bones: []
     spriteID: a49b07b19510f3d4f944d3263e4dd977
     internalID: 0
     vertices: []
-    indices: 
+    indices:
     edges: []
     weights: []
     secondaryTextures: []
@@ -340,8 +340,8 @@ TextureImporter:
       char_teen_stage_00: 1052543564
       char_teen_stage_01: -1106174088
       char_teen_stage_02: 1793549821
-  mipmapLimitGroupName: 
+  mipmapLimitGroupName:
   pSDRemoveMatte: 0
-  userData: 
-  assetBundleName: 
-  assetBundleVariant: 
+  userData:
+  assetBundleName:
+  assetBundleVariant:

@@ -45,6 +45,9 @@ public static class JourneyRegressionChecks
             SetStatic(typeof(SceneAudio), "Instance", null);
             var player = new GameObject("Regression Player", typeof(PlayerController2D), typeof(HandConnection));
             Call(player.GetComponent<PlayerController2D>(), "Awake");
+            Require(player.GetComponent<Rigidbody2D>().interpolation == RigidbodyInterpolation2D.Interpolate,
+                "the moving player must interpolate its visible pose between physics ticks");
+            CheckMotionAssets(results);
             var hand = player.GetComponent<HandConnection>();
             Call(hand, "Awake");
             var director = new GameObject("Regression Director").AddComponent<StorySceneDirector>();
@@ -299,6 +302,34 @@ public static class JourneyRegressionChecks
                 results.Add("PASS: " + pair.Key + " has all required saved-scene anchors.");
             }
             finally { EditorSceneManager.ClosePreviewScene(preview); }
+        }
+    }
+
+    private static void CheckMotionAssets(List<string> results)
+    {
+        foreach (var age in new[] { "child", "teen", "adult" })
+        {
+            foreach (var motion in new[] { "idle", "walk" })
+            {
+                var count = motion == "idle" ? 4 : 6;
+                var clip = AssetDatabase.LoadAssetAtPath<AnimationClip>($"Assets/Art/Generated/char_{age}_{motion}.anim");
+                Require(clip != null, "missing motion clip: " + age + motion);
+                var sprites = AnimationUtility.GetObjectReferenceCurveBindings(clip)
+                    .SelectMany(binding => AnimationUtility.GetObjectReferenceCurve(clip, binding))
+                    .Select(key => key.value as Sprite).Distinct().OrderBy(sprite => sprite == null ? "" : sprite.name).ToArray();
+                Require(sprites.Length == count && sprites.All(sprite => sprite != null), "motion frame references must survive reslicing: " + age + motion);
+                var importer = (TextureImporter)AssetImporter.GetAtPath(AssetDatabase.GetAssetPath(sprites[0].texture));
+                importer.GetSourceTextureWidthAndHeight(out var width, out var height);
+                Require(sprites[0].texture.width == width && sprites[0].texture.height == height &&
+                    importer.textureCompression == TextureImporterCompression.Uncompressed, "motion texture must retain source resolution and avoid lossy compression");
+                for (var i = 0; i < count; i++)
+                {
+                    var left = Mathf.RoundToInt(width * i / (float)count);
+                    var right = Mathf.RoundToInt(width * (i + 1) / (float)count);
+                    Require(sprites[i].rect == new Rect(left, 0f, right - left, height), "motion frames must use original source coordinates: " + age + motion + i);
+                }
+            }
+            results.Add("PASS: " + age + " idle/walk preserve all animation references and use clear, correctly aligned source frames.");
         }
     }
 

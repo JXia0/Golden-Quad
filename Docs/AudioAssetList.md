@@ -1,6 +1,6 @@
 # 《放开我的手》基础音频资产清单
 
-> 当前：12 个新 SFX 已通过 `Assets/Resources/SceneAudioLibrary.asset` 在 `SceneAudio.Start` 接入，原文件位于 `Assets/Audio/SFX/SFX`。环境声 `amb_indoor_loop`、配乐 `bgm_growth_theme_loop` 尚缺，已交 5.6 跟进。音效库只覆盖 SFX，保留场景内的音乐与环境声设置；无需为了启用这批音效重新执行全场景美术绑定。
+> 当前：12 个新 SFX 已通过 `Assets/Resources/SceneAudioLibrary.asset` 在 `SceneAudio.Start` 接入，原文件位于 `Assets/Audio/SFX/SFX`。环境声 `Assets/Audio/LoopAudio/amb_indoor_loop.WAV` 已交付并接入默认循环；配乐 `bgm_growth_theme_loop` 尚缺，已交 5.6 跟进。音效库覆盖 SFX，仅在场景未设置环境声时补入默认底声，保留场景内已有音乐与环境声；无需为了启用这批音效重新执行全场景美术绑定。
 
 ## 交付规格
 

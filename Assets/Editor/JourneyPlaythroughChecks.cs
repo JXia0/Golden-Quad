@@ -55,7 +55,7 @@ public static class JourneyPlaythroughChecks
 
     public static void RunBatch()
     {
-        LetGoSpriteAssetIntegrator.BuildTeenController();
+        LetGoSpriteAssetIntegrator.BuildAvailableControllers();
         EditorSceneManager.OpenScene("Assets/Scenes/00_Prologue.unity");
         JourneyArtImporter.Refresh();
         JourneyRegressionChecks.Run();
@@ -83,9 +83,42 @@ public static class JourneyPlaythroughChecks
         RunBatch();
     }
 
+    public static void ValidatePassagesAndBuildWindowsBatch()
+    {
+        SessionState.SetBool(BuildAfterKey, true);
+        SessionState.SetBool("LetGo.QA.PassagesOnly", true);
+        RunBatch();
+    }
+
+    public static void ValidateContinuousKindergartenAndBuildWindowsBatch()
+    {
+        SessionState.SetBool(BuildAfterKey, true);
+        SessionState.SetBool("LetGo.QA.ContinuousKindergarten", true);
+        RunBatch();
+    }
+
+    public static void ValidateMovementAndBuildWindowsBatch()
+    {
+        SessionState.SetBool("LetGo.QA.FullAfterKindergarten", true);
+        ValidateContinuousKindergartenAndBuildWindowsBatch();
+    }
+
+    public static void ValidateDeliveredArtAndBuildWindowsBatch()
+    {
+        SessionState.SetBool(BuildAfterKey, true);
+        SessionState.SetBool("LetGo.QA.DeliveredArt", true);
+        RunBatch();
+    }
+
+    public static void ValidateHandPassagesBatch()
+    {
+        SessionState.SetBool("LetGo.QA.HandPassages", true);
+        RunBatch();
+    }
+
     public static void BuildWindowsBatch()
     {
-        LetGoSpriteAssetIntegrator.BuildTeenController();
+        LetGoSpriteAssetIntegrator.BuildAvailableControllers();
         JourneyArtImporter.Refresh();
         const string output = "Builds/Windows/LetGo.exe";
         Directory.CreateDirectory(Path.GetDirectoryName(output));

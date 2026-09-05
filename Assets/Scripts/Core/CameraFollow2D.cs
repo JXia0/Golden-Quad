@@ -11,6 +11,11 @@ namespace LetGo
         private Vector3 velocity;
 
         public void SetTarget(Transform value) => target = value;
+        public void SetHorizontalBounds(float minimum, float maximum)
+        {
+            minX = minimum;
+            maxX = Mathf.Max(minimum, maximum);
+        }
 
         private void LateUpdate()
         {

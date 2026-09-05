@@ -128,10 +128,10 @@ TextureImporter:
   platformSettings:
   - serializedVersion: 4
     buildTarget: DefaultTexturePlatform
-    maxTextureSize: 2048
+    maxTextureSize: 4096
     resizeAlgorithm: 0
     textureFormat: -1
-    textureCompression: 1
+    textureCompression: 0
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
@@ -161,12 +161,12 @@ TextureImporter:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 512
-        height: 683
+        width: 543
+        height: 724
       alignment: 7
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
+      customData:
       outline: []
       physicsShape: []
       tessellationDetail: 0
@@ -174,21 +174,21 @@ TextureImporter:
       spriteID: 6a23f07f4084397418bf67a5826bda32
       internalID: -175823313
       vertices: []
-      indices: 
+      indices:
       edges: []
       weights: []
     - serializedVersion: 2
       name: char_teen_breath_01
       rect:
         serializedVersion: 2
-        x: 512
+        x: 543
         y: 0
-        width: 512
-        height: 683
+        width: 543
+        height: 724
       alignment: 7
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
+      customData:
       outline: []
       physicsShape: []
       tessellationDetail: 0
@@ -196,21 +196,21 @@ TextureImporter:
       spriteID: 962373ac391c22041b5e9456af479c63
       internalID: -1654831799
       vertices: []
-      indices: 
+      indices:
       edges: []
       weights: []
     - serializedVersion: 2
       name: char_teen_breath_02
       rect:
         serializedVersion: 2
-        x: 1024
+        x: 1086
         y: 0
-        width: 512
-        height: 683
+        width: 543
+        height: 724
       alignment: 7
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
+      customData:
       outline: []
       physicsShape: []
       tessellationDetail: 0
@@ -218,21 +218,21 @@ TextureImporter:
       spriteID: e1fe65de6eabefc43aff33d8422b096a
       internalID: -1370291773
       vertices: []
-      indices: 
+      indices:
       edges: []
       weights: []
     - serializedVersion: 2
       name: char_teen_breath_03
       rect:
         serializedVersion: 2
-        x: 1536
+        x: 1629
         y: 0
-        width: 512
-        height: 683
+        width: 543
+        height: 724
       alignment: 7
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
+      customData:
       outline: []
       physicsShape: []
       tessellationDetail: 0
@@ -240,17 +240,17 @@ TextureImporter:
       spriteID: 819e7293774d7184c8908c0e2dbf5804
       internalID: 97970065
       vertices: []
-      indices: 
+      indices:
       edges: []
       weights: []
     outline: []
-    customData: 
+    customData:
     physicsShape: []
     bones: []
     spriteID: 2a2154fa115cbe84590e0ac43c46c282
     internalID: 0
     vertices: []
-    indices: 
+    indices:
     edges: []
     weights: []
     secondaryTextures: []
@@ -261,8 +261,8 @@ TextureImporter:
       char_teen_breath_01: -1654831799
       char_teen_breath_02: -1370291773
       char_teen_breath_03: 97970065
-  mipmapLimitGroupName: 
+  mipmapLimitGroupName:
   pSDRemoveMatte: 0
-  userData: 
-  assetBundleName: 
-  assetBundleVariant: 
+  userData:
+  assetBundleName:
+  assetBundleVariant:

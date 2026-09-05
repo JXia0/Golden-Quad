@@ -95,10 +95,10 @@ TextureImporter:
   platformSettings:
   - serializedVersion: 4
     buildTarget: DefaultTexturePlatform
-    maxTextureSize: 2048
+    maxTextureSize: 4096
     resizeAlgorithm: 0
     textureFormat: -1
-    textureCompression: 1
+    textureCompression: 0
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
@@ -128,12 +128,12 @@ TextureImporter:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 512
-        height: 683
+        width: 543
+        height: 724
       alignment: 7
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
+      customData:
       outline: []
       physicsShape: []
       tessellationDetail: 0
@@ -141,21 +141,21 @@ TextureImporter:
       spriteID: 1dc0d445846be944a953effaf6f9442f
       internalID: -1701664992
       vertices: []
-      indices: 
+      indices:
       edges: []
       weights: []
     - serializedVersion: 2
       name: char_teen_idle_01
       rect:
         serializedVersion: 2
-        x: 512
+        x: 543
         y: 0
-        width: 512
-        height: 683
+        width: 543
+        height: 724
       alignment: 7
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
+      customData:
       outline: []
       physicsShape: []
       tessellationDetail: 0
@@ -163,21 +163,21 @@ TextureImporter:
       spriteID: 3eb9ad531c63f9749990747d3329289e
       internalID: -280361704
       vertices: []
-      indices: 
+      indices:
       edges: []
       weights: []
     - serializedVersion: 2
       name: char_teen_idle_02
       rect:
         serializedVersion: 2
-        x: 1024
+        x: 1086
         y: 0
-        width: 512
-        height: 683
+        width: 543
+        height: 724
       alignment: 7
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
+      customData:
       outline: []
       physicsShape: []
       tessellationDetail: 0
@@ -185,21 +185,21 @@ TextureImporter:
       spriteID: a5f31c94ca750144b8679ec512dba55e
       internalID: 1732333160
       vertices: []
-      indices: 
+      indices:
       edges: []
       weights: []
     - serializedVersion: 2
       name: char_teen_idle_03
       rect:
         serializedVersion: 2
-        x: 1536
+        x: 1629
         y: 0
-        width: 512
-        height: 683
+        width: 543
+        height: 724
       alignment: 7
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
+      customData:
       outline: []
       physicsShape: []
       tessellationDetail: 0
@@ -207,17 +207,17 @@ TextureImporter:
       spriteID: bb522a41d358ff049a058ac6fbb3a8b2
       internalID: 1444194024
       vertices: []
-      indices: 
+      indices:
       edges: []
       weights: []
     outline: []
-    customData: 
+    customData:
     physicsShape: []
     bones: []
     spriteID: eae00bdfb911f6c43b457da7a1c531ed
     internalID: 0
     vertices: []
-    indices: 
+    indices:
     edges: []
     weights: []
     secondaryTextures: []
@@ -228,8 +228,8 @@ TextureImporter:
       char_teen_idle_01: -280361704
       char_teen_idle_02: 1732333160
       char_teen_idle_03: 1444194024
-  mipmapLimitGroupName: 
+  mipmapLimitGroupName:
   pSDRemoveMatte: 0
-  userData: 
-  assetBundleName: 
-  assetBundleVariant: 
+  userData:
+  assetBundleName:
+  assetBundleVariant:

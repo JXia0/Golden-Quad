@@ -76,7 +76,7 @@
 |---|---|---|
 | ResearchExpedition | Crate / Plank / Lamp / Toy / Learner / Report | 获取实际可交互根节点，Toy 可为空 |
 | ResearchExpedition | GateOpen / GateLatched | 压力门开合、门闩常开 |
-| ResearchExpedition | State / LearnerChanged | Waiting / Walking / NeedsBridge / NeedsComfort / Returning / Arrived；停在缺口与害怕退回须区分 |
+| ResearchExpedition | State / LearnerChanged | Waiting / Walking / NeedsBridge / NeedsComfort / Returning / Arrived / Recalling；停在缺口、害怕退回与主动召回须区分 |
 | ResearchExpedition | WindActive / LampWorking / WindowChanged | 关窗后恢复光；不要只播放风特效而把灯继续显示为有效 |
 | ResearchExpedition | ShortcutOpen / ShortcutOpened / ReportReturned | 显示回程入口、报告与桌上成果 |
 | ResearchExpedition | CluesFound | 可选调查，无收集配额 |
@@ -86,3 +86,11 @@
 必要反馈：机关的通电方向、箱子的可踩顶部、缺口宽度、灯范围/熄灭、窗户状态、模型退回和恢复、回程入口。保留 GameplayLine 到替代反馈完成。结尾不可由动画直接切黑，依然等待玩家最后一步。
 
 玩具声音接口：ResearchExpedition.ToyWinding01、ToySoundRemaining、ToyWound；默认保留声音范围圈，正式发条/旋律接这三个值。
+
+## 9月5日新资源与牵手复核
+
+- `HandTetherPresentation` 复用原牵手 LineRenderer：16 点细曲线、按人物显示包围盒贴手、随距离调整松紧。只对人物显示；Carryable 和自我安定不显示。近距离、拉远、释放、背包与成年告别已在运行中检查。
+- `prop_research_bridge` 原图是左右两态；实际采用左侧闭合平板 Rect(55,103,951,185)，按 2048×768 源尺寸缩放裁切，透明黑底材质按纹理独立缓存，显示宽1.5。架上与放下后的底部对齐；右侧开盒盖不冒充承重桥。
+- `workshop-window` 采用 Rect(59,173,1006,1054)，源尺寸1122×1402；游戏中 `Draft Window Handle` 显示完整窗扇，开窗滑动露出暗处，关窗恢复位置。
+- 新 `workshop-window_frame` 已检查：2172×724 横向框与上述近方形窗比例不匹配，本轮未强行叠加。新窗本身自带框，当前可以完整显示。若美术继续交独立框，请与窗扇使用同画布、同位置与同一外框比例。
+- 新环境声通过 SceneAudioLibrary.ambience 补入未设置 ambience 的场景，SceneAudio.AmbienceClip / IsAmbiencePlaying 可用于运行检查；不会覆盖美术已手动设置的场景音乐与环境声。

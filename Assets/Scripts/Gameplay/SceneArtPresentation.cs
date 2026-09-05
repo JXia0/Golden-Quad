@@ -13,6 +13,7 @@ namespace LetGo
         private const float GroundY = -2.72f;
         private const float ViewSize = 2.95f;
         private static Sprite radialGlow;
+        private static Sprite memoryBlackSprite;
 
         [SerializeField] private SpriteRenderer vignette;
         [SerializeField] private SpriteRenderer passageBlackout;
@@ -24,18 +25,27 @@ namespace LetGo
         private EmotionalEnvironment environment;
         private SpriteRenderer playerArt;
         private PlayerController2D player;
+        private float playerFeetOffset;
+        private bool playerFeetOffsetReady;
         private SpriteRenderer carriedReport;
-        private SpriteRenderer kindergartenEntrance;
-        private SpriteRenderer kindergartenCubby;
+        private ResearchExpedition research;
+        private SpriteRenderer researchLearnerVisual;
+        private Sprite researchLearnerIdle;
+        private Sprite researchLearnerWalk;
+        private Sprite researchLearnerFear;
+        private LearnerState? researchLearnerPose;
+        private SpriteRenderer researchShutterSource;
+        private SpriteRenderer researchShutterVisual;
+        private LineRenderer stageBreathFeedback;
+        private LineRenderer stageAimFeedback;
+        private readonly List<LineRenderer> stageListenerFeedback = new();
+        private bool stageFeedbackCached;
         private string visibleAge;
         private readonly List<(SpriteRenderer source, SpriteRenderer visible)> actors = new();
-        private readonly List<SpriteRenderer> kindergartenRevealProps = new();
         private readonly List<SpriteRenderer> finalStageGroup = new();
         private readonly List<SpriteRenderer> finalResearchGroup = new();
         private readonly List<SpriteRenderer> finalUnknownGroup = new();
-        private bool finalStageRevealed;
-        private bool finalResearchRevealed;
-        private bool finalUnknownRevealed;
+        private readonly Dictionary<SpriteRenderer, float> authoredAlpha = new();
 
         public void Configure(SpriteRenderer overlay, Vector2 limits, SpriteRenderer blackout = null)
         {
@@ -55,6 +65,12 @@ namespace LetGo
             {
                 playerArt = player.CharacterRenderer;
                 playerBody = player.GetComponent<Collider2D>();
+                if (playerBody != null)
+                {
+                    playerFeetOffset = playerBody.bounds.min.y - player.transform.position.y;
+                    playerFeetOffsetReady = true;
+                }
+                InstallHandTetherPresentation();
             }
             carriedReport = GameObject.Find("Carried Research Report")?.GetComponentInChildren<SpriteRenderer>();
             if (carriedReport != null) FitWorld(carriedReport, new Vector2(0.42f, 0.5f));
@@ -90,8 +106,6 @@ namespace LetGo
                 bag.enabled = false;
             }
 
-            if (kindergartenEntrance != null)
-                CaptureKindergartenRevealProps();
             if (SceneManager.GetActiveScene().name == "06_FinalWalk")
                 PrepareFinalMemoryGroups();
         }
@@ -104,9 +118,11 @@ namespace LetGo
             {
                 HideRenderers("Warm Light");
                 HideRenderers("Classroom Hand Gate");
-                kindergartenEntrance = GameObject.Find("Integrated Classroom Entrance")?.GetComponent<SpriteRenderer>();
-                kindergartenCubby = GameObject.Find("Cubby")?.GetComponent<SpriteRenderer>();
-                AddPassageOverlay(scene);
+                HideRenderers("Unfamiliar Shadows");
+                // The delivered hall layer was an alternate full-screen composition. Keeping it
+                // over the room made walking back replay a transition, so the chapter now uses
+                // one continuous world and the normal camera follow from its first frame.
+                HideRenderers("Integrated Classroom Entrance");
             }
             else if (scene == "03_Stage")
             {
@@ -126,6 +142,7 @@ namespace LetGo
                 if (stageVisual != null) FitWorld(stageVisual, new Vector2(38f, 12.7f));
                 if (GetComponent<StageFeedbackPresentation>() == null)
                     gameObject.AddComponent<StageFeedbackPresentation>();
+                CacheStageFeedback();
             }
             else if (scene == "05_Research")
             {
@@ -146,11 +163,22 @@ namespace LetGo
                 FitDoor("Unknown Door", new Vector2(1.18f, 2.68f));
                 foreach (var transform in FindObjectsByType<Transform>(FindObjectsInactive.Include))
                     if (transform.name.StartsWith("Memory Picture ")) transform.gameObject.SetActive(false);
+                BuildMemoryBlackPassages();
                 AddPassageOverlay(scene);
             }
         }
 
-        private static void NormalizeResearchPresentation()
+        private void InstallHandTetherPresentation()
+        {
+            if (hand == null || playerArt == null) return;
+            var tether = GameObject.Find("Hand Connection Light")?.GetComponent<LineRenderer>();
+            if (tether == null) return;
+            var presentation = tether.GetComponent<HandTetherPresentation>();
+            if (presentation == null) presentation = tether.gameObject.AddComponent<HandTetherPresentation>();
+            presentation.Configure(hand, tether, playerArt);
+        }
+
+        private void NormalizeResearchPresentation()
         {
             var retiredDraft = GameObject.Find("Doubt Notes");
             if (retiredDraft != null) retiredDraft.SetActive(false);
@@ -162,6 +190,7 @@ namespace LetGo
             GroundVisual("Workshop Crate", new Vector2(1.08f, 1.08f));
             GroundVisual("Portable Lamp", new Vector2(0.58f, 0.72f));
             GroundVisual("Workshop Learner", new Vector2(0.56f, 0.9f));
+            SetupResearchLearnerPresentation();
             GroundVisual("Workshop Shutter Frame", new Vector2(3.15f, 4.35f));
             GroundVisual("Workshop Shutter Door", new Vector2(2.8f, 3.75f));
             NudgePresentationVisual("Workshop Shutter Frame", -0.23f);
@@ -184,6 +213,53 @@ namespace LetGo
             if (frame != null) frame.sortingOrder = 9;
             var door = GameObject.Find("Workshop Shutter Door")?.GetComponent<SpriteRenderer>();
             if (door != null) door.sortingOrder = 8;
+            var doorRoot = GameObject.Find("Workshop Shutter Door")?.transform;
+            researchShutterSource = doorRoot?.GetComponent<SpriteRenderer>();
+            researchShutterVisual = doorRoot?.Find("Presentation Visual")?.GetComponent<SpriteRenderer>();
+        }
+
+        private void SetupResearchLearnerPresentation()
+        {
+            research = FindAnyObjectByType<ResearchExpedition>();
+            var root = GameObject.Find("Workshop Learner")?.transform;
+            researchLearnerVisual = root?.Find("Presentation Visual")?.GetComponent<SpriteRenderer>();
+            if (research == null || researchLearnerVisual == null || researchLearnerVisual.sprite == null) return;
+            var texture = researchLearnerVisual.sprite.texture;
+            if (texture == null || texture.name != "prop_research_model") return;
+            var scaleX = texture.width / 1882f;
+            var scaleY = texture.height / 836f;
+            researchLearnerIdle = ResearchLearnerSprite(texture, "prop_research_model_idle", new Rect(255f * scaleX, 12f * scaleY, 402f * scaleX, 806f * scaleY));
+            researchLearnerWalk = ResearchLearnerSprite(texture, "prop_research_model_walk", new Rect(742f * scaleX, 11f * scaleY, 486f * scaleX, 795f * scaleY));
+            researchLearnerFear = ResearchLearnerSprite(texture, "prop_research_model_fear", new Rect(1296f * scaleX, 0f, 430f * scaleX, 782f * scaleY));
+            var oldBase = GameObject.Find("Learner Model Base");
+            if (oldBase != null) oldBase.SetActive(false);
+            UpdateResearchLearnerPose(true);
+        }
+
+        private static Sprite ResearchLearnerSprite(Texture2D texture, string name, Rect rect)
+        {
+            rect.x = Mathf.Clamp(rect.x, 0f, texture.width - 1f);
+            rect.y = Mathf.Clamp(rect.y, 0f, texture.height - 1f);
+            rect.width = Mathf.Clamp(rect.width, 1f, texture.width - rect.x);
+            rect.height = Mathf.Clamp(rect.height, 1f, texture.height - rect.y);
+            var sprite = Sprite.Create(texture, rect, new Vector2(0.5f, 0f), 100f, 0, SpriteMeshType.FullRect);
+            sprite.name = name;
+            return sprite;
+        }
+
+        private void UpdateResearchLearnerPose(bool force = false)
+        {
+            if (research == null || researchLearnerVisual == null) return;
+            var state = research.State;
+            if (!force && researchLearnerPose == state) return;
+            researchLearnerPose = state;
+            researchLearnerVisual.sprite = state == LearnerState.Walking || state == LearnerState.Recalling
+                ? researchLearnerWalk
+                : state == LearnerState.NeedsComfort || state == LearnerState.Returning
+                    ? researchLearnerFear
+                    : researchLearnerIdle;
+            FitWorld(researchLearnerVisual, new Vector2(0.56f, 0.9f));
+            researchLearnerVisual.transform.position += Vector3.up * (GroundY - researchLearnerVisual.bounds.min.y);
         }
 
         private static void GroundVisual(string rootName, Vector2 size)
@@ -334,32 +410,21 @@ namespace LetGo
             }
 
             if (view == null) return;
-            ComposeKindergartenEntrance();
             RevealFinalMemoryGroups();
             RestyleStageFeedback();
             MaintainResearchPresentation();
+            UpdateResearchLearnerPose();
             ClampCamera();
             FitOverlay(vignette);
             UpdateVignette();
         }
 
-        private static void MaintainResearchPresentation()
+        private void MaintainResearchPresentation()
         {
             if (SceneManager.GetActiveScene().name != "05_Research") return;
-            HideRenderers("Inside Shutter Latch Locked");
-            HideRenderers("Inside Shutter Latch Open");
-            MirrorDynamicVisual("Workshop Shutter Door");
-        }
-
-        private static void MirrorDynamicVisual(string rootName)
-        {
-            var root = GameObject.Find(rootName)?.transform;
-            if (root == null) return;
-            var source = root.GetComponent<SpriteRenderer>();
-            var visual = root.Find("Presentation Visual")?.GetComponent<SpriteRenderer>();
-            if (source == null || visual == null) return;
-            visual.enabled = source.enabled;
-            source.enabled = false;
+            if (researchShutterSource == null || researchShutterVisual == null) return;
+            researchShutterVisual.enabled = researchShutterSource.enabled;
+            researchShutterSource.enabled = false;
         }
 
         private void FitPlayerForCurrentAge()
@@ -374,8 +439,11 @@ namespace LetGo
                 var height = age == "adult" ? 1.78f : age == "teen" ? 1.48f : 1.02f;
                 player.SetCharacterScale(Vector3.one * (height / playerArt.sprite.bounds.size.y));
             }
-            if (playerBody != null)
-                playerArt.transform.position += Vector3.up * (playerBody.bounds.min.y - playerArt.bounds.min.y);
+            if (playerFeetOffsetReady)
+            {
+                var interpolatedFeet = player.transform.position.y + playerFeetOffset;
+                playerArt.transform.position += Vector3.up * (interpolatedFeet - playerArt.bounds.min.y);
+            }
             if (SceneManager.GetActiveScene().name == "03_Stage" && age == "teen")
                 playerArt.transform.position += Vector3.down * 0.08f;
         }
@@ -411,47 +479,40 @@ namespace LetGo
         {
             var halfWidth = view.orthographicSize * view.aspect;
             var cameraPosition = view.transform.position;
-            cameraPosition.x = Mathf.Clamp(cameraPosition.x, backdropLimits.x + halfWidth, backdropLimits.y - halfWidth);
+            var limits = SceneManager.GetActiveScene().name == "06_FinalWalk"
+                ? FinalPassageLayout.WorldLimits
+                : backdropLimits;
+            cameraPosition.x = Mathf.Clamp(cameraPosition.x, limits.x + halfWidth, limits.y - halfWidth);
             view.transform.position = cameraPosition;
         }
 
-        private void ComposeKindergartenEntrance()
-        {
-            if (kindergartenEntrance == null || playerBody == null) return;
-            CaptureKindergartenRevealProps();
-            var beforeThreshold = playerBody.bounds.center.x < -1.8f;
-            kindergartenEntrance.enabled = beforeThreshold;
-            if (kindergartenCubby != null) kindergartenCubby.enabled = !beforeThreshold;
-            foreach (var renderer in kindergartenRevealProps)
-                if (renderer != null) renderer.enabled = !beforeThreshold;
-            if (!beforeThreshold) return;
-            var cameraPosition = view.transform.position;
-            cameraPosition.x = -5.15f;
-            view.transform.position = cameraPosition;
-        }
-
-        private void CaptureKindergartenRevealProps()
-        {
-            if (kindergartenRevealProps.Count > 0) return;
-            var bagRoot = GameObject.Find("Bag from home");
-            if (bagRoot == null) return;
-            foreach (var renderer in bagRoot.GetComponentsInChildren<SpriteRenderer>(true))
-                if (renderer.enabled) kindergartenRevealProps.Add(renderer);
-        }
-
-        private static void RestyleStageFeedback()
+        private void CacheStageFeedback()
         {
             if (SceneManager.GetActiveScene().name != "03_Stage") return;
+            stageListenerFeedback.Clear();
             foreach (var line in FindObjectsByType<LineRenderer>())
             {
-                if (line.positionCount == 0) continue;
                 if (line.name.StartsWith("Listener response"))
-                    line.enabled = false;
+                    stageListenerFeedback.Add(line);
                 else if (line.name == "A breath becomes a phrase")
-                    RestyleRing(line, 0.68f, 0.12f, GroundY + 0.07f, JourneyVisuals.Warm, 0.55f, 0.024f);
+                    stageBreathFeedback = line;
                 else if (line.name == "Where the voice is going")
-                    RestyleLine(line, JourneyVisuals.Warm, 0.38f, 0.022f);
+                    stageAimFeedback = line;
             }
+            stageFeedbackCached = stageBreathFeedback != null && stageAimFeedback != null && stageListenerFeedback.Count >= 2;
+        }
+
+        private void RestyleStageFeedback()
+        {
+            if (SceneManager.GetActiveScene().name != "03_Stage") return;
+            if (!stageFeedbackCached) CacheStageFeedback();
+            foreach (var listener in stageListenerFeedback)
+                if (listener != null) listener.enabled = false;
+            if (stageBreathFeedback != null && stageBreathFeedback.positionCount > 0)
+                RestyleRing(stageBreathFeedback, 0.68f, 0.12f, GroundY + 0.07f,
+                    JourneyVisuals.Warm, 0.55f, 0.024f);
+            if (stageAimFeedback != null && stageAimFeedback.positionCount > 0)
+                RestyleLine(stageAimFeedback, JourneyVisuals.Warm, 0.38f, 0.022f);
         }
 
         private static void RestyleRing(LineRenderer line, float xScale, float yScale, float targetY,
@@ -484,14 +545,17 @@ namespace LetGo
 
         private void PrepareFinalMemoryGroups()
         {
-            CaptureEnabledRenderers(finalStageGroup, "Stage Memory", "Memory Spotlight",
+            CaptureEnabledRenderers(finalStageGroup, "Memory Spotlight",
                 "Remembered Steady Route", "Remembered Forward Route");
-            CaptureEnabledRenderers(finalResearchGroup, "Research Memory", "Remembered Question",
+            CaptureEnabledRenderers(finalResearchGroup, "Remembered Question",
                 "Remembered Photo Evidence", "Remembered Data Evidence", "Remembered Conclusion");
-            CaptureEnabledRenderers(finalUnknownGroup, "Unknown Wall", "Young Presenter", "Unknown Door");
-            SetVisible(finalStageGroup, false);
-            SetVisible(finalResearchGroup, false);
-            SetVisible(finalUnknownGroup, false);
+            CaptureEnabledRenderers(finalUnknownGroup, "Young Presenter", "Unknown Door");
+            RememberAuthoredAlpha(finalStageGroup);
+            RememberAuthoredAlpha(finalResearchGroup);
+            RememberAuthoredAlpha(finalUnknownGroup);
+            SetAuthoredOpacity(finalStageGroup, 0f);
+            SetAuthoredOpacity(finalResearchGroup, 0f);
+            SetAuthoredOpacity(finalUnknownGroup, 0f);
         }
 
         private static void CaptureEnabledRenderers(List<SpriteRenderer> destination, params string[] roots)
@@ -509,27 +573,57 @@ namespace LetGo
         {
             if (playerBody == null || finalStageGroup.Count == 0) return;
             var x = playerBody.bounds.center.x;
-            if (!finalStageRevealed && x >= 6f)
+            var centers = FinalPassageLayout.Centers;
+            SetAuthoredOpacity(finalStageGroup, x >= centers[0] && x < centers[1] ? 1f : 0f);
+            SetAuthoredOpacity(finalResearchGroup, x >= centers[1] && x < centers[2] ? 1f : 0f);
+            SetAuthoredOpacity(finalUnknownGroup, x >= centers[2] ? 1f : 0f);
+        }
+
+        private void BuildMemoryBlackPassages()
+        {
+            if (view == null || GameObject.Find("Memory Black Passage 1") != null) return;
+            memoryBlackSprite ??= Sprite.Create(Texture2D.whiteTexture, new Rect(0, 0, 1, 1),
+                Vector2.one * 0.5f, 1f, 0, SpriteMeshType.FullRect);
+            memoryBlackSprite.name = "memory_black_passage";
+            var width = 2f * view.orthographicSize * view.aspect + 2.8f;
+            var height = 2f * view.orthographicSize + 2f;
+            var centers = FinalPassageLayout.Centers;
+            for (var i = 0; i < centers.Length; i++)
             {
-                finalStageRevealed = true;
-                SetVisible(finalStageGroup, true);
-            }
-            if (!finalResearchRevealed && x >= 20f)
-            {
-                finalResearchRevealed = true;
-                SetVisible(finalResearchGroup, true);
-            }
-            if (!finalUnknownRevealed && x >= 33f)
-            {
-                finalUnknownRevealed = true;
-                SetVisible(finalUnknownGroup, true);
+                var passage = new GameObject("Memory Black Passage " + (i + 1), typeof(SpriteRenderer));
+                var renderer = passage.GetComponent<SpriteRenderer>();
+                renderer.sprite = memoryBlackSprite;
+                renderer.color = Color.black;
+                renderer.sortingOrder = 30000;
+                passage.transform.position = new Vector3(centers[i], view.transform.position.y, 0f);
+                passage.transform.localScale = new Vector3(width, height, 1f);
             }
         }
 
-        private static void SetVisible(List<SpriteRenderer> renderers, bool visible)
+        private void RememberAuthoredAlpha(SpriteRenderer renderer)
         {
-            foreach (var renderer in renderers)
-                if (renderer != null) renderer.enabled = visible;
+            if (renderer != null && !authoredAlpha.ContainsKey(renderer)) authoredAlpha.Add(renderer, renderer.color.a);
+        }
+
+        private void RememberAuthoredAlpha(List<SpriteRenderer> renderers)
+        {
+            foreach (var renderer in renderers) RememberAuthoredAlpha(renderer);
+        }
+
+        private void SetAuthoredOpacity(List<SpriteRenderer> renderers, float opacity)
+        {
+            foreach (var renderer in renderers) SetAuthoredOpacity(renderer, opacity);
+        }
+
+        private void SetAuthoredOpacity(SpriteRenderer renderer, float opacity)
+        {
+            if (renderer == null) return;
+            RememberAuthoredAlpha(renderer);
+            var alpha = authoredAlpha[renderer] * Mathf.Clamp01(opacity);
+            var color = renderer.color;
+            color.a = alpha;
+            renderer.color = color;
+            renderer.enabled = alpha > 0.002f;
         }
 
         private void FitOverlay(SpriteRenderer overlay)
@@ -548,6 +642,13 @@ namespace LetGo
             var color = vignette.color;
             color.a = Mathf.Lerp(color.a, 0.2f * tension, Time.deltaTime * 3f);
             vignette.color = color;
+        }
+
+        private void OnDestroy()
+        {
+            if (researchLearnerIdle != null) Destroy(researchLearnerIdle);
+            if (researchLearnerWalk != null) Destroy(researchLearnerWalk);
+            if (researchLearnerFear != null) Destroy(researchLearnerFear);
         }
 
         private static float ActorHeight(string actorName)
@@ -576,6 +677,7 @@ namespace LetGo
     {
         private string sceneName;
         private Rigidbody2D body;
+        public float CurrentAlpha { get; private set; }
 
         public void Configure(string value)
         {
@@ -585,12 +687,8 @@ namespace LetGo
 
         private void OnGUI()
         {
-            var x = body != null ? body.position.x : transform.position.x;
-            var alpha = sceneName == "01_Kindergarten" ? Alpha(x, -1.8f) :
-                sceneName == "05_Research" ? Alpha(x, 20f) :
-                sceneName == "06_FinalWalk"
-                    ? Mathf.Max(Alpha(x, 6f), Alpha(x, 20f), Alpha(x, 33f))
-                    : 0f;
+            var alpha = 0f;
+            CurrentAlpha = alpha;
             if (alpha <= 0.001f) return;
             var previousColor = GUI.color;
             var previousDepth = GUI.depth;
@@ -601,9 +699,6 @@ namespace LetGo
             GUI.depth = previousDepth;
         }
 
-        private static float Alpha(float x, float center)
-        {
-            return 1f - Mathf.SmoothStep(1f, 2f, Mathf.Abs(x - center));
-        }
+
     }
 }

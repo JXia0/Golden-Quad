@@ -16,11 +16,11 @@ MonoBehaviour:
   - id: prop_child_backpack
     sprite: {fileID: 872123929, guid: e90f2de1fcdb59b46ba44ee9cc821f43, type: 3}
   - id: prop_research_model
-    sprite: {fileID: 1347895108, guid: 0c01d189875a4f54394c685a8d896e1b, type: 3}
+    sprite: {fileID: -4694568971126195842, guid: 364c8b579fee614499bdc6c6154b87f3, type: 3}
   - id: prop_research_crate
     sprite: {fileID: 21300000, guid: 0e74be713ebabd3498415a6b5a13a657, type: 3}
   - id: prop_research_bridge
-    sprite: {fileID: -2122452163, guid: 3fbef5451a6b3654f89e5e70f12709e3, type: 3}
+    sprite: {fileID: -8648752352989267731, guid: 48ee1a4be16d63a4492bfb0ba72306e3, type: 3}
   - id: prop_toy
     sprite: {fileID: 4914537887585951343, guid: 88e69e3731f9f1b45b9eb0ac36eb2f9d, type: 3}
   - id: prop_researchlight
@@ -50,7 +50,7 @@ MonoBehaviour:
   - id: workshop-latch
     sprite: {fileID: 21300000, guid: be88dd30dad76cc478c3760aefc61931, type: 3}
   - id: workshop-window
-    sprite: {fileID: -3250104689935397743, guid: 1b3419b63d77a2f46b242d8fac699807, type: 3}
+    sprite: {fileID: 21300000, guid: 6a0bf447d6b51594c8336439b35aa602, type: 3}
   - id: workshop-report
     sprite: {fileID: -5859529707505656056, guid: acdb1a3e919ccff4180a413199ce053d, type: 3}
   - id: workshop-desk

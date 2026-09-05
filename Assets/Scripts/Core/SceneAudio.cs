@@ -25,6 +25,13 @@ namespace LetGo
         [SerializeField] private AudioClip ambience;
         [SerializeField] private AudioClip music;
         private bool alternateFootstep;
+        public AudioClip AmbienceClip => ambience;
+        public bool IsAmbiencePlaying => ambienceSource != null && ambienceSource.isPlaying && ambienceSource.loop;
+
+        public void SetFallbackAmbience(AudioClip clip)
+        {
+            if (ambience == null && clip != null) ambience = clip;
+        }
 
         public void ConfigureSources(AudioSource effects, AudioSource ambienceLoop, AudioSource musicLoop,
             AudioSource tensionLoop)

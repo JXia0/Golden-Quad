@@ -13,6 +13,7 @@ namespace LetGo
 
         private Rigidbody2D body;
         private CapsuleCollider2D bodyCollider;
+        private SpriteRenderer characterRenderer;
         private bool controlsEnabled = true;
         private bool interactionLocked;
         private Vector3 characterScale;
@@ -36,16 +37,16 @@ namespace LetGo
         // A companion can offer movement; explicit left input still lets the player pull back.
         public float? AssistedHorizontal { get; set; }
         public void SetJumpForce(float value) => jumpForce = value;
-        public SpriteRenderer CharacterRenderer => characterVisual == null
-            ? null
-            : characterVisual.GetComponent<SpriteRenderer>();
+        public SpriteRenderer CharacterRenderer => characterRenderer;
 
         private void Awake()
         {
             body = GetComponent<Rigidbody2D>();
             bodyCollider = GetComponent<CapsuleCollider2D>();
             if (characterVisual == null) characterVisual = transform.Find("Character Visual");
+            characterRenderer = characterVisual == null ? null : characterVisual.GetComponent<SpriteRenderer>();
             body.freezeRotation = true;
+            body.interpolation = RigidbodyInterpolation2D.Interpolate;
             characterScale = characterVisual == null ? Vector3.one : characterVisual.localScale;
             groundFilter = new ContactFilter2D();
             groundFilter.SetLayerMask(groundMask);
@@ -72,8 +73,8 @@ namespace LetGo
             body.linearVelocity = new Vector2(horizontal * moveSpeed, body.linearVelocity.y);
             if (Mathf.Abs(horizontal) > 0.01f)
             {
-                facing = Mathf.Sign(horizontal);
-                ApplyScale();
+                var nextFacing = Mathf.Sign(horizontal);
+                if (nextFacing != facing) { facing = nextFacing; ApplyScale(); }
             }
         }
 
@@ -86,6 +87,7 @@ namespace LetGo
         public void ConfigureCharacterVisual(Transform visual)
         {
             characterVisual = visual;
+            characterRenderer = visual == null ? null : visual.GetComponent<SpriteRenderer>();
         }
 
         public void FitCharacterVisualToCollider()

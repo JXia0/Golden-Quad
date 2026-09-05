@@ -18,6 +18,9 @@ namespace LetGo
         private Transform shutterVisual;
         private SpriteRenderer shutterDoorVisual, plateVisual, latchLockedVisual, latchUnlockedVisual;
         private Sprite plateRaisedSprite, platePressedSprite;
+        private Sprite bridgeSprite, windowSprite;
+        private SpriteRenderer windowVisual;
+        private Vector3 windowClosedPosition;
         private readonly System.Collections.Generic.Dictionary<Texture, Material> blackKeyMaterials = new();
         private LineRenderer wire, gap, comfort, wind, map, toySound;
         private ResearchGuide guide;
@@ -79,6 +82,7 @@ namespace LetGo
             plank = Tool("Folding Plank", "workshop-plank", new Vector3(-2f, -0.12f), new Vector2(1.6f, 0.18f), "prop_research_bridge", "E · 拿折叠板");
             plank.Configure("workshop-plank", HoldTargetMode.Carryable, "E · 拿折叠板", 1f, 3f);
             plank.DropFloorY = -2.5f;
+            PrepareDeliveredBridge();
             lamp = Tool("Portable Lamp", "workshop-lamp", new Vector3(12.6f, -2.2f), new Vector2(0.55f, 0.7f), "prop_researchlight", "E · 拿灯");
             if (JourneyChoices.TookChildhoodToy)
             {
@@ -122,7 +126,8 @@ namespace LetGo
             }
             var gapShadow = visuals.Prop("Workshop Gap", new Vector3(16f, -2.72f), new Vector2(1.3f, 0.28f), Color.black, "workshop-gap-shadow");
             gapShadow.sortingOrder = 7;
-            visuals.Prop("Draft Window Handle", new Vector3(21f, -1.5f), new Vector2(0.5f, 0.65f), JourneyVisuals.Cool, "workshop-window");
+            windowVisual = visuals.Prop("Draft Window Handle", new Vector3(21f, -0.55f), new Vector2(1.4f, 1.5f), JourneyVisuals.Cool, "workshop-window");
+            PrepareDeliveredWindow();
             visuals.Prop("Archive Notebook", new Vector3(-2.7f, 0.3f), new Vector2(0.4f, 0.35f), JourneyVisuals.Warm, "prop_research_book");
             wire = visuals.GameplayLine("Plate to shutter circuit", JourneyVisuals.Warm, 0.045f);
             gap = visuals.GameplayLine("Learner crossing gap", JourneyVisuals.Cool);
@@ -332,6 +337,52 @@ namespace LetGo
             KeyBlack(plateVisual);
         }
 
+        private void PrepareDeliveredBridge()
+        {
+            var renderer = plank.GetComponent<SpriteRenderer>();
+            if (renderer.sprite == null || renderer.sprite.texture.name != "prop_research_bridge") return;
+            var texture = renderer.sprite.texture;
+            bridgeSprite = Sprite.Create(texture, new Rect(55f * texture.width / 2048f,
+                103f * texture.height / 768f, 951f * texture.width / 2048f, 185f * texture.height / 768f),
+                Vector2.one * 0.5f, 100f);
+            bridgeSprite.name = "Research Bridge Closed";
+            renderer.sprite = bridgeSprite;
+            FitSprite(renderer, new Vector2(1.5f, 0.3f));
+            KeyBlack(renderer);
+            // The same flat surface rests on the archive initially and the floor after carrying.
+            var halfHeight = renderer.bounds.extents.y;
+            var position = plank.transform.position;
+            position.y = -0.2f + halfHeight;
+            plank.transform.position = position;
+            plank.DropFloorY = -2.72f + halfHeight;
+        }
+
+        private void PrepareDeliveredWindow()
+        {
+            if (windowVisual.sprite == null || windowVisual.sprite.texture.name != "workshop-window") return;
+            var texture = windowVisual.sprite.texture;
+            windowSprite = Sprite.Create(texture, new Rect(59f * texture.width / 1122f,
+                173f * texture.height / 1402f, 1006f * texture.width / 1122f, 1054f * texture.height / 1402f),
+                Vector2.one * 0.5f, 100f);
+            windowSprite.name = "Research Window Pane";
+            windowVisual.sprite = windowSprite;
+            FitSprite(windowVisual, new Vector2(1.4f, 1.5f));
+            windowVisual.sortingOrder = 3;
+            windowClosedPosition = windowVisual.transform.position;
+            var opening = visuals.Prop("Window Opening", windowClosedPosition, new Vector2(1.4f, 1.47f),
+                new Color(0.06f, 0.09f, 0.13f), "workshop-window-opening");
+            opening.sortingOrder = 2;
+            UpdateDeliveredWindow(WindActive);
+            WindowChanged += UpdateDeliveredWindow;
+        }
+
+        private void UpdateDeliveredWindow(bool open)
+        {
+            if (windowVisual == null || windowSprite == null) return;
+            windowVisual.transform.position = windowClosedPosition + Vector3.left * (open ? 0.45f : 0f);
+            windowVisual.color = open ? new Color(0.68f, 0.82f, 1f) : Color.white;
+        }
+
         private static void FitSprite(SpriteRenderer renderer, Vector2 size)
         {
             if (renderer == null || renderer.sprite == null) return;
@@ -365,6 +416,9 @@ namespace LetGo
             if (toolSurface != null) Destroy(toolSurface);
             if (plateRaisedSprite != null) Destroy(plateRaisedSprite);
             if (platePressedSprite != null) Destroy(platePressedSprite);
+            if (bridgeSprite != null) Destroy(bridgeSprite);
+            if (windowSprite != null) Destroy(windowSprite);
+            WindowChanged -= UpdateDeliveredWindow;
             foreach (var material in blackKeyMaterials.Values) Destroy(material);
         }
     }

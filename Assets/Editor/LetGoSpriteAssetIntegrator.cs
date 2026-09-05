@@ -246,34 +246,46 @@ public static class LetGoSpriteAssetIntegrator
     private static void EnsureGridSlices(string path, string prefix, int frameCount)
     {
         var importer = AssetImporter.GetAtPath(path) as TextureImporter;
-        var texture = AssetDatabase.LoadAssetAtPath<Texture2D>(path);
-        if (importer == null || texture == null) return;
+        if (importer == null) return;
+        importer.GetSourceTextureWidthAndHeight(out var sourceWidth, out var sourceHeight);
 
         var factory = new SpriteDataProviderFactories();
         factory.Init();
         var provider = factory.GetSpriteEditorDataProviderFromObject(importer);
         provider.InitSpriteEditorDataProvider();
         var current = provider.GetSpriteRects();
-        if (current.Length == frameCount && current.All(rect => rect.name.StartsWith(prefix))) return;
+        var preserveIds = current.Length == frameCount && current.All(rect => rect.name.StartsWith(prefix));
+        if (preserveIds) current = current.OrderBy(rect => rect.name).ToArray();
+        var correct = preserveIds && importer.maxTextureSize >= 4096 &&
+            importer.textureCompression == TextureImporterCompression.Uncompressed;
+        for (var i = 0; correct && i < frameCount; i++)
+        {
+            var min = Mathf.RoundToInt(sourceWidth * i / (float)frameCount);
+            var max = Mathf.RoundToInt(sourceWidth * (i + 1) / (float)frameCount);
+            correct &= current[i].rect == new Rect(min, 0f, max - min, sourceHeight);
+        }
+        if (correct) return;
 
         importer.textureType = TextureImporterType.Sprite;
         importer.spriteImportMode = SpriteImportMode.Multiple;
         importer.spritePixelsPerUnit = 100f;
         importer.alphaIsTransparency = true;
         importer.mipmapEnabled = false;
+        importer.maxTextureSize = 4096;
+        importer.textureCompression = TextureImporterCompression.Uncompressed;
 
         var rects = new SpriteRect[frameCount];
         var pairs = new SpriteNameFileIdPair[frameCount];
         for (var i = 0; i < frameCount; i++)
         {
-            var xMin = Mathf.RoundToInt(texture.width * i / (float)frameCount);
-            var xMax = Mathf.RoundToInt(texture.width * (i + 1) / (float)frameCount);
-            var id = GUID.Generate();
+            var xMin = Mathf.RoundToInt(sourceWidth * i / (float)frameCount);
+            var xMax = Mathf.RoundToInt(sourceWidth * (i + 1) / (float)frameCount);
+            var id = preserveIds ? current[i].spriteID : GUID.Generate();
             var name = $"{prefix}_{i:00}";
             rects[i] = new SpriteRect
             {
                 name = name,
-                rect = new Rect(xMin, 0f, xMax - xMin, texture.height),
+                rect = new Rect(xMin, 0f, xMax - xMin, sourceHeight),
                 alignment = SpriteAlignment.BottomCenter,
                 pivot = new Vector2(0.5f, 0f),
                 spriteID = id

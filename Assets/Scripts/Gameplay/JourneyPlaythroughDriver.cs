@@ -60,6 +60,55 @@ public sealed class JourneyPlaythroughDriver : MonoBehaviour
     private IEnumerator Run()
     {
         yield return new WaitForSeconds(1.4f);
+        if (SessionState.GetBool("LetGo.QA.HandPassages", false))
+        {
+            SessionState.EraseBool("LetGo.QA.HandPassages");
+            yield return ReviewContinuousKindergarten();
+            if (finished) yield break;
+            yield return ReviewPassages();
+            if (finished) yield break;
+            Finish("ALL PLAYTHROUGH CHECKS PASSED for continuous kindergarten, hand presentation and reversible passages.");
+            yield break;
+        }
+        if (SessionState.GetBool("LetGo.QA.DeliveredArt", false))
+        {
+            SessionState.EraseBool("LetGo.QA.DeliveredArt");
+            yield return ReviewContinuousKindergarten();
+            if (finished) yield break;
+            SceneManager.LoadScene("05_Research");
+            yield return Keys(1.4f);
+            yield return WorkshopHeld();
+            if (finished) yield break;
+            yield return ExploreAlternative();
+            if (finished) yield break;
+            yield return ReviewPassages();
+            if (finished) yield break;
+            Finish("ALL PLAYTHROUGH CHECKS PASSED for delivered art, hand presentation, workshop routes and reversible passages.");
+            yield break;
+        }
+        if (SessionState.GetBool("LetGo.QA.ContinuousKindergarten", false))
+        {
+            SessionState.EraseBool("LetGo.QA.ContinuousKindergarten");
+            yield return ReviewContinuousKindergarten();
+            if (finished) yield break;
+            if (!SessionState.GetBool("LetGo.QA.FullAfterKindergarten", false))
+            {
+                Finish("ALL PLAYTHROUGH CHECKS PASSED for the continuous kindergarten opening and return to the backpack.");
+                yield break;
+            }
+            SessionState.EraseBool("LetGo.QA.FullAfterKindergarten");
+            JourneyChoices.Reset();
+            SceneManager.LoadScene("00_Prologue");
+            yield return Keys(1.4f);
+        }
+        if (SessionState.GetBool("LetGo.QA.PassagesOnly", false))
+        {
+            SessionState.EraseBool("LetGo.QA.PassagesOnly");
+            yield return ReviewPassages();
+            if (finished) yield break;
+            Finish("ALL PLAYTHROUGH CHECKS PASSED for the entrance and reversible cinematic passages.");
+            yield break;
+        }
         if (SessionState.GetBool("LetGo.QA.TransitionsOnly", false))
         {
             SessionState.EraseBool("LetGo.QA.TransitionsOnly");
@@ -268,7 +317,7 @@ public sealed class JourneyPlaythroughDriver : MonoBehaviour
         yield return WorkshopHeld();
         if (finished) yield break;
         phase = "final farewell";
-        yield return Walk(36f);
+        yield return Walk(EmotionalJourney.Target("young-presenter").transform.position.x - 1f);
         yield return Keys(0.3f, Key.E);
         yield return Keys(0.25f);
         var ending = FindAnyObjectByType<ReleaseEndingGoal>();
@@ -423,6 +472,17 @@ public sealed class JourneyPlaythroughDriver : MonoBehaviour
                 AssetDatabase.GetAssetPath(expected).StartsWith("Assets/Audio/SFX/SFX/", StringComparison.Ordinal);
         }
         if (!Check(deliveredAudio, "all twelve delivered SFX are loaded and bound in the running scene")) yield break;
+        if (!Check(audio.AmbienceClip != null && audio.AmbienceClip.name == "amb_indoor_loop" && audio.IsAmbiencePlaying,
+            "the newly delivered indoor ambience is bound and actually looping")) yield break;
+        var bridgeArt = research.Plank.GetComponent<SpriteRenderer>();
+        var windowArt = GameObject.Find("Draft Window Handle")?.GetComponent<SpriteRenderer>();
+        if (!Check(bridgeArt.sprite.name == "Research Bridge Closed" && bridgeArt.sprite.texture.name == "prop_research_bridge" &&
+            bridgeArt.bounds.size.x > 1.4f && Mathf.Abs(bridgeArt.bounds.min.y + 0.2f) < 0.02f,
+            "the delivered bridge shows only its closed flat surface, resting on the archive")) yield break;
+        if (!Check(windowArt != null && windowArt.sprite.name == "Research Window Pane" &&
+            windowArt.sprite.texture.name == "workshop-window" && windowArt.bounds.size.y > 1.4f,
+            "the delivered window replaces the old signs using the complete cropped pane")) yield break;
+        if (!CheckLearnerPose(research, "idle")) yield break;
         Capture("05-lab-entry");
         if (!Check(guide != null && guide.GoalText.Contains("实验小人") && guide.SituationText.Contains("压力板"), "research shows its goal and the first obstacle immediately on entry")) yield break;
         yield return Keys(0.15f, Key.H);
@@ -450,6 +510,7 @@ public sealed class JourneyPlaythroughDriver : MonoBehaviour
         yield return Keys(0.2f);
         yield return Walk(11.6f);
         yield return Keys(0.2f, Key.F);
+        if (!CheckLearnerPose(research, "walk")) yield break;
         yield return Keys(2f);
         if (!Check(research.State == LearnerState.NeedsBridge, "trying before preparation exposes the missing crossing")) yield break;
         if (!Check(guide.Step == ResearchGuideStep.Bridge && guide.SituationText.Contains("落脚点") && guide.GoalText.Contains("缺口"), "the visible goal explains why the learner stopped at the gap")) yield break;
@@ -458,6 +519,8 @@ public sealed class JourneyPlaythroughDriver : MonoBehaviour
         if (finished) yield break;
         yield return Keys(2f);
         if (!Check(research.State == LearnerState.NeedsComfort, "the same crate solves a second problem but cannot solve darkness")) yield break;
+        if (!CheckLearnerPose(research, "fear")) yield break;
+        Capture("05-model-afraid");
         if (!Check(guide.Step == ResearchGuideStep.Comfort && guide.SituationText.Contains("暗处"), "the guide distinguishes fear of darkness from a missing crossing")) yield break;
         yield return Keys(0.5f, Key.D, Key.Space);
         yield return Walk(research.Learner.transform.position.x - 0.4f);
@@ -467,6 +530,7 @@ public sealed class JourneyPlaythroughDriver : MonoBehaviour
         yield return Keys(1.2f, Key.E);
         yield return Keys(0.3f);
         if (!Check(research.ShortcutOpen && !JourneyChoices.LearnedIndependentDeparture && JourneyChoices.CrossingTool == "crate", "accompanying the learner remembers a distinct solution")) yield break;
+        if (!CheckLearnerPose(research, "idle")) yield break;
         Capture("03-workshop-arrival");
         yield return ReturnReport(research);
         if (finished) yield break;
@@ -605,6 +669,8 @@ public sealed class JourneyPlaythroughDriver : MonoBehaviour
         yield return Keys(0.2f, Key.Q);
         if (!Check(!research.ShortcutOpen && research.State == LearnerState.Recalling && research.Rehearsals == 1,
             "the player can recall a successful experiment before submitting the report")) yield break;
+        if (!CheckLearnerPose(research, "walk")) yield break;
+        Capture("05-model-recalling");
         yield return Keys(3.5f);
         yield return Carry(research.Lamp, 11f);
         if (finished) yield break;
@@ -618,7 +684,7 @@ public sealed class JourneyPlaythroughDriver : MonoBehaviour
         Capture("05-learned-independence");
         yield return ReturnReport(research);
         if (finished) yield break;
-        yield return Walk(35.6f);
+        yield return Walk(EmotionalJourney.Target("young-presenter").transform.position.x - 1.4f);
         yield return Keys(0.4f);
         var ending = FindAnyObjectByType<ReleaseEndingGoal>();
         Check(ending.InitiatesOwnDeparture && ending.IsDeparting && Hand.CurrentTarget == null, "the previous independent solution makes the next person initiate goodbye without being prompted by a hand hold");
@@ -626,7 +692,7 @@ public sealed class JourneyPlaythroughDriver : MonoBehaviour
 
     private IEnumerator Walk(float x, bool hold = false)
     {
-        var timeout = Time.time + 18f;
+        var timeout = Time.time + Mathf.Max(18f, Mathf.Abs(x - Player.transform.position.x) / 2.5f + 5f);
         var direction = Mathf.Sign(x - Player.transform.position.x);
         while (Mathf.Abs(Player.transform.position.x - x) > 0.12f &&
             Mathf.Sign(x - Player.transform.position.x) == direction && Time.time < timeout && Player.ControlsEnabled)
@@ -645,6 +711,266 @@ public sealed class JourneyPlaythroughDriver : MonoBehaviour
         // Let the next input update consume the state before starting its dwell time.
         yield return null;
         yield return new WaitForSeconds(seconds);
+    }
+    private IEnumerator ReviewContinuousKindergarten()
+    {
+        JourneyChoices.Reset();
+        phase = "continuous kindergarten opening";
+        SceneManager.LoadScene("01_Kindergarten");
+        yield return Keys(1.4f);
+        var bag = EmotionalJourney.Target("home-bag");
+        var wall = GameObject.Find("Classroom Wall");
+        var backdropStates = new Dictionary<SpriteRenderer, Color>();
+        foreach (var renderer in wall.GetComponentsInChildren<SpriteRenderer>())
+            if (renderer.enabled) backdropStates.Add(renderer, renderer.color);
+        if (!Check(VisibleObject(bag.gameObject) && VisibleObject(GameObject.Find("Cubby")) &&
+            !VisibleObject(GameObject.Find("Integrated Classroom Entrance")) && PassageAlpha() == 0f,
+            "the opening starts with a stable classroom, visible backpack and cubby, and no transition overlay")) yield break;
+        Capture("01-continuous-start");
+        var escort = FindAnyObjectByType<ParentEscort>();
+        yield return Keys(0.3f, Key.E);
+        yield return new WaitForEndOfFrame();
+        if (!CheckHandThread("near the parent")) yield break;
+        Capture("01-hand-thread-near");
+        for (var i = 0; i < 80 && !escort.WaitingAtDoor; i++) yield return Keys(0.2f, Key.E);
+        if (!Check(escort.WaitingAtDoor && Player.ControlsEnabled, "parental guidance still works in the continuous classroom")) yield break;
+        yield return Walk(EmotionalJourney.Target("parent").transform.position.x + 2.05f, true);
+        yield return new WaitForEndOfFrame();
+        if (!CheckHandThread("when walking away from the waiting parent")) yield break;
+        Capture("01-hand-thread-stretched");
+        yield return Keys(0.2f);
+        yield return new WaitForEndOfFrame();
+        if (!Check(!FindAnyObjectByType<HandTetherPresentation>().IsVisible, "releasing the parent hides the hand thread")) yield break;
+        yield return Walk(-1.25f);
+        yield return Keys(0.2f, Key.E);
+        if (!Check(Hand.CurrentTarget == bag && FindAnyObjectByType<ReleaseGate>().HasEntered,
+            "the backpack can be picked up after the child's own first step")) yield break;
+        yield return new WaitForEndOfFrame();
+        if (!Check(!FindAnyObjectByType<HandTetherPresentation>().IsVisible, "carrying the backpack never shows the hand thread")) yield break;
+        yield return Walk(-4.2f, true);
+        yield return Keys(0.8f, Key.E);
+        var unchanged = true;
+        foreach (var state in backdropStates) unchanged &= state.Key.enabled && state.Key.color == state.Value;
+        if (!Check(Hand.CurrentTarget == bag && VisibleObject(bag.gameObject) && unchanged && PassageAlpha() == 0f &&
+            !VisibleObject(GameObject.Find("Integrated Classroom Entrance")),
+            "carrying the backpack back across the old threshold never fades or replaces the scene")) yield break;
+        if (!Check(Mathf.Abs(Camera.main.transform.position.x - Player.transform.position.x) < 0.6f,
+            "the camera continues following the child when returning toward the parents")) yield break;
+        Capture("01-continuous-return-with-bag");
+        yield return Keys(0.3f);
+        if (!Check(Hand.CurrentTarget == null && VisibleObject(bag.gameObject),
+            "putting the backpack down on the return route leaves it visible")) yield break;
+        yield return Keys(0.2f, Key.E);
+        yield return Walk(1.8f, true);
+        yield return Keys(0.3f);
+        if (!Check(StorySceneDirector.Instance.CompletedObjectives == 2 && VisibleObject(bag.gameObject) && PassageAlpha() == 0f,
+            "returning with the backpack still completes the chair task without a camera transition")) yield break;
+        Capture("01-continuous-bag-placed");
+    }
+
+    private bool CheckHandThread(string moment)
+    {
+        var presentation = FindAnyObjectByType<HandTetherPresentation>();
+        var line = presentation == null ? null : presentation.GetComponent<LineRenderer>();
+        return Check(Hand.CurrentTarget != null && presentation != null && presentation.IsVisible &&
+            line.positionCount == 16 && line.startWidth <= 0.0281f && line.endWidth <= 0.0221f &&
+            Vector3.Distance(line.GetPosition(0), presentation.StartPoint) < 0.001f &&
+            Vector3.Distance(line.GetPosition(15), presentation.EndPoint) < 0.001f &&
+            presentation.StartPoint.y > Player.CharacterRenderer.bounds.min.y &&
+            presentation.StartPoint.y < Player.CharacterRenderer.bounds.max.y,
+            "thin curved hand thread follows visible hands " + moment);
+    }
+
+    private static bool VisibleObject(GameObject root)
+    {
+        if (root == null) return false;
+        foreach (var renderer in root.GetComponentsInChildren<SpriteRenderer>(true))
+            if (renderer.enabled && renderer.gameObject.activeInHierarchy && renderer.color.a > 0.99f) return true;
+        return false;
+    }
+
+    private IEnumerator ReviewPassages()
+    {
+        JourneyChoices.Reset();
+        phase = "kindergarten entrance continuity";
+        SceneManager.LoadScene("01_Kindergarten");
+        yield return Keys(1.4f);
+        Capture("01-entrance-wide");
+        var escort = FindAnyObjectByType<ParentEscort>();
+        for (var i = 0; i < 80 && !escort.WaitingAtDoor; i++) yield return Keys(0.2f, Key.E);
+        if (!Check(escort.WaitingAtDoor && Player.ControlsEnabled, "the opening still lets the parent lead to the doorway")) yield break;
+        yield return Keys(0.2f);
+        yield return Walk(-1.8f);
+        yield return Keys(1f);
+        if (!Check(Player.ControlsEnabled && PassageVisible(), "stopping at the kindergarten threshold keeps the scene visible and controllable")) yield break;
+        Capture("01-entrance-threshold");
+        yield return Walk(-3.2f);
+        yield return Keys(0.5f);
+        if (!Check(PassageVisible(), "returning toward the parent does not trap the opening in a blackout")) yield break;
+        Capture("01-entrance-return");
+        yield return Walk(-0.8f);
+        yield return Keys(0.6f);
+        if (!Check(StorySceneDirector.Instance.CompletedObjectives == 1 && PassageVisible(), "entering the classroom preserves the release objective and visibility")) yield break;
+        Capture("01-entrance-inside");
+
+        phase = "final memory continuity";
+        SceneManager.LoadScene("06_FinalWalk");
+        yield return Keys(1.4f);
+        var clearDistance = Mathf.Max(14f, Camera.main.orthographicSize * Camera.main.aspect * 2f + 1.9f);
+        foreach (var age in new[] { "char_teen", "char_adult" })
+        {
+            FinalAgeTransition transition = null;
+            foreach (var candidate in FindObjectsByType<FinalAgeTransition>())
+                if (candidate.ArtSlotId == age) transition = candidate;
+            if (!Check(transition != null, "the memory walk contains the " + age + " transition")) yield break;
+            var boundary = transition.transform.position.x;
+            var earlierAge = age == "char_teen" ? "char_child" : "char_teen";
+            yield return Walk(boundary - clearDistance);
+            yield return Keys(0.2f);
+            if (!Check(Player.CharacterRenderer.sprite.name.StartsWith(earlierAge) && PassageVisible(),
+                "approaching " + age + " begins visibly in " + earlierAge)) yield break;
+            Capture("06-before-" + age);
+            var bodySize = Player.GetComponent<Collider2D>().bounds.size;
+            yield return Walk(boundary - 0.5f);
+            yield return Keys(1f);
+            if (!Check(PassageAlpha() >= 0.99f && Player.ControlsEnabled && Player.CharacterRenderer.sprite.name.StartsWith(earlierAge),
+                "the player enters full black before changing from " + earlierAge)) yield break;
+            Capture("06-black-before-" + age);
+            yield return Walk(boundary + 0.5f);
+            yield return Keys(0.2f);
+            if (!Check(PassageAlpha() >= 0.99f && transition.IsCurrentAge && Player.CharacterRenderer.sprite.name.StartsWith(age) &&
+                Vector3.Distance(bodySize, Player.GetComponent<Collider2D>().bounds.size) < 0.01f,
+                "the " + age + " change occurs inside full black without changing collision dimensions")) yield break;
+            yield return Walk(boundary + clearDistance);
+            yield return Keys(0.2f);
+            if (!Check(PassageVisible() && Player.CharacterRenderer.sprite.name.StartsWith(age),
+                "walking out of the cinematic passage reveals " + age)) yield break;
+            Capture("06-emerged-" + age);
+            yield return Keys(0.1f);
+            if (!CheckMemoryBackdrop(age == "char_teen" ? "Stage Memory" : "Research Memory")) yield break;
+            yield return Walk(boundary - 0.5f);
+            yield return Keys(0.2f);
+            if (!Check(PassageAlpha() >= 0.99f && !transition.IsCurrentAge && Player.CharacterRenderer.sprite.name.StartsWith(earlierAge),
+                "walking back restores " + earlierAge + " while still fully black")) yield break;
+            yield return Walk(boundary - clearDistance);
+            yield return Keys(0.2f);
+            if (!Check(PassageVisible() && Player.CharacterRenderer.sprite.name.StartsWith(earlierAge),
+                "leaving the passage backwards reveals the previous age again")) yield break;
+            Capture("06-returned-" + earlierAge);
+            yield return Keys(0.1f);
+            if (!CheckMemoryBackdrop(earlierAge == "char_child" ? "Kindergarten Memory" : "Stage Memory")) yield break;
+            yield return Walk(boundary + clearDistance);
+            yield return Keys(0.2f);
+            if (!Check(transition.Applications >= 2 && transition.IsCurrentAge && Player.ControlsEnabled,
+                "repeating the same crossing restores " + age + " without a one-shot trigger")) yield break;
+        }
+        yield return Walk(FinalPassageLayout.Centers[2]);
+        yield return Keys(1f);
+        if (!Check(Player.ControlsEnabled && PassageAlpha() >= 0.99f, "the last cinematic passage also keeps movement available inside full black")) yield break;
+        Capture("06-final-threshold");
+        yield return Walk(FinalPassageLayout.Centers[2] + clearDistance);
+        yield return Keys(0.2f);
+        if (!Check(PassageVisible(), "continued walking reveals the last room instead of ending the scene automatically")) yield break;
+        if (!CheckMemoryBackdrop("Unknown Wall")) yield break;
+        Capture("06-final-emerged");
+        phase = "farewell after spaced memory rooms";
+        var recipient = EmotionalJourney.Target("young-presenter");
+        var ending = FindAnyObjectByType<ReleaseEndingGoal>();
+        yield return Walk(recipient.transform.position.x - 0.8f);
+        yield return Keys(1.8f, Key.E);
+        if (!Check(ending.IsReadyToLeave && Hand.CurrentTarget == recipient,
+            "the relocated final recipient still receives the player's reassurance")) yield break;
+        yield return new WaitForEndOfFrame();
+        if (!CheckHandThread("between the adult and final recipient")) yield break;
+        Capture("06-hand-thread-reassurance");
+        yield return Keys(4f);
+        if (!Check(ending.HasEnteredDoor && Player.ControlsEnabled,
+            "the relocated goodbye reaches its actual door and waits for the player's last step")) yield break;
+        yield return Walk(ending.OnwardPositionX + 0.2f);
+        yield return Keys(0.3f);
+        if (!Check(!Player.ControlsEnabled,
+            "the expanded memory floor and camera still allow the player to complete the ending")) yield break;
+    }
+
+    private bool CheckMemoryBackdrop(string expectedRoot)
+    {
+        var view = Camera.main;
+        SpriteRenderer backdrop = null;
+        var adjacentHidden = true;
+        var halfHeight = view.orthographicSize;
+        var halfWidth = halfHeight * view.aspect;
+        var center = view.transform.position;
+        foreach (var rootName in new[] { "Kindergarten Memory", "Stage Memory", "Research Memory", "Unknown Wall" })
+        {
+            var root = GameObject.Find(rootName);
+            if (root == null) continue;
+            foreach (var renderer in root.GetComponentsInChildren<SpriteRenderer>(true))
+            {
+                if (!renderer.enabled || !renderer.gameObject.activeInHierarchy || renderer.color.a <= 0f) continue;
+                if (rootName == expectedRoot) backdrop = renderer;
+                else adjacentHidden &= renderer.bounds.max.x <= center.x - halfWidth || renderer.bounds.min.x >= center.x + halfWidth;
+            }
+        }
+        var covers = false;
+        if (backdrop != null && view != null)
+        {
+            var bounds = backdrop.bounds;
+            // The authored panoramas intentionally have narrow letterboxing. Check their
+            // playable picture and floor, rather than requiring a stretched full-height image.
+            covers = bounds.min.x <= center.x - halfWidth + 0.02f && bounds.max.x >= center.x + halfWidth - 0.02f &&
+                bounds.size.y >= halfHeight * 1.6f && bounds.min.y <= Player.GetComponent<Collider2D>().bounds.min.y + 0.2f;
+        }
+        return Check(adjacentHidden && covers && backdrop != null && backdrop.enabled,
+            "the complete " + expectedRoot + " fills the playable frame, without adjacent-room seams" +
+            " (bounds=" + (backdrop == null ? "missing" : backdrop.bounds.ToString()) + ", camera=" + center + ", adjacent=" + adjacentHidden + ")");
+    }
+
+    private bool PassageVisible()
+    {
+        return PassageAlpha() < 0.4f;
+    }
+
+    private float PassageAlpha()
+    {
+        if (SceneManager.GetActiveScene().name == "06_FinalWalk")
+        {
+            var view = Camera.main;
+            var halfHeight = view.orthographicSize;
+            var halfWidth = halfHeight * view.aspect;
+            var center = view.transform.position;
+            var overlap = false;
+            foreach (var renderer in FindObjectsByType<SpriteRenderer>())
+            {
+                if (!renderer.name.StartsWith("Memory Black Passage ") || !renderer.enabled) continue;
+                var bounds = renderer.bounds;
+                if (renderer.sortingOrder <= Player.CharacterRenderer.sortingOrder || renderer.color.a < 0.999f) return -1f;
+                if (bounds.min.x <= center.x - halfWidth && bounds.max.x >= center.x + halfWidth &&
+                    bounds.min.y <= center.y - halfHeight && bounds.max.y >= center.y + halfHeight) return 1f;
+                overlap |= bounds.min.x < center.x + halfWidth && bounds.max.x > center.x - halfWidth;
+            }
+            return overlap ? 0.5f : 0f;
+        }
+        var overlay = FindAnyObjectByType<PassageBlackoutOverlay>();
+        if (overlay == null || !overlay.enabled) return 0f;
+        var alpha = typeof(PassageBlackoutOverlay).GetProperty("CurrentAlpha");
+        return alpha == null ? -1f : (float)alpha.GetValue(overlay);
+    }
+
+    private bool CheckLearnerPose(ResearchExpedition research, string pose)
+    {
+        SpriteRenderer visible = null;
+        var count = 0;
+        foreach (var renderer in research.Learner.GetComponentsInChildren<SpriteRenderer>())
+            if (renderer.enabled && renderer.gameObject.activeInHierarchy && renderer.color.a > 0f)
+            { visible = renderer; count++; }
+        var sprite = visible == null ? null : visible.sprite;
+        var valid = count == 1 && sprite != null &&
+            sprite.name == "prop_research_model_" + pose &&
+            AssetDatabase.GetAssetPath(sprite.texture) == "Assets/Sprites/prop_research_model.png" &&
+            sprite.rect.width < sprite.texture.width * 0.5f &&
+            Mathf.Abs(visible.bounds.min.y + 2.72f) < 0.08f;
+        return Check(valid, "delivered learner shows one grounded " + pose + " pose during " + research.State +
+            " (sprite=" + sprite?.name + ", bottom=" + (visible == null ? "missing" : visible.bounds.min.y.ToString("F2")) + ")");
     }
     private bool Check(bool condition, string message)
     {

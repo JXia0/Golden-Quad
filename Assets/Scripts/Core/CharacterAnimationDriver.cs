@@ -30,6 +30,7 @@ namespace LetGo
         private bool hasVerticalSpeed;
         private bool hasCarrying;
         private bool hasSelfAnchoring;
+        private RuntimeAnimatorController parameterController;
 
         private void Awake()
         {
@@ -37,7 +38,13 @@ namespace LetGo
             player = GetComponent<PlayerController2D>();
             inventory = GetComponent<CarryInventory>();
             connection = GetComponent<HandConnection>();
+            RefreshParameters();
+        }
 
+        private void RefreshParameters()
+        {
+            parameterController = animator.runtimeAnimatorController;
+            hasSpeed = hasMoving = hasVerticalSpeed = hasCarrying = hasSelfAnchoring = hasPerform = false;
             foreach (var parameter in animator.parameters)
             {
                 if (parameter.nameHash == SpeedId && parameter.type == AnimatorControllerParameterType.Float) hasSpeed = true;
@@ -51,6 +58,7 @@ namespace LetGo
 
         private void Update()
         {
+            if (parameterController != animator.runtimeAnimatorController) RefreshParameters();
             var velocity = player.Velocity;
             var horizontalSpeed = Mathf.Abs(velocity.x);
             if (hasSpeed) animator.SetFloat(SpeedId, horizontalSpeed);

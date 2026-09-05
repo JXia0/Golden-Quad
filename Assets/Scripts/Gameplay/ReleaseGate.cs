@@ -4,6 +4,7 @@ namespace LetGo
 {
     public sealed class ReleaseGate : MonoBehaviour
     {
+        public bool HasEntered => completed;
         [SerializeField] private HandConnection connection;
         [SerializeField] private string targetId;
         [SerializeField] private float boundaryX;
