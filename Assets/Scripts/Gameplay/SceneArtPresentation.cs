@@ -124,6 +124,8 @@ namespace LetGo
                 }
                 var stageVisual = GameObject.Find("Stage Background")?.transform.Find("Aligned Visual")?.GetComponent<SpriteRenderer>();
                 if (stageVisual != null) FitWorld(stageVisual, new Vector2(38f, 12.7f));
+                if (GetComponent<StageFeedbackPresentation>() == null)
+                    gameObject.AddComponent<StageFeedbackPresentation>();
             }
             else if (scene == "05_Research")
             {
@@ -135,6 +137,7 @@ namespace LetGo
                     FitWorld(hallway, new Vector2(14f, 5.5f));
                     hallway.transform.position = research.position + Vector3.right * 15f;
                 }
+                NormalizeResearchPresentation();
                 AddPassageOverlay(scene);
             }
             else if (scene == "06_FinalWalk")
@@ -145,6 +148,52 @@ namespace LetGo
                     if (transform.name.StartsWith("Memory Picture ")) transform.gameObject.SetActive(false);
                 AddPassageOverlay(scene);
             }
+        }
+
+        private static void NormalizeResearchPresentation()
+        {
+            // The frame itself already contains a readable latch and status light. The separate
+            // full-canvas latch sheets looked like person-sized floating machines in play.
+            HideRenderers("Inside Shutter Latch Locked");
+            HideRenderers("Inside Shutter Latch Open");
+
+            GroundVisual("Workshop Crate", new Vector2(1.08f, 1.08f));
+            GroundVisual("Portable Lamp", new Vector2(0.58f, 0.72f));
+            GroundVisual("Workshop Learner", new Vector2(0.56f, 0.9f));
+
+            var plate = GameObject.Find("Pressure Plate")?.GetComponent<SpriteRenderer>();
+            if (plate != null)
+            {
+                FitWorld(plate, new Vector2(1.35f, 0.22f));
+                plate.transform.position += Vector3.up * (GroundY - plate.bounds.min.y + 0.01f);
+                plate.sortingOrder = 10;
+            }
+
+            var frame = GameObject.Find("Workshop Shutter Frame")?.GetComponent<SpriteRenderer>();
+            if (frame != null) frame.sortingOrder = 9;
+            var door = GameObject.Find("Workshop Shutter Door")?.GetComponent<SpriteRenderer>();
+            if (door != null) door.sortingOrder = 8;
+        }
+
+        private static void GroundVisual(string rootName, Vector2 size)
+        {
+            var root = GameObject.Find(rootName)?.transform;
+            var source = root?.GetComponent<SpriteRenderer>();
+            if (root == null || source == null || source.sprite == null) return;
+            var visual = root.Find("Presentation Visual")?.GetComponent<SpriteRenderer>();
+            if (visual == null)
+            {
+                visual = new GameObject("Presentation Visual", typeof(SpriteRenderer)).GetComponent<SpriteRenderer>();
+                visual.transform.SetParent(root, false);
+            }
+            visual.sprite = source.sprite;
+            visual.sharedMaterial = source.sharedMaterial;
+            visual.color = source.color;
+            visual.sortingLayerID = source.sortingLayerID;
+            visual.sortingOrder = source.sortingOrder;
+            FitWorld(visual, size);
+            visual.transform.position += Vector3.up * (GroundY - visual.bounds.min.y);
+            source.enabled = false;
         }
 
         private void AddPassageOverlay(string scene)
@@ -242,9 +291,18 @@ namespace LetGo
             if (view == null) return;
             ComposeKindergartenEntrance();
             RevealFinalMemoryGroups();
+            RestyleStageFeedback();
+            MaintainResearchPresentation();
             ClampCamera();
             FitOverlay(vignette);
             UpdateVignette();
+        }
+
+        private static void MaintainResearchPresentation()
+        {
+            if (SceneManager.GetActiveScene().name != "05_Research") return;
+            HideRenderers("Inside Shutter Latch Locked");
+            HideRenderers("Inside Shutter Latch Open");
         }
 
         private void FitPlayerForCurrentAge()
@@ -320,6 +378,49 @@ namespace LetGo
             if (bagRoot == null) return;
             foreach (var renderer in bagRoot.GetComponentsInChildren<SpriteRenderer>(true))
                 if (renderer.enabled) kindergartenRevealProps.Add(renderer);
+        }
+
+        private static void RestyleStageFeedback()
+        {
+            if (SceneManager.GetActiveScene().name != "03_Stage") return;
+            foreach (var line in FindObjectsByType<LineRenderer>())
+            {
+                if (line.positionCount == 0) continue;
+                if (line.name.StartsWith("Listener response"))
+                    RestyleRing(line, 0.42f, 0.42f, float.NaN, JourneyVisuals.Cool, 0.5f, 0.018f);
+                else if (line.name == "A breath becomes a phrase")
+                    RestyleRing(line, 0.68f, 0.12f, GroundY + 0.07f, JourneyVisuals.Warm, 0.55f, 0.024f);
+                else if (line.name == "Where the voice is going")
+                    RestyleLine(line, JourneyVisuals.Warm, 0.38f, 0.022f);
+            }
+        }
+
+        private static void RestyleRing(LineRenderer line, float xScale, float yScale, float targetY,
+            Color color, float alpha, float width)
+        {
+            var sourceCenter = LineCenter(line);
+            var center = sourceCenter;
+            if (!float.IsNaN(targetY)) center.y = targetY;
+            for (var i = 0; i < line.positionCount; i++)
+            {
+                var delta = line.GetPosition(i) - sourceCenter;
+                line.SetPosition(i, center + new Vector3(delta.x * xScale, delta.y * yScale, delta.z));
+            }
+            RestyleLine(line, color, alpha, width);
+        }
+
+        private static Vector3 LineCenter(LineRenderer line)
+        {
+            var center = Vector3.zero;
+            for (var i = 0; i < line.positionCount; i++) center += line.GetPosition(i);
+            return center / Mathf.Max(1, line.positionCount);
+        }
+
+        private static void RestyleLine(LineRenderer line, Color color, float alpha, float width)
+        {
+            color.a = alpha;
+            line.startColor = line.endColor = color;
+            line.startWidth = line.endWidth = width;
         }
 
         private void PrepareFinalMemoryGroups()
