@@ -28,7 +28,7 @@ namespace LetGo
             {
                 case "01_Kindergarten": director.gameObject.AddComponent<KindergartenChapter>().Initialize(director, visuals); break;
                 case "03_Stage": director.gameObject.AddComponent<StagePerformance>().Initialize(director, visuals); break;
-                case "05_Research": director.gameObject.AddComponent<ResearchDraft>().Initialize(director, visuals); break;
+                case "05_Research": director.gameObject.AddComponent<ResearchExpedition>().Initialize(director, visuals); break;
             }
         }
 

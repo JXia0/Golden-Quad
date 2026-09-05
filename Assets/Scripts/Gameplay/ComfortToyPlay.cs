@@ -37,6 +37,7 @@ namespace LetGo
 
         private void Roll(HoldTarget value)
         {
+            if (Exchanges >= 2) return;
             if (toy.IsPlaced) return;
             playerThrow = true;
             speed = player.FacingDirection * Mathf.Lerp(2f, 4.6f, Mathf.Clamp01(toy.HeldDuration));
@@ -44,7 +45,7 @@ namespace LetGo
 
         private void Update()
         {
-            if (toy == null) return;
+            if (toy == null || Exchanges >= 2) { if (aim != null) aim.enabled = false; return; }
             director.ClearPrompt(activePrompt);
             activePrompt = null;
             aim.enabled = toy.IsHeld;

@@ -38,6 +38,12 @@ namespace LetGo
 
         private void OnDisable() => ActiveSockets.Remove(this);
 
+        public static void Reclaim(HoldTarget target)
+        {
+            foreach (var socket in ActiveSockets)
+                if (socket != null && socket.occupant == target) socket.occupant = null;
+        }
+
         public static bool TryPlace(HoldTarget target)
         {
             HoldSocket best = null;

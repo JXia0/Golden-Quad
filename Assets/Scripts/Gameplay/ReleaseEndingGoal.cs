@@ -24,6 +24,7 @@ namespace LetGo
         public bool IsDeparting => departing;
         public bool HasEnteredDoor => gone;
         public bool IsReadyToLeave => ready;
+        public bool InitiatesOwnDeparture => JourneyChoices.LearnedIndependentDeparture;
         public bool IsHeldBack { get; private set; }
         public int TimesReheld { get; private set; }
         public float OnwardPositionX => onwardX;
@@ -58,6 +59,21 @@ namespace LetGo
                 {
                     breath = visuals.Line("The next person's breath", JourneyVisuals.Warm);
                     onward = visuals.Line("One more step", JourneyVisuals.Warm, 0.035f);
+                }
+            }
+            // The workshop taught a way of helping. That experience changes who takes
+            // the initiative here, while both versions still allow reaching back.
+            if (!departing && !ready && InitiatesOwnDeparture &&
+                Mathf.Abs(connection.transform.position.x - recipient.transform.position.x) < 2.1f)
+            {
+                ready = true;
+                readyAt = Time.time;
+                ReadyToLeave?.Invoke();
+                if (connection.CurrentTarget != recipient)
+                {
+                    departing = true;
+                    wasHeld = false;
+                    RecipientDeparted?.Invoke();
                 }
             }
             if (departing)

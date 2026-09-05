@@ -21,6 +21,7 @@ namespace LetGo
             (Keyboard.current.spaceKey.wasPressedThisFrame || Keyboard.current.wKey.wasPressedThisFrame || Keyboard.current.upArrowKey.wasPressedThisFrame);
 
         public static bool InteractPressed => Keyboard.current != null && Keyboard.current.eKey.wasPressedThisFrame;
+        public static bool UsePressed => Keyboard.current != null && Keyboard.current.fKey.wasPressedThisFrame;
         public static bool InteractHeld => Keyboard.current != null && Keyboard.current.eKey.isPressed;
         public static bool InteractReleased => Keyboard.current != null && Keyboard.current.eKey.wasReleasedThisFrame;
         public static bool RestartPressed => Keyboard.current != null && Keyboard.current.rKey.wasPressedThisFrame;

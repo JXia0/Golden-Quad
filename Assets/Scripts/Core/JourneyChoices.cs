@@ -9,6 +9,18 @@ namespace LetGo
         public static bool FirstBeatLong { get; private set; }
         public static bool SecondBeatLong { get; private set; }
         public static string TestedResearchModel { get; private set; }
+        public static bool TookChildhoodToy { get; private set; }
+        public static bool LearnedIndependentDeparture { get; private set; }
+        public static string CrossingTool { get; private set; }
+        public static int WorkshopVisits { get; private set; }
+        public static int BeginWorkshop() => ++WorkshopVisits;
+        public static void TakeChildhoodToy(bool taken) => TookChildhoodToy = taken;
+        public static void RememberWorkshop(string support, string crossing, bool independent)
+        {
+            TestedResearchModel = support;
+            CrossingTool = crossing;
+            LearnedIndependentDeparture = independent;
+        }
 
         public static void RememberRhythm(bool firstLong, bool secondLong)
         {
@@ -27,6 +39,8 @@ namespace LetGo
             HasStageRhythm = false;
             FirstBeatLong = SecondBeatLong = false;
             TestedResearchModel = string.Empty;
+            TookChildhoodToy = LearnedIndependentDeparture = false;
+            CrossingTool = string.Empty;
         }
 
         public static void Record(string category, string value, bool onlyIfEmpty)

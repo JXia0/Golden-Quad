@@ -56,11 +56,18 @@ public static class JourneyPlaythroughChecks
     public static void RunBatch()
     {
         EditorSceneManager.OpenScene("Assets/Scenes/00_Prologue.unity");
+        JourneyArtImporter.Refresh();
         JourneyRegressionChecks.Run();
         if (!File.ReadAllText("Logs/JourneyRegressionChecks.txt").Contains("ALL CHECKS PASSED"))
         { EditorApplication.Exit(1); return; }
         SessionState.SetBool(BatchKey, true);
         Run();
+    }
+
+    public static void ValidateWorkshopBatch()
+    {
+        SessionState.SetBool("LetGo.QA.WorkshopOnly", true);
+        RunBatch();
     }
 
     public static void BuildWindowsBatch()

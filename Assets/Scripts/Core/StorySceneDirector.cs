@@ -32,6 +32,7 @@ namespace LetGo
         public bool ObjectivesComplete => completedObjectives >= requiredObjectives;
         public int CompletedObjectives => completedObjectives;
         public int RequiredObjectives => requiredObjectives;
+        public void SetRequiredObjectives(int count) { requiredObjectives = count; UpdateObjectiveText(); }
 
         private void Awake()
         {

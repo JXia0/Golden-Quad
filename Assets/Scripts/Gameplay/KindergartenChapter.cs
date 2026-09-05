@@ -49,6 +49,7 @@ namespace LetGo
             {
                 value.transform.SetParent(child.transform, true);
                 value.transform.position = child.transform.position + new Vector3(0.35f, -0.15f, 0);
+                if (teacher.Completed) value.AllowReclaim = true;
                 JourneyChoices.Record("kindergarten", "shared-comfort", false);
             };
             gameObject.AddComponent<ComfortToyPlay>().Initialize(director, toy, child, toySocket, visuals);
@@ -57,6 +58,10 @@ namespace LetGo
             teacher.Placed += value =>
             {
                 value.WalkAway(teacher.transform.position + Vector3.right * 1.4f);
+                toy.AllowReclaim = true;
+                toySocket.Replaceable = true;
+                toy.DropFloorY = -2.35f;
+                toy.Configure("comfort-toy", HoldTargetMode.Carryable, "E · 取回熟悉的玩具，也可以留给他", 1.5f, 3f);
                 var environment = FindAnyObjectByType<EmotionalEnvironment>();
                 if (environment != null) environment.Resolution01 = 1f;
             };
@@ -77,7 +82,7 @@ namespace LetGo
             else director.ClearPrompt(WaitPrompt);
             Transform receiver = null;
             if (hand.CurrentTarget == bag) receiver = chair;
-            else if (hand.CurrentTarget == toy) receiver = child.transform;
+            else if (hand.CurrentTarget == toy && !teacher.Completed) receiver = child.transform;
             else if (hand.CurrentTarget == child) receiver = teacher.transform;
             destination.enabled = receiver != null;
             if (receiver != null)

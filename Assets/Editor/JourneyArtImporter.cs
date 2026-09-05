@@ -8,7 +8,12 @@ using UnityEngine;
 public sealed class JourneyArtImporter : AssetPostprocessor
 {
     private const string PalettePath = "Assets/Resources/JourneyArtPalette.asset";
-    private static readonly string[] Slots = { "prop_child_backpack", "prop_research_model", "prop_research_bridge" };
+    private static readonly string[] Slots =
+    {
+        "prop_child_backpack", "prop_research_model", "prop_research_bridge", "prop_toy", "prop_researchlight", "prop_stage_box", "prop_research_report", "prop_research_book",
+        "workshop-platform", "workshop-notebook", "workshop-plate", "workshop-shutter", "workshop-latch",
+        "workshop-window", "workshop-report", "workshop-desk"
+    };
     private static bool queued;
 
     [InitializeOnLoadMethod]

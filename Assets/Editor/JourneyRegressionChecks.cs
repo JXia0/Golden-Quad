@@ -148,37 +148,35 @@ public static class JourneyRegressionChecks
 
     private static void ValidateExperiments(List<string> results)
     {
-        var trial = new ResearchTrial();
-        trial.Begin(0f, 8f, true);
-        trial.Tick(3f, -5f, true, true, 0f, false);
-        Require(trial.WaitingForBridge && trial.PositionX < trial.FirstGapX, "a missing bridge blocks the figure");
-        trial.Tick(3f, -5f, true, true, trial.FirstGapX, true);
-        trial.Tick(5f, -5f, true, true, trial.FirstGapX, true);
-        Require(trial.State == ResearchTrialState.NeedsCompany, "company model cannot complete without company");
-        trial.Tick(1f, trial.PositionX, false, true, trial.FirstGapX, true);
-        Require(trial.State == ResearchTrialState.NeedsCompany, "running past is not companionship");
-        trial.Tick(1f, trial.PositionX, true, false, trial.FirstGapX, true);
-        Require(trial.State == ResearchTrialState.NeedsCompany, "hands must be free during the trial response");
-        trial.Tick(1f, trial.PositionX, true, true, trial.FirstGapX, true);
-        trial.Tick(3f, 8f, true, true, trial.FirstGapX, true);
-        Require(trial.WaitingForBridge && trial.PositionX < trial.SecondGapX, "the same bridge must move to the second gap");
-        trial.Tick(3f, 8f, true, true, trial.SecondGapX, true);
-        Require(trial.State == ResearchTrialState.Arrived, "company trial reaches its end after a nearby pause");
-        results.Add("PASS: observational trial requires a nearby pause with empty hands, then finishes independently.");
-        trial.Begin(0f, 8f, false);
-        Require(trial.State == ResearchTrialState.Approaching && trial.Progress01 == 0f,
-            "revision invalidates the previous test result");
-        trial.Tick(3f, 0f, true, true, trial.SecondGapX, true);
-        Require(trial.WaitingForBridge, "a revision needs its own crossing, not the previous model's bridge progress");
-        trial.Tick(3f, 0f, true, true, trial.FirstGapX, true);
-        trial.Tick(5f, trial.PositionX, true, true, trial.FirstGapX, true);
-        Require(trial.State == ResearchTrialState.NeedsSpace, "waiting beside the direct model cannot advance it");
-        trial.Tick(1f, trial.PositionX + 3f, true, false, trial.SecondGapX, true);
-        Require(trial.State == ResearchTrialState.NeedsSpace, "carrying the conclusion cannot substitute for letting go");
-        trial.Tick(1f, trial.PositionX + 3f, true, true, trial.SecondGapX, true);
-        trial.Tick(3f, 8f, true, true, trial.SecondGapX, true);
-        Require(trial.State == ResearchTrialState.Arrived, "direct trial reaches its end when given room");
-        results.Add("PASS: revised direct trial requires space and cannot reuse the observational result.");
+        var walker = new ExpeditionLearner();
+        for (var i = 0; i < 200; i++) walker.Tick(0.05f, "crate", false, 23f, true, false);
+        Require(walker.X == 12f, "the learner waits for player initiative");
+        walker.Start();
+        for (var i = 0; i < 100; i++) walker.Tick(0.05f, "", false, 23f, true, false);
+        Require(walker.State == LearnerState.NeedsBridge, "no crossing without a placed tool");
+        for (var i = 0; i < 80; i++) walker.Tick(0.05f, "plank", false, 23f, false, false);
+        Require(walker.State == LearnerState.NeedsComfort, "the learner stops at darkness");
+        for (var i = 0; i < 30; i++)
+        {
+            walker.Tick(0.016f, "plank", false, 23f, false, false);
+            Require(walker.State == LearnerState.NeedsComfort && Mathf.Abs(walker.X - 17.8f) < 0.01f,
+                "waiting without support must not oscillate between moving and stopping");
+        }
+        for (var i = 0; i < 10; i++) walker.Tick(0.05f, "plank", false, 23f, true, false);
+        var before = walker.X;
+        walker.Tick(0.2f, "plank", false, 23f, false, false);
+        Require(walker.X < before && walker.Retreats == 1, "removing support makes the learner retreat");
+        for (var i = 0; i < 100; i++) walker.Tick(0.05f, "plank", false, 23f, true, false);
+        Require(walker.State == LearnerState.Arrived && walker.Independent && walker.Support == "lamp" && walker.Crossing == "plank", "lamp and plank enable independent crossing");
+        results.Add("PASS: missing tools stop progress; withdrawing light causes a recoverable retreat; lamp and plank allow independent crossing.");
+        walker = new ExpeditionLearner();
+        for (var i = 0; i < 200; i++) walker.Tick(0.05f, "crate", true, 24f, false, false);
+        Require(walker.State == LearnerState.Arrived && !walker.Independent && walker.Support == "hand" && walker.Crossing == "crate", "crate and hand are a complete alternate solution");
+        results.Add("PASS: crate and hand solve the same space with a different remembered outcome.");
+        walker = new ExpeditionLearner(); walker.Start();
+        for (var i = 0; i < 200; i++) walker.Tick(0.05f, "crate", false, 24f, false, true);
+        Require(walker.State == LearnerState.Arrived && walker.Independent && walker.Support == "toy", "a remembered toy substitutes for light");
+        results.Add("PASS: the childhood toy is a functional substitute for the lamp.");
     }
 
     private static void ValidateScenes(List<string> results)

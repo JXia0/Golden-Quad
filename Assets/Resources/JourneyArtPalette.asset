@@ -19,3 +19,29 @@ MonoBehaviour:
     sprite: {fileID: 0}
   - id: prop_research_bridge
     sprite: {fileID: 0}
+  - id: prop_toy
+    sprite: {fileID: 4914537887585951343, guid: 88e69e3731f9f1b45b9eb0ac36eb2f9d, type: 3}
+  - id: prop_researchlight
+    sprite: {fileID: 1396588016, guid: 18aefbc4bb07d254e85a14f211be7c44, type: 3}
+  - id: prop_stage_box
+    sprite: {fileID: -2122452163, guid: 3fbef5451a6b3654f89e5e70f12709e3, type: 3}
+  - id: prop_research_report
+    sprite: {fileID: -5859529707505656056, guid: acdb1a3e919ccff4180a413199ce053d, type: 3}
+  - id: prop_research_book
+    sprite: {fileID: 2129806188, guid: 3f7fb1e2bd5ec9e429645debe12a22c1, type: 3}
+  - id: workshop-platform
+    sprite: {fileID: 0}
+  - id: workshop-notebook
+    sprite: {fileID: 0}
+  - id: workshop-plate
+    sprite: {fileID: 0}
+  - id: workshop-shutter
+    sprite: {fileID: 0}
+  - id: workshop-latch
+    sprite: {fileID: 0}
+  - id: workshop-window
+    sprite: {fileID: 0}
+  - id: workshop-report
+    sprite: {fileID: 0}
+  - id: workshop-desk
+    sprite: {fileID: 0}

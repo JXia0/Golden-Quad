@@ -37,6 +37,9 @@ namespace LetGo
         private float walkRemaining;
         private Vector3 walkDestination;
         public bool GentleCompanion { get; set; }
+        public bool AllowReclaim { get; set; }
+        public float? DropFloorY { get; set; }
+        public Vector3 CarryOffset { get; set; } = new Vector3(0.8f, 0.55f);
         public bool IsWaiting => GentleCompanion && needsReassurance;
         public float Reassurance01 => Mathf.Clamp01(reassurance / 0.8f);
         public bool IsPlaced => placed;
@@ -51,7 +54,7 @@ namespace LetGo
         public string SelectionGroup => selectionGroup;
         public string ChoiceCategory => choiceCategory;
         public string ChoiceValue => choiceValue;
-        public bool CanHold => !placed && !unavailable &&
+        public bool CanHold => (!placed || AllowReclaim) && !unavailable &&
             (StorySceneDirector.Instance == null || StorySceneDirector.Instance.CompletedObjectives >= prerequisiteCount);
 
         public void Configure(string id, HoldTargetMode targetMode, string promptText, float radius, float distance,
@@ -97,6 +100,14 @@ namespace LetGo
 
         public void BeginHold(HandConnection connection)
         {
+            if (placed && AllowReclaim)
+            {
+                HoldSocket.Reclaim(this);
+                restPosition = transform.position;
+                transform.SetParent(null, true);
+                placed = false;
+                AllowReclaim = false;
+            }
             heldBy = connection;
             HeldDuration = 0f;
             if (GentleCompanion) { needsReassurance = true; reassurance = 0f; }
@@ -109,7 +120,7 @@ namespace LetGo
             var playerPosition = connection.transform.position;
             if (mode == HoldTargetMode.Carryable)
             {
-                var desired = playerPosition + new Vector3(0.8f, 0.55f, 0f);
+                var desired = playerPosition + CarryOffset;
                 if (targetId == "conclusion")
                     desired += new Vector3(Mathf.Sin(Time.time * 9f), Mathf.Sin(Time.time * 7f), 0f) * 0.045f;
                 transform.position = Vector3.Lerp(transform.position, desired, 1f - Mathf.Exp(-12f * deltaTime));
@@ -142,7 +153,7 @@ namespace LetGo
             if (!placed && mode == HoldTargetMode.Carryable)
             {
                 // Put it within reach on the floor even if released during a jump.
-                transform.position = new Vector3(transform.position.x, restPosition.y, transform.position.z);
+                transform.position = new Vector3(transform.position.x, DropFloorY ?? restPosition.y, transform.position.z);
             }
         }
 
