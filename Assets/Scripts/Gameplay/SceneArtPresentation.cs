@@ -25,8 +25,11 @@ namespace LetGo
         private SpriteRenderer playerArt;
         private PlayerController2D player;
         private SpriteRenderer carriedReport;
+        private SpriteRenderer kindergartenEntrance;
+        private SpriteRenderer kindergartenCubby;
         private string visibleAge;
         private readonly List<(SpriteRenderer source, SpriteRenderer visible)> actors = new();
+        private readonly List<SpriteRenderer> kindergartenRevealProps = new();
 
         public void Configure(SpriteRenderer overlay, Vector2 limits, SpriteRenderer blackout = null)
         {
@@ -79,6 +82,9 @@ namespace LetGo
                 actors.Add((bag, visible));
                 bag.enabled = false;
             }
+
+            if (kindergartenEntrance != null)
+                CaptureKindergartenRevealProps();
         }
 
         private void NormalizeSceneComposition()
@@ -88,7 +94,10 @@ namespace LetGo
             if (scene == "01_Kindergarten")
             {
                 HideRenderers("Warm Light");
-                FitDoor("Classroom Hand Gate", new Vector2(1.05f, 2.4f));
+                HideRenderers("Classroom Hand Gate");
+                kindergartenEntrance = GameObject.Find("Integrated Classroom Entrance")?.GetComponent<SpriteRenderer>();
+                kindergartenCubby = GameObject.Find("Cubby")?.GetComponent<SpriteRenderer>();
+                AddPassageOverlay(scene);
             }
             else if (scene == "03_Stage")
             {
@@ -221,6 +230,7 @@ namespace LetGo
             }
 
             if (view == null) return;
+            ComposeKindergartenEntrance();
             ClampCamera();
             FitOverlay(vignette);
             UpdateVignette();
@@ -277,6 +287,30 @@ namespace LetGo
             view.transform.position = cameraPosition;
         }
 
+        private void ComposeKindergartenEntrance()
+        {
+            if (kindergartenEntrance == null || playerBody == null) return;
+            CaptureKindergartenRevealProps();
+            var beforeThreshold = playerBody.bounds.center.x < -1.8f;
+            kindergartenEntrance.enabled = beforeThreshold;
+            if (kindergartenCubby != null) kindergartenCubby.enabled = !beforeThreshold;
+            foreach (var renderer in kindergartenRevealProps)
+                if (renderer != null) renderer.enabled = !beforeThreshold;
+            if (!beforeThreshold) return;
+            var cameraPosition = view.transform.position;
+            cameraPosition.x = -5.15f;
+            view.transform.position = cameraPosition;
+        }
+
+        private void CaptureKindergartenRevealProps()
+        {
+            if (kindergartenRevealProps.Count > 0) return;
+            var bagRoot = GameObject.Find("Bag from home");
+            if (bagRoot == null) return;
+            foreach (var renderer in bagRoot.GetComponentsInChildren<SpriteRenderer>(true))
+                if (renderer.enabled) kindergartenRevealProps.Add(renderer);
+        }
+
         private void FitOverlay(SpriteRenderer overlay)
         {
             if (overlay == null || overlay.sprite == null) return;
@@ -331,7 +365,8 @@ namespace LetGo
         private void OnGUI()
         {
             var x = body != null ? body.position.x : transform.position.x;
-            var alpha = sceneName == "05_Research" ? Alpha(x, 20f) :
+            var alpha = sceneName == "01_Kindergarten" ? Alpha(x, -1.8f) :
+                sceneName == "05_Research" ? Alpha(x, 20f) :
                 sceneName == "06_FinalWalk"
                     ? Mathf.Max(Alpha(x, 6f), Alpha(x, 20f), Alpha(x, 33f))
                     : 0f;

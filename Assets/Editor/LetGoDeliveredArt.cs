@@ -38,6 +38,19 @@ public static class LetGoDeliveredArt
         Debug.Log("[LetGo Art] Filled delivered sprites while preserving existing transforms and gameplay colliders.");
     }
 
+    // A focused entry point for visual iteration on the kindergarten scene. This keeps
+    // command-line previews from resaving every gameplay scene in the project.
+    public static void ApplyKindergartenOnly()
+    {
+        if (EditorApplication.isPlayingOrWillChangePlaymode) return;
+        PrepareSprites();
+        var scene = EditorSceneManager.OpenScene("Assets/Scenes/01_Kindergarten.unity");
+        FillScene(scene.name);
+        EditorSceneManager.SaveScene(scene);
+        AssetDatabase.SaveAssets();
+        Debug.Log("[LetGo Art] Updated the integrated kindergarten entrance.");
+    }
+
     public static void FillScene(string scene)
     {
         Hide("Ground");
@@ -49,14 +62,18 @@ public static class LetGoDeliveredArt
         switch (scene)
         {
             case "01_Kindergarten":
-                Reframe("Classroom Hand Gate", "prop_kindergarten_door", new Vector2(0, -0.03f), new Vector2(1.05f, 2.4f));
+                // The old isolated door looked pasted onto the hall. Keep its gameplay
+                // trigger in place, but let the doorway painted into the background carry
+                // the threshold visually so wall, floor, shadows and warm light all join.
+                HideRecursive("Classroom Hand Gate");
                 Hide("Warm Light");
                 Hide("Teacher Safe Area");
                 Replace("Oversized Blocks", "deco_kindergarden_bricks:bricks_scattered", true);
                 var wall = Find("Classroom Wall");
                 Add(wall, "Entrance Backdrop", "view_kindergarten_entry", new Vector2(-22f, 0), new Vector2(10f, 5.5f), -5);
+                Add(wall, "Integrated Classroom Entrance", "view_kindergarten_threshold", new Vector2(-14.15f, 0.2f), new Vector2(10.5f, 5.9f), -3);
                 Add(wall, "Cubby", "prop_cubby", new Vector2(-8.5f, -1.65f), new Vector2(2.3f, 1.6f), -1);
-                Add(wall, "Welcome Flags", "deco_kindergarden_flag:flags_00", new Vector2(-10f, 2.3f), new Vector2(5f, 0.85f), -2);
+                Add(wall, "Welcome Flags", "deco_kindergarden_flag:flags_00", new Vector2(-11.8f, 2.3f), new Vector2(5f, 0.85f), -2);
                 Add(wall, "Classroom Flags", "deco_kindergarden_flag:flags_01", new Vector2(7f, 2.3f), new Vector2(5f, 0.85f), -2);
                 Add(wall, "Children Drawing A", "deco_kindergarden_drawing:drawings_00", new Vector2(-5f, 0.3f), new Vector2(0.65f, 0.7f), -2);
                 Add(wall, "Children Drawing B", "deco_kindergarden_drawing:drawings_03", new Vector2(5.5f, 0.4f), new Vector2(0.65f, 0.7f), -2);
@@ -298,6 +315,8 @@ public static class LetGoDeliveredArt
         MakePanel("view_memory_office", "bg_office_hallway", 14f / 5.5f);
         MakePanel("view_office_wall", "bg_office_hallway", 10f / 5.5f);
         MakeView("view_kindergarten_entry", "bg_kindergarten_hall", new Rect(0, 0, 10f / 34f, 1));
+        // Trim the letterbox edges while retaining the painted doorway and its floor contact.
+        MakeView("view_kindergarten_threshold", "幼儿园背景图", new Rect(0.09f, 0.09f, 0.82f, 0.82f));
     }
 
     private static void MakeSolidSprite(string name, Color color)
