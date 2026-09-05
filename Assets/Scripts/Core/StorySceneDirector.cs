@@ -26,6 +26,8 @@ namespace LetGo
         private int completedObjectives;
         private Coroutine narrationRoutine;
         private bool transitioning;
+        public bool NarrationEnabled { get; set; } = true;
+        public Transform Player => player;
 
         public bool ObjectivesComplete => completedObjectives >= requiredObjectives;
         public int CompletedObjectives => completedObjectives;
@@ -41,6 +43,7 @@ namespace LetGo
 
         private void Start()
         {
+            EmotionalJourney.Install(this);
             if (fadeImage != null) StartCoroutine(FadeFromBlack());
         }
 
@@ -73,6 +76,7 @@ namespace LetGo
 
         public void Say(string text, float duration = 3.5f)
         {
+            if (!NarrationEnabled) return;
             if (narrationRoutine != null) StopCoroutine(narrationRoutine);
             narrationRoutine = StartCoroutine(SayRoutine(text, duration));
         }
@@ -96,6 +100,7 @@ namespace LetGo
         public void RespawnPlayer()
         {
             if (player == null || checkpoint == null) return;
+            player.GetComponent<HandConnection>()?.CancelConnection();
             player.position = checkpoint.position;
             var body = player.GetComponent<Rigidbody2D>();
             if (body != null) body.linearVelocity = Vector2.zero;
@@ -167,22 +172,27 @@ namespace LetGo
             transitioning = true;
             if (player != null) player.GetComponent<PlayerController2D>().ControlsEnabled = false;
             SceneAudio.Instance?.PlayFinal();
-            Say("我会在这里。", 2.5f);
             yield return new WaitForSeconds(2.2f);
             yield return FadeToBlack(1.2f);
             if (endingTitle != null)
             {
                 endingTitle.gameObject.SetActive(true);
-                endingTitle.text = "《放开我的手》\n\n每一次放手，都是第一次长大。";
+                endingTitle.text = "《放开我的手》\n\n谢谢你，陪我走到这里。\n\nEnter · 再走一次";
             }
+            while (!GameInput.ConfirmPressed) yield return null;
+            JourneyChoices.Reset();
+            SceneManager.LoadScene("00_Prologue");
         }
 
         private void UpdateObjectiveText()
         {
             if (objectiveText == null) return;
-            objectiveText.text = requiredObjectives > 0
-                ? new string('●', completedObjectives) + new string('○', requiredObjectives - completedObjectives)
-                : string.Empty;
+            objectiveText.text = string.Empty;
+        }
+
+        private void OnDestroy()
+        {
+            if (Instance == this) Instance = null;
         }
     }
 }

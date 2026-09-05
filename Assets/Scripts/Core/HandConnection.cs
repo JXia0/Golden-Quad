@@ -21,6 +21,8 @@ namespace LetGo
         private string displayedPrompt;
 
         public HoldTarget CurrentTarget => currentTarget;
+        public HoldTarget LastReleasedTarget { get; private set; }
+        public float LastReleaseTime { get; private set; } = -100f;
         public bool IsSelfAnchoring => selfAnchoring;
         public float SelfChargeNormalized => selfChargeSeconds <= 0f ? 1f : Mathf.Clamp01(selfCharge / selfChargeSeconds);
         public float LastFullSelfReleaseTime { get; private set; } = -100f;
@@ -28,7 +30,11 @@ namespace LetGo
         {
             get
             {
-                if (currentTarget != null) return 1f;
+                if (currentTarget != null)
+                {
+                    if (currentTarget.Mode == HoldTargetMode.Carryable) return 0.45f;
+                    return currentTarget.IsWaiting ? 0.5f : 1f;
+                }
                 if (selfAnchoring) return Mathf.Lerp(0.45f, 1f, SelfChargeNormalized);
                 return stableMoveSeconds <= 0f ? 0f : Mathf.Clamp01(stableRemaining / stableMoveSeconds);
             }
@@ -50,6 +56,7 @@ namespace LetGo
 
         private void Update()
         {
+            if (!player.ControlsEnabled) { CancelConnection(); return; }
             stableRemaining = Mathf.Max(0f, stableRemaining - Time.deltaTime);
 
             if (currentTarget != null)
@@ -68,7 +75,7 @@ namespace LetGo
             {
                 StopSelfAnchor(false);
                 ShowTargetPrompt(nearest);
-                if (GameInput.InteractHeld) Attach(nearest);
+                if (GameInput.InteractPressed) Attach(nearest);
                 return;
             }
 
@@ -109,13 +116,26 @@ namespace LetGo
         {
             var released = currentTarget;
             currentTarget = null;
+            LastReleasedTarget = released;
+            LastReleaseTime = Time.time;
             if (released != null && released.Mode == HoldTargetMode.Companion)
                 stableRemaining = stableMoveSeconds;
             if (tether != null) tether.enabled = false;
             if (released != null && released.TargetId == "parent") SetAnimatorBool("HoldingParent", false);
             if (released != null && released.Mode == HoldTargetMode.Carryable) SceneAudio.Instance?.PlayItemMove();
             else SceneAudio.Instance?.PlayRelease();
-            released?.EndHold();
+            if (released != null) released.EndHold();
+        }
+
+        public void CancelConnection()
+        {
+            // Reset/scene changes must not count as a deliberate release into a socket.
+            if (currentTarget != null) currentTarget.CancelHold();
+            currentTarget = null;
+            LastReleasedTarget = null;
+            StopSelfAnchor(false);
+            if (tether != null) tether.enabled = false;
+            SetAnimatorBool("HoldingParent", false);
         }
 
         private void StopSelfAnchor(bool grantStableMovement)
@@ -135,9 +155,15 @@ namespace LetGo
         private void UpdateTether()
         {
             if (tether == null || currentTarget == null) return;
-            tether.SetPosition(0, transform.position + new Vector3(0.35f, 0.35f, 0f));
-            tether.SetPosition(1, currentTarget.transform.position + new Vector3(0f, 0.35f, 0f));
+            tether.positionCount = 12;
+            var start = transform.position + new Vector3(0.25f, 0.35f, 0f);
+            var end = currentTarget.transform.position + new Vector3(0f, 0.35f, 0f);
             var tension = Mathf.Clamp01(Vector2.Distance(transform.position, currentTarget.transform.position) / currentTarget.MaxDistance);
+            for (var i = 0; i < tether.positionCount; i++)
+            {
+                var t = i / (float)(tether.positionCount - 1);
+                tether.SetPosition(i, Vector3.Lerp(start, end, t) + Vector3.down * (Mathf.Sin(t * Mathf.PI) * (1f - tension) * 0.65f));
+            }
             tether.startWidth = tether.endWidth = Mathf.Lerp(0.16f, 0.07f, tension);
             var color = Color.Lerp(new Color(1f, 0.62f, 0.25f), Color.white, tension);
             tether.startColor = tether.endColor = color;
@@ -146,10 +172,11 @@ namespace LetGo
         private void ConstrainDistance()
         {
             if (currentTarget == null || currentTarget.MaxDistance <= 0f) return;
-            var offset = (Vector2)transform.position - (Vector2)currentTarget.transform.position;
-            if (offset.magnitude <= currentTarget.MaxDistance) return;
-            var clamped = (Vector2)currentTarget.transform.position + offset.normalized * currentTarget.MaxDistance;
-            transform.position = new Vector3(clamped.x, clamped.y, transform.position.z);
+            if (currentTarget.Mode == HoldTargetMode.Carryable) return;
+            var offset = transform.position.x - currentTarget.transform.position.x;
+            if (Mathf.Abs(offset) <= currentTarget.MaxDistance) return;
+            var clamped = currentTarget.transform.position.x + Mathf.Sign(offset) * currentTarget.MaxDistance;
+            transform.position = new Vector3(clamped, transform.position.y, transform.position.z);
             body.linearVelocity = new Vector2(0f, body.linearVelocity.y);
         }
 
@@ -171,6 +198,7 @@ namespace LetGo
 
         private void OnDisable()
         {
+            CancelConnection();
             ClearTargetPrompt();
             player?.SetInteractionLocked(false);
         }

@@ -32,6 +32,7 @@ namespace LetGo
         }
 
         public Vector2 Velocity => body == null ? Vector2.zero : body.linearVelocity;
+        public void SetJumpForce(float value) => jumpForce = value;
         public SpriteRenderer CharacterRenderer => characterVisual == null
             ? null
             : characterVisual.GetComponent<SpriteRenderer>();
@@ -50,9 +51,10 @@ namespace LetGo
 
         private void Update()
         {
-            if (!controlsEnabled || interactionLocked) return;
-            if (GameInput.JumpPressed && IsGrounded()) body.linearVelocity = new Vector2(body.linearVelocity.x, jumpForce);
+            if (!controlsEnabled) return;
             if (GameInput.RestartPressed) StorySceneDirector.Instance?.RespawnPlayer();
+            if (interactionLocked) return;
+            if (GameInput.JumpPressed && IsGrounded()) body.linearVelocity = new Vector2(body.linearVelocity.x, jumpForce);
             UpdateFootsteps();
         }
 

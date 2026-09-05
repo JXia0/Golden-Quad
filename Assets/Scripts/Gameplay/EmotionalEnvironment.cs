@@ -13,6 +13,7 @@ namespace LetGo
         [SerializeField] private int activeAfterObjectives;
         [SerializeField] private int deactivateAtObjectives = -1;
         private Vector3 rootOrigin;
+        public float Resolution01 { get; set; }
 
         public void Configure(HandConnection handConnection, Transform root, SpriteRenderer[] fears, Camera camera,
             Color stable, Color unstable, int activateAfter = 0, int deactivateAt = -1)
@@ -39,7 +40,7 @@ namespace LetGo
             var objectiveCount = StorySceneDirector.Instance == null ? 0 : StorySceneDirector.Instance.CompletedObjectives;
             var active = objectiveCount >= activeAfterObjectives &&
                          (deactivateAtObjectives < 0 || objectiveCount < deactivateAtObjectives);
-            var instability = active ? 1f - connection.Stability01 : 0f;
+            var instability = active ? (1f - connection.Stability01) * (1f - Resolution01) : 0f;
             SceneAudio.Instance?.SetTension(instability);
             if (unstableRoot != null)
                 unstableRoot.localPosition = rootOrigin + new Vector3(

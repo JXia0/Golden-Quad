@@ -64,11 +64,7 @@ namespace LetGo
                 if (allowBreathingRecovery && GameInput.InteractHeld)
                     courage += breatheRecoveryPerSecond * Time.deltaTime;
                 courage = Mathf.Clamp(courage, 0f, maxCourage);
-                if (courage <= 0f)
-                {
-                    StorySceneDirector.Instance?.Say("没关系。再试一次。", 1.5f);
-                    StorySceneDirector.Instance?.RespawnPlayer();
-                }
+                // Fear is an expressive state, never a countdown that erases progress.
             }
             if (innerLight != null)
             {

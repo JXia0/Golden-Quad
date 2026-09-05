@@ -31,6 +31,17 @@ namespace LetGo
         private HandConnection heldBy;
         private bool placed;
         private bool unavailable;
+        private Vector3 restPosition;
+        private float reassurance;
+        private bool needsReassurance;
+        private float walkRemaining;
+        private Vector3 walkDestination;
+        public bool GentleCompanion { get; set; }
+        public bool IsWaiting => GentleCompanion && needsReassurance;
+        public float Reassurance01 => Mathf.Clamp01(reassurance / 0.8f);
+        public bool IsPlaced => placed;
+        public bool IsHeld => heldBy != null;
+        public System.Action<HoldTarget> Released;
 
         public string TargetId => targetId;
         public HoldTargetMode Mode => mode;
@@ -63,6 +74,7 @@ namespace LetGo
 
         private void OnEnable()
         {
+            restPosition = transform.position;
             if (!ActiveTargets.Contains(this)) ActiveTargets.Add(this);
         }
 
@@ -87,6 +99,7 @@ namespace LetGo
         {
             heldBy = connection;
             HeldDuration = 0f;
+            if (GentleCompanion) { needsReassurance = true; reassurance = 0f; }
         }
 
         public void TickHeld(HandConnection connection, float deltaTime)
@@ -97,10 +110,23 @@ namespace LetGo
             if (mode == HoldTargetMode.Carryable)
             {
                 var desired = playerPosition + new Vector3(0.8f, 0.55f, 0f);
+                if (targetId == "conclusion")
+                    desired += new Vector3(Mathf.Sin(Time.time * 9f), Mathf.Sin(Time.time * 7f), 0f) * 0.045f;
                 transform.position = Vector3.Lerp(transform.position, desired, 1f - Mathf.Exp(-12f * deltaTime));
             }
             else if (mode == HoldTargetMode.Companion)
             {
+                if (GentleCompanion)
+                {
+                    var distance = Mathf.Abs(playerPosition.x - transform.position.x);
+                    if (distance > maxDistance * 0.82f) { needsReassurance = true; reassurance = 0f; }
+                    if (needsReassurance)
+                    {
+                        reassurance = distance < maxDistance * 0.62f ? reassurance + deltaTime : 0f;
+                        if (reassurance < 0.8f) return;
+                        needsReassurance = false;
+                    }
+                }
                 var desiredX = Mathf.Min(playerPosition.x - followOffset, maximumFollowX);
                 var desired = new Vector3(desiredX, transform.position.y, transform.position.z);
                 transform.position = Vector3.MoveTowards(transform.position, desired, followSpeed * deltaTime);
@@ -112,6 +138,38 @@ namespace LetGo
             heldBy = null;
             if (mode == HoldTargetMode.Carryable || mode == HoldTargetMode.Companion)
                 HoldSocket.TryPlace(this);
+            Released?.Invoke(this);
+            if (!placed && mode == HoldTargetMode.Carryable)
+            {
+                // Put it within reach on the floor even if released during a jump.
+                transform.position = new Vector3(transform.position.x, restPosition.y, transform.position.z);
+            }
+        }
+
+        public void CancelHold()
+        {
+            heldBy = null;
+            if (mode == HoldTargetMode.Carryable && !placed) transform.position = restPosition;
+        }
+
+        public void ReturnToRest()
+        {
+            placed = false;
+            transform.position = restPosition;
+        }
+
+        public void WalkAway(Vector3 destination)
+        {
+            placed = true;
+            walkDestination = new Vector3(destination.x, transform.position.y, transform.position.z);
+            walkRemaining = 1.5f;
+        }
+
+        private void Update()
+        {
+            if (walkRemaining <= 0f) return;
+            transform.position = Vector3.MoveTowards(transform.position, walkDestination, 1.7f * Time.deltaTime);
+            if (Vector3.Distance(transform.position, walkDestination) < 0.03f) walkRemaining = 0f;
         }
 
         public void MarkPlaced(Vector3 position)
