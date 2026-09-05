@@ -15,7 +15,7 @@ public sealed class JourneyArtImporter : AssetPostprocessor
         "workshop-shutter_locked", "workshop-shutter_unlocked", "workshop-latch",
         "workshop-window", "workshop-report", "workshop-desk"
         , "prop_researchnote", "montage01_stayupwithfriends", "montage02_takebus", "montage03_parentstired",
-        "montage04_firstraisehand", "montage_growth_rejected", "montage_growth_conflict"
+        "montage04_firstraisehand", "montage_growth_rejected", "montage_growth_conflict", "bg_research_room"
     };
     private static readonly Dictionary<string, string> Fallbacks = new()
     {

@@ -69,3 +69,5 @@ MonoBehaviour:
     sprite: {fileID: -787814576, guid: 6d7e29097d0a91e4d930a57079477079, type: 3}
   - id: montage_growth_conflict
     sprite: {fileID: 142250809, guid: 7db026b974be3c74fa3b50b8c94cca85, type: 3}
+  - id: bg_research_room
+    sprite: {fileID: -6751144742328248299, guid: ca9dc9f4508bb2f4d835f6a82e326535, type: 3}

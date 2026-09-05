@@ -152,6 +152,8 @@ namespace LetGo
 
         private static void NormalizeResearchPresentation()
         {
+            var retiredDraft = GameObject.Find("Doubt Notes");
+            if (retiredDraft != null) retiredDraft.SetActive(false);
             // The frame itself already contains a readable latch and status light. The separate
             // full-canvas latch sheets looked like person-sized floating machines in play.
             HideRenderers("Inside Shutter Latch Locked");
@@ -160,6 +162,13 @@ namespace LetGo
             GroundVisual("Workshop Crate", new Vector2(1.08f, 1.08f));
             GroundVisual("Portable Lamp", new Vector2(0.58f, 0.72f));
             GroundVisual("Workshop Learner", new Vector2(0.56f, 0.9f));
+            GroundVisual("Workshop Shutter Frame", new Vector2(3.15f, 4.35f));
+            GroundVisual("Workshop Shutter Door", new Vector2(2.8f, 3.75f));
+            BuildArchiveShelving();
+
+            var notebook = GameObject.Find("Archive Notebook")?.GetComponent<SpriteRenderer>();
+            if (notebook != null && notebook.sprite != null)
+                notebook.transform.position += Vector3.up * (-0.18f - notebook.bounds.min.y);
 
             var plate = GameObject.Find("Pressure Plate")?.GetComponent<SpriteRenderer>();
             if (plate != null)
@@ -194,6 +203,29 @@ namespace LetGo
             FitWorld(visual, size);
             visual.transform.position += Vector3.up * (GroundY - visual.bounds.min.y);
             source.enabled = false;
+        }
+
+        private static void BuildArchiveShelving()
+        {
+            var shelf = GameObject.Find("Archive Shelf")?.GetComponent<SpriteRenderer>();
+            if (shelf == null || shelf.sprite == null || shelf.transform.Find("Left Archive Upright") != null) return;
+            ShelfPiece(shelf, "Left Archive Upright", new Vector3(-3.25f, -1.61f, 0f), new Vector2(2.12f, 0.2f), true);
+            ShelfPiece(shelf, "Right Archive Upright", new Vector3(-0.75f, -1.61f, 0f), new Vector2(2.12f, 0.2f), true);
+            ShelfPiece(shelf, "Archive Middle Shelf", new Vector3(-2f, -1.58f, 0f), new Vector2(2.7f, 0.16f), false);
+            ShelfPiece(shelf, "Archive Cabinet Base", new Vector3(-2f, -2.61f, 0f), new Vector2(2.85f, 0.18f), false);
+        }
+
+        private static void ShelfPiece(SpriteRenderer source, string name, Vector3 position, Vector2 size, bool vertical)
+        {
+            var renderer = new GameObject(name, typeof(SpriteRenderer)).GetComponent<SpriteRenderer>();
+            renderer.transform.SetParent(source.transform, true);
+            renderer.sprite = source.sprite;
+            renderer.sharedMaterial = source.sharedMaterial;
+            renderer.color = new Color(0.62f, 0.56f, 0.48f, 1f);
+            renderer.sortingOrder = source.sortingOrder - 1;
+            renderer.transform.position = position;
+            FitWorld(renderer, size);
+            if (vertical) renderer.transform.rotation = Quaternion.Euler(0f, 0f, 90f);
         }
 
         private void AddPassageOverlay(string scene)
@@ -303,6 +335,18 @@ namespace LetGo
             if (SceneManager.GetActiveScene().name != "05_Research") return;
             HideRenderers("Inside Shutter Latch Locked");
             HideRenderers("Inside Shutter Latch Open");
+            MirrorDynamicVisual("Workshop Shutter Door");
+        }
+
+        private static void MirrorDynamicVisual(string rootName)
+        {
+            var root = GameObject.Find(rootName)?.transform;
+            if (root == null) return;
+            var source = root.GetComponent<SpriteRenderer>();
+            var visual = root.Find("Presentation Visual")?.GetComponent<SpriteRenderer>();
+            if (source == null || visual == null) return;
+            visual.enabled = source.enabled;
+            source.enabled = false;
         }
 
         private void FitPlayerForCurrentAge()
@@ -319,6 +363,8 @@ namespace LetGo
             }
             if (playerBody != null)
                 playerArt.transform.position += Vector3.up * (playerBody.bounds.min.y - playerArt.bounds.min.y);
+            if (SceneManager.GetActiveScene().name == "03_Stage" && age == "teen")
+                playerArt.transform.position += Vector3.down * 0.08f;
         }
 
         private void PlaceCarriedReport()
@@ -387,7 +433,7 @@ namespace LetGo
             {
                 if (line.positionCount == 0) continue;
                 if (line.name.StartsWith("Listener response"))
-                    RestyleRing(line, 0.42f, 0.42f, float.NaN, JourneyVisuals.Cool, 0.5f, 0.018f);
+                    line.enabled = false;
                 else if (line.name == "A breath becomes a phrase")
                     RestyleRing(line, 0.68f, 0.12f, GroundY + 0.07f, JourneyVisuals.Warm, 0.55f, 0.024f);
                 else if (line.name == "Where the voice is going")

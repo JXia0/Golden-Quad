@@ -20,6 +20,8 @@ namespace LetGo
         private readonly Text[] pieceLabels = new Text[3];
         private Image fullLetter;
         private Text addresses;
+        private Texture2D repairPaperTexture;
+        private Sprite repairPaperSprite;
         private bool growing, leaving;
         private float readyAt;
         public FirstsJourney Firsts { get; private set; }
@@ -59,6 +61,7 @@ namespace LetGo
 
         private Sprite Art(string id) => palette != null ? palette.Find(id) : null;
         private static float Along(float value) => -450f + 900f * value;
+        private static float PaperAlong(float value) => -320f + 640f * value;
 
         private void BuildRide()
         {
@@ -80,24 +83,59 @@ namespace LetGo
         private void BuildRepair()
         {
             title.text = "被退回的那一页";
-            var paper = Art("prop_researchnote");
+            repairPaperTexture = CreateRepairPaper();
+            repairPaperSprite = Sprite.Create(repairPaperTexture,
+                new Rect(0, 0, repairPaperTexture.width, repairPaperTexture.height), Vector2.one * 0.5f, 100f,
+                0, SpriteMeshType.FullRect);
+            repairPaperSprite.name = "One repaired report page";
             for (var i = 0; i < pieces.Length; i++)
             {
-                sockets[i] = ui.Picture("Repair outline " + i, new Vector2(Along(RepairJourney.Target(i)), -140), new Vector2(210, 140), null, new Color(1f, 0.86f, 0.64f, 0.16f));
-                pieces[i] = ui.Rect("Paper fragment " + i, new Vector2(Along(Repair.Pieces[i]), -140), new Vector2(190, 125)).gameObject.AddComponent<RawImage>();
+                sockets[i] = ui.Picture("Repair outline " + i, new Vector2(PaperAlong(RepairJourney.Target(i)), -100), new Vector2(160, 240), null, new Color(1f, 0.86f, 0.64f, 0.16f));
+                pieces[i] = ui.Rect("Paper fragment " + i, new Vector2(PaperAlong(Repair.Pieces[i]), -100), new Vector2(160, 240)).gameObject.AddComponent<RawImage>();
                 pieces[i].raycastTarget = false;
-                if (paper != null)
-                {
-                    pieces[i].texture = paper.texture;
-                    var rect = paper.rect;
-                    pieces[i].uvRect = new Rect((rect.x + rect.width * i / 3f) / paper.texture.width,
-                        rect.y / paper.texture.height, rect.width / (3f * paper.texture.width), rect.height / paper.texture.height);
-                }
+                pieces[i].texture = repairPaperTexture;
+                pieces[i].uvRect = new Rect(i / 3f, 0f, 1f / 3f, 1f);
                 pieceLabels[i] = ui.Label("Fragment number " + i, Vector2.zero, new Vector2(90, 30), 21);
             }
-            fullLetter = ui.Picture("Repaired letter", new Vector2(0, -140), new Vector2(230, 180), paper, Color.white);
+            fullLetter = ui.Picture("Repaired letter", new Vector2(0, -100), new Vector2(480, 240), repairPaperSprite, Color.white);
             fullLetter.gameObject.SetActive(false);
             addresses = ui.Label("Where the page goes", new Vector2(0, -220), new Vector2(1000, 40), 24);
+        }
+
+        private static Texture2D CreateRepairPaper()
+        {
+            const int width = 768;
+            const int height = 384;
+            var texture = new Texture2D(width, height, TextureFormat.RGBA32, false)
+                { name = "Runtime single rejected report", wrapMode = TextureWrapMode.Clamp };
+            var seed = new System.Random(1741);
+            for (var y = 0; y < height; y++)
+            for (var x = 0; x < width; x++)
+            {
+                var edge = Mathf.Min(Mathf.Min(x, width - 1 - x), Mathf.Min(y, height - 1 - y));
+                var roughEdge = 5 + (int)(3f * Mathf.Sin((x + y * 0.7f) * 0.11f));
+                var alpha = edge < roughEdge ? 0f : Mathf.Clamp01((edge - roughEdge) / 4f);
+                var grain = (float)(seed.NextDouble() - 0.5) * 0.035f;
+                texture.SetPixel(x, y, new Color(0.82f + grain, 0.76f + grain, 0.62f + grain, alpha));
+            }
+            DrawPaperLine(texture, 72, 300, 600, new Color(0.2f, 0.25f, 0.31f, 0.72f), 4);
+            DrawPaperLine(texture, 72, 254, 645, new Color(0.2f, 0.25f, 0.31f, 0.6f), 3);
+            DrawPaperLine(texture, 72, 208, 560, new Color(0.2f, 0.25f, 0.31f, 0.6f), 3);
+            DrawPaperLine(texture, 72, 162, 630, new Color(0.2f, 0.25f, 0.31f, 0.6f), 3);
+            DrawPaperLine(texture, 72, 116, 500, new Color(0.2f, 0.25f, 0.31f, 0.6f), 3);
+            DrawPaperLine(texture, 610, 68, 100, new Color(0.5f, 0.18f, 0.14f, 0.65f), 5);
+            texture.Apply();
+            return texture;
+        }
+
+        private static void DrawPaperLine(Texture2D texture, int x, int y, int length, Color color, int thickness)
+        {
+            for (var py = Mathf.Max(0, y - thickness); py <= Mathf.Min(texture.height - 1, y + thickness); py++)
+            for (var px = Mathf.Max(0, x); px < Mathf.Min(texture.width, x + length); px++)
+            {
+                var existing = texture.GetPixel(px, py);
+                texture.SetPixel(px, py, Color.Lerp(existing, color, color.a));
+            }
         }
 
         private void Update()
@@ -158,21 +196,21 @@ namespace LetGo
             }
             else
             {
-                art = Repair.Ready && Repair.Destination == "home" ? "montage_growth_conflict" : "montage_growth_rejected";
+                art = "bg_research_room";
                 for (var i = 0; i < pieces.Length; i++)
                 {
                     var show = Repair.RepairedCount < 3;
                     pieces[i].gameObject.SetActive(show);
                     sockets[i].gameObject.SetActive(show);
                     pieceLabels[i].gameObject.SetActive(show);
-                    pieces[i].rectTransform.anchoredPosition = new Vector2(Along(Repair.Pieces[i]), -140 + (Repair.Holding && Repair.Selected == i ? 16 : 0));
+                    pieces[i].rectTransform.anchoredPosition = new Vector2(PaperAlong(Repair.Pieces[i]), -100 + (Repair.Holding && Repair.Selected == i ? 16 : 0));
                     pieces[i].color = Repair.Placed[i] ? new Color(0.8f, 1f, 0.8f) : Repair.Selected == i ? Color.white : new Color(0.65f, 0.65f, 0.65f);
-                    pieceLabels[i].rectTransform.anchoredPosition = new Vector2(Along(Repair.Pieces[i]), -55);
-                    pieceLabels[i].text = (Repair.Placed[i] ? "✓ " : "") + (i + 1);
+                    pieceLabels[i].rectTransform.anchoredPosition = new Vector2(PaperAlong(Repair.Pieces[i]), 35);
+                    pieceLabels[i].text = Repair.Placed[i] ? "✓" : "";
                 }
                 fullLetter.gameObject.SetActive(Repair.RepairedCount == 3);
-                fullLetter.rectTransform.anchoredPosition = new Vector2(Along(Repair.LetterPosition), -135);
-                addresses.text = Repair.RepairedCount == 3 ? "寄回家里                                        留进自己的笔记" : "1                                      2                                      3";
+                fullLetter.rectTransform.anchoredPosition = new Vector2(PaperAlong(Repair.LetterPosition), -100);
+                addresses.text = Repair.RepairedCount == 3 ? "寄回家里                                        留进自己的笔记" : "";
                 status.text = Repair.Ready ? Repair.Destination == "home" ? "纸寄出去了。家里回了一张画着窗与灯的小图。" : "修补过的这一页，留在了自己的笔记里。" :
                     Repair.RepairedCount == 3 ? "这一页已经完整。决定把它留在哪里。" : "对照浅色轮廓，把三片纸拼回原位。已拼好 " + Repair.RepairedCount + " / 3";
                 instruction.text = Repair.Ready ? "F · 带着它继续，进入研究室" :
@@ -185,6 +223,11 @@ namespace LetGo
             if (previousMoment != art) { previousMoment = art; MomentChanged?.Invoke(art); }
         }
 
-        private void OnDestroy() { if (ui != null) Destroy(ui.gameObject); }
+        private void OnDestroy()
+        {
+            if (ui != null) Destroy(ui.gameObject);
+            if (repairPaperSprite != null) Destroy(repairPaperSprite);
+            if (repairPaperTexture != null) Destroy(repairPaperTexture);
+        }
     }
 }

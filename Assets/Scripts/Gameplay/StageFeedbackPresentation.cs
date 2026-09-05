@@ -37,6 +37,8 @@ namespace LetGo
             voiceLight = CreatePool("Voice light", JourneyVisuals.Warm, 14);
             audienceLights[0] = CreatePool("Left audience answer", JourneyVisuals.Cool, 12);
             audienceLights[1] = CreatePool("Right audience answer", JourneyVisuals.Cool, 12);
+            audienceLights[0].transform.localScale = new Vector3(0.22f, 0.32f, 1f);
+            audienceLights[1].transform.localScale = new Vector3(0.22f, 0.32f, 1f);
             performance.NoteReleased += OnNoteReleased;
             performance.AudienceAnswered += OnAudienceAnswered;
         }
@@ -61,7 +63,7 @@ namespace LetGo
             pendingAudience = listener;
             pendingAudienceAt = Time.time + 0.14f;
             // The response belongs to the audience bank, not to a floating target above it.
-            audienceLights[listener].transform.position = new Vector3(position.x, -0.15f, 0f);
+            audienceLights[listener].transform.position = position;
         }
 
         private void LateUpdate()
