@@ -1,0 +1,925 @@
+fileFormatVersion: 2
+guid: 2c83a47a3ec11b042af092bcd401e7bd
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 8310978339447573135
+    second: workshop-plate_0
+  - first:
+      213: 5674405401741071256
+    second: workshop-plate_1
+  - first:
+      213: 1927397119451805858
+    second: workshop-plate_2
+  - first:
+      213: -7041175642751633837
+    second: workshop-plate_3
+  - first:
+      213: -7199711951203312013
+    second: workshop-plate_4
+  - first:
+      213: -8118799511731617714
+    second: workshop-plate_5
+  - first:
+      213: 8687410070810024508
+    second: workshop-plate_6
+  - first:
+      213: 2492865810036065591
+    second: workshop-plate_7
+  - first:
+      213: 6537923852720585063
+    second: workshop-plate_8
+  - first:
+      213: -4205671570321676583
+    second: workshop-plate_9
+  - first:
+      213: 4638145357895844100
+    second: workshop-plate_10
+  - first:
+      213: -4393188442739724515
+    second: workshop-plate_11
+  - first:
+      213: -1269164417244444699
+    second: workshop-plate_12
+  - first:
+      213: -1646343750088842007
+    second: workshop-plate_13
+  - first:
+      213: -3815498176301656640
+    second: workshop-plate_14
+  - first:
+      213: 4705190671474494526
+    second: workshop-plate_15
+  - first:
+      213: -6351386649468731130
+    second: workshop-plate_16
+  - first:
+      213: -8857276634372669898
+    second: workshop-plate_17
+  - first:
+      213: 7386136809879966662
+    second: workshop-plate_18
+  - first:
+      213: 1112905369140293814
+    second: workshop-plate_19
+  - first:
+      213: 6124171904899567320
+    second: workshop-plate_20
+  - first:
+      213: -5919364785885475795
+    second: workshop-plate_21
+  - first:
+      213: 5958361868669261238
+    second: workshop-plate_22
+  - first:
+      213: -2681060499334699073
+    second: workshop-plate_23
+  - first:
+      213: 7217165393312707739
+    second: workshop-plate_24
+  - first:
+      213: 8595995176120919172
+    second: workshop-plate_25
+  - first:
+      213: 6723871528334626132
+    second: workshop-plate_26
+  - first:
+      213: 3992479047968070441
+    second: workshop-plate_27
+  - first:
+      213: -3986939457361905290
+    second: workshop-plate_28
+  - first:
+      213: 1716779818166622759
+    second: workshop-plate_29
+  - first:
+      213: -8873580101088469374
+    second: workshop-plate_30
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 1
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationMethod: 0
+  spriteTessellationDetail: -1
+  spriteGeometrySubdivision: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 4096
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: workshop-plate_0
+      rect:
+        serializedVersion: 2
+        x: 306
+        y: 647
+        width: 37
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f8a0dba24c6865370800000000000000
+      internalID: 8310978339447573135
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: workshop-plate_1
+      rect:
+        serializedVersion: 2
+        x: 384
+        y: 625
+        width: 60
+        height: 66
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 893955a06a98fbe40800000000000000
+      internalID: 5674405401741071256
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: workshop-plate_2
+      rect:
+        serializedVersion: 2
+        x: 491
+        y: 615
+        width: 49
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2a83906e77d7fba10800000000000000
+      internalID: 1927397119451805858
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: workshop-plate_3
+      rect:
+        serializedVersion: 2
+        x: 746
+        y: 274
+        width: 669
+        height: 344
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 356f7a40f08b84e90800000000000000
+      internalID: -7041175642751633837
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: workshop-plate_4
+      rect:
+        serializedVersion: 2
+        x: 1148
+        y: 615
+        width: 150
+        height: 128
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 37e5467402c751c90800000000000000
+      internalID: -7199711951203312013
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: workshop-plate_5
+      rect:
+        serializedVersion: 2
+        x: 32
+        y: 250
+        width: 711
+        height: 358
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e404f9cfbda345f80800000000000000
+      internalID: -8118799511731617714
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: workshop-plate_6
+      rect:
+        serializedVersion: 2
+        x: 151
+        y: 331
+        width: 9
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c3a58c87e61ef8870800000000000000
+      internalID: 8687410070810024508
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: workshop-plate_7
+      rect:
+        serializedVersion: 2
+        x: 167
+        y: 291
+        width: 9
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7358ae71f30789220800000000000000
+      internalID: 2492865810036065591
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: workshop-plate_8
+      rect:
+        serializedVersion: 2
+        x: 199
+        y: 323
+        width: 9
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 769b6f9ca1f5bba50800000000000000
+      internalID: 6537923852720585063
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: workshop-plate_9
+      rect:
+        serializedVersion: 2
+        x: 215
+        y: 290
+        width: 17
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9d664094df372a5c0800000000000000
+      internalID: -4205671570321676583
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: workshop-plate_10
+      rect:
+        serializedVersion: 2
+        x: 231
+        y: 277
+        width: 28
+        height: 40
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 401420a01a00e5040800000000000000
+      internalID: 4638145357895844100
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: workshop-plate_11
+      rect:
+        serializedVersion: 2
+        x: 255
+        y: 313
+        width: 6
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d1fa52f23624803c0800000000000000
+      internalID: -4393188442739724515
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: workshop-plate_12
+      rect:
+        serializedVersion: 2
+        x: 271
+        y: 282
+        width: 20
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5e74494dfa5036ee0800000000000000
+      internalID: -1269164417244444699
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: workshop-plate_13
+      rect:
+        serializedVersion: 2
+        x: 316
+        y: 289
+        width: 21
+        height: 31
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9e425cdf4130729e0800000000000000
+      internalID: -1646343750088842007
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: workshop-plate_14
+      rect:
+        serializedVersion: 2
+        x: 394
+        y: 323
+        width: 7
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0c59360cf90ac0bc0800000000000000
+      internalID: -3815498176301656640
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: workshop-plate_15
+      rect:
+        serializedVersion: 2
+        x: 472
+        y: 293
+        width: 14
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e3c08bd8cf13c4140800000000000000
+      internalID: 4705190671474494526
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: workshop-plate_16
+      rect:
+        serializedVersion: 2
+        x: 501
+        y: 303
+        width: 15
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 601024f4e775bd7a0800000000000000
+      internalID: -6351386649468731130
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: workshop-plate_17
+      rect:
+        serializedVersion: 2
+        x: 609
+        y: 291
+        width: 30
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 63e79d234d1a41580800000000000000
+      internalID: -8857276634372669898
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: workshop-plate_18
+      rect:
+        serializedVersion: 2
+        x: 812
+        y: 306
+        width: 32
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6c3155f8b44d08660800000000000000
+      internalID: 7386136809879966662
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: workshop-plate_19
+      rect:
+        serializedVersion: 2
+        x: 845
+        y: 307
+        width: 7
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6b07b3c6985d17f00800000000000000
+      internalID: 1112905369140293814
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: workshop-plate_20
+      rect:
+        serializedVersion: 2
+        x: 957
+        y: 278
+        width: 7
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8de47f676ed6df450800000000000000
+      internalID: 6124171904899567320
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: workshop-plate_21
+      rect:
+        serializedVersion: 2
+        x: 981
+        y: 313
+        width: 15
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d2c0751e6113adda0800000000000000
+      internalID: -5919364785885475795
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: workshop-plate_22
+      rect:
+        serializedVersion: 2
+        x: 981
+        y: 300
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6b593410d8a50b250800000000000000
+      internalID: 5958361868669261238
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: workshop-plate_23
+      rect:
+        serializedVersion: 2
+        x: 989
+        y: 364
+        width: 6
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fb7e2d34ea5facad0800000000000000
+      internalID: -2681060499334699073
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: workshop-plate_24
+      rect:
+        serializedVersion: 2
+        x: 1020
+        y: 305
+        width: 9
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b9475a1efa5882460800000000000000
+      internalID: 7217165393312707739
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: workshop-plate_25
+      rect:
+        serializedVersion: 2
+        x: 1164
+        y: 306
+        width: 8
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 484a8a3b11c1b4770800000000000000
+      internalID: 8595995176120919172
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: workshop-plate_26
+      rect:
+        serializedVersion: 2
+        x: 1166
+        y: 291
+        width: 10
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 45d8fb9c78dff4d50800000000000000
+      internalID: 6723871528334626132
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: workshop-plate_27
+      rect:
+        serializedVersion: 2
+        x: 1169
+        y: 310
+        width: 10
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 92b93538a82286730800000000000000
+      internalID: 3992479047968070441
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: workshop-plate_28
+      rect:
+        serializedVersion: 2
+        x: 1172
+        y: 299
+        width: 10
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 67974feefab8ba8c0800000000000000
+      internalID: -3986939457361905290
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: workshop-plate_29
+      rect:
+        serializedVersion: 2
+        x: 1275
+        y: 291
+        width: 11
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 72a9163162a33d710800000000000000
+      internalID: 1716779818166622759
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: workshop-plate_30
+      rect:
+        serializedVersion: 2
+        x: 1284
+        y: 291
+        width: 8
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 28e95ac89e5bad480800000000000000
+      internalID: -8873580101088469374
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    outline: []
+    customData:
+    physicsShape: []
+    bones: []
+    spriteID: 5e97eb03825dee720800000000000000
+    internalID: 0
+    vertices: []
+    indices:
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      workshop-plate_0: 8310978339447573135
+      workshop-plate_1: 5674405401741071256
+      workshop-plate_10: 4638145357895844100
+      workshop-plate_11: -4393188442739724515
+      workshop-plate_12: -1269164417244444699
+      workshop-plate_13: -1646343750088842007
+      workshop-plate_14: -3815498176301656640
+      workshop-plate_15: 4705190671474494526
+      workshop-plate_16: -6351386649468731130
+      workshop-plate_17: -8857276634372669898
+      workshop-plate_18: 7386136809879966662
+      workshop-plate_19: 1112905369140293814
+      workshop-plate_2: 1927397119451805858
+      workshop-plate_20: 6124171904899567320
+      workshop-plate_21: -5919364785885475795
+      workshop-plate_22: 5958361868669261238
+      workshop-plate_23: -2681060499334699073
+      workshop-plate_24: 7217165393312707739
+      workshop-plate_25: 8595995176120919172
+      workshop-plate_26: 6723871528334626132
+      workshop-plate_27: 3992479047968070441
+      workshop-plate_28: -3986939457361905290
+      workshop-plate_29: 1716779818166622759
+      workshop-plate_3: -7041175642751633837
+      workshop-plate_30: -8873580101088469374
+      workshop-plate_4: -7199711951203312013
+      workshop-plate_5: -8118799511731617714
+      workshop-plate_6: 8687410070810024508
+      workshop-plate_7: 2492865810036065591
+      workshop-plate_8: 6537923852720585063
+      workshop-plate_9: -4205671570321676583
+  mipmapLimitGroupName:
+  pSDRemoveMatte: 0
+  userData:
+  assetBundleName:
+  assetBundleVariant:

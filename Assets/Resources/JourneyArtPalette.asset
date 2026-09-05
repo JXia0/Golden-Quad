@@ -16,9 +16,11 @@ MonoBehaviour:
   - id: prop_child_backpack
     sprite: {fileID: 872123929, guid: e90f2de1fcdb59b46ba44ee9cc821f43, type: 3}
   - id: prop_research_model
-    sprite: {fileID: 0}
+    sprite: {fileID: 1347895108, guid: 0c01d189875a4f54394c685a8d896e1b, type: 3}
+  - id: prop_research_crate
+    sprite: {fileID: 21300000, guid: 0e74be713ebabd3498415a6b5a13a657, type: 3}
   - id: prop_research_bridge
-    sprite: {fileID: 0}
+    sprite: {fileID: -2122452163, guid: 3fbef5451a6b3654f89e5e70f12709e3, type: 3}
   - id: prop_toy
     sprite: {fileID: 4914537887585951343, guid: 88e69e3731f9f1b45b9eb0ac36eb2f9d, type: 3}
   - id: prop_researchlight
@@ -30,21 +32,29 @@ MonoBehaviour:
   - id: prop_research_book
     sprite: {fileID: 2129806188, guid: 3f7fb1e2bd5ec9e429645debe12a22c1, type: 3}
   - id: workshop-platform
-    sprite: {fileID: 0}
+    sprite: {fileID: -2122452163, guid: 3fbef5451a6b3654f89e5e70f12709e3, type: 3}
   - id: workshop-notebook
-    sprite: {fileID: 0}
+    sprite: {fileID: 2129806188, guid: 3f7fb1e2bd5ec9e429645debe12a22c1, type: 3}
   - id: workshop-plate
-    sprite: {fileID: 0}
+    sprite: {fileID: 21300000, guid: 2c83a47a3ec11b042af092bcd401e7bd, type: 3}
   - id: workshop-shutter
-    sprite: {fileID: 0}
+    sprite: {fileID: 21300000, guid: abc3619189b1d694884a312353d433a4, type: 3}
+  - id: workshop-shutter_frame
+    sprite: {fileID: 21300000, guid: 8f0ecd3662466dd48bba8f66ffac60bd, type: 3}
+  - id: workshop-shutter_door
+    sprite: {fileID: 21300000, guid: abc3619189b1d694884a312353d433a4, type: 3}
+  - id: workshop-shutter_locked
+    sprite: {fileID: 21300000, guid: be88dd30dad76cc478c3760aefc61931, type: 3}
+  - id: workshop-shutter_unlocked
+    sprite: {fileID: 21300000, guid: 856756632ed4ef64399f182d4f139df7, type: 3}
   - id: workshop-latch
-    sprite: {fileID: 0}
+    sprite: {fileID: 21300000, guid: be88dd30dad76cc478c3760aefc61931, type: 3}
   - id: workshop-window
-    sprite: {fileID: 0}
+    sprite: {fileID: -3250104689935397743, guid: 1b3419b63d77a2f46b242d8fac699807, type: 3}
   - id: workshop-report
-    sprite: {fileID: 0}
+    sprite: {fileID: -5859529707505656056, guid: acdb1a3e919ccff4180a413199ce053d, type: 3}
   - id: workshop-desk
-    sprite: {fileID: 0}
+    sprite: {fileID: -953408873247314364, guid: c4d3f775edfd9a346bb652577b3b0cb5, type: 3}
   - id: prop_researchnote
     sprite: {fileID: -376304895, guid: c9a17482fbbaf1a4ea4396b813d29e73, type: 3}
   - id: montage01_stayupwithfriends

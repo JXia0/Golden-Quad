@@ -30,6 +30,12 @@ namespace LetGo
         private string visibleAge;
         private readonly List<(SpriteRenderer source, SpriteRenderer visible)> actors = new();
         private readonly List<SpriteRenderer> kindergartenRevealProps = new();
+        private readonly List<SpriteRenderer> finalStageGroup = new();
+        private readonly List<SpriteRenderer> finalResearchGroup = new();
+        private readonly List<SpriteRenderer> finalUnknownGroup = new();
+        private bool finalStageRevealed;
+        private bool finalResearchRevealed;
+        private bool finalUnknownRevealed;
 
         public void Configure(SpriteRenderer overlay, Vector2 limits, SpriteRenderer blackout = null)
         {
@@ -55,7 +61,8 @@ namespace LetGo
             passageBlackout ??= transform.Find("Passage Blackout")?.GetComponent<SpriteRenderer>();
 
             yield return null;
-            FindAnyObjectByType<JourneyVisuals>()?.SetGuidesVisible(false);
+            var journeyVisuals = FindAnyObjectByType<JourneyVisuals>();
+            journeyVisuals?.SetGuidesVisible(false);
             RestylePrompt();
             NormalizeSceneComposition();
             ReplaceCourageGlow();
@@ -85,6 +92,8 @@ namespace LetGo
 
             if (kindergartenEntrance != null)
                 CaptureKindergartenRevealProps();
+            if (SceneManager.GetActiveScene().name == "06_FinalWalk")
+                PrepareFinalMemoryGroups();
         }
 
         private void NormalizeSceneComposition()
@@ -130,6 +139,7 @@ namespace LetGo
             }
             else if (scene == "06_FinalWalk")
             {
+                if (view != null) view.backgroundColor = Color.black;
                 FitDoor("Unknown Door", new Vector2(1.18f, 2.68f));
                 foreach (var transform in FindObjectsByType<Transform>(FindObjectsInactive.Include))
                     if (transform.name.StartsWith("Memory Picture ")) transform.gameObject.SetActive(false);
@@ -231,6 +241,7 @@ namespace LetGo
 
             if (view == null) return;
             ComposeKindergartenEntrance();
+            RevealFinalMemoryGroups();
             ClampCamera();
             FitOverlay(vignette);
             UpdateVignette();
@@ -309,6 +320,56 @@ namespace LetGo
             if (bagRoot == null) return;
             foreach (var renderer in bagRoot.GetComponentsInChildren<SpriteRenderer>(true))
                 if (renderer.enabled) kindergartenRevealProps.Add(renderer);
+        }
+
+        private void PrepareFinalMemoryGroups()
+        {
+            CaptureEnabledRenderers(finalStageGroup, "Stage Memory", "Memory Spotlight",
+                "Remembered Steady Route", "Remembered Forward Route");
+            CaptureEnabledRenderers(finalResearchGroup, "Research Memory", "Remembered Question",
+                "Remembered Photo Evidence", "Remembered Data Evidence", "Remembered Conclusion");
+            CaptureEnabledRenderers(finalUnknownGroup, "Unknown Wall", "Young Presenter", "Unknown Door");
+            SetVisible(finalStageGroup, false);
+            SetVisible(finalResearchGroup, false);
+            SetVisible(finalUnknownGroup, false);
+        }
+
+        private static void CaptureEnabledRenderers(List<SpriteRenderer> destination, params string[] roots)
+        {
+            foreach (var rootName in roots)
+            {
+                var root = GameObject.Find(rootName);
+                if (root == null) continue;
+                foreach (var renderer in root.GetComponentsInChildren<SpriteRenderer>(true))
+                    if (renderer.enabled) destination.Add(renderer);
+            }
+        }
+
+        private void RevealFinalMemoryGroups()
+        {
+            if (playerBody == null || finalStageGroup.Count == 0) return;
+            var x = playerBody.bounds.center.x;
+            if (!finalStageRevealed && x >= 6f)
+            {
+                finalStageRevealed = true;
+                SetVisible(finalStageGroup, true);
+            }
+            if (!finalResearchRevealed && x >= 20f)
+            {
+                finalResearchRevealed = true;
+                SetVisible(finalResearchGroup, true);
+            }
+            if (!finalUnknownRevealed && x >= 33f)
+            {
+                finalUnknownRevealed = true;
+                SetVisible(finalUnknownGroup, true);
+            }
+        }
+
+        private static void SetVisible(List<SpriteRenderer> renderers, bool visible)
+        {
+            foreach (var renderer in renderers)
+                if (renderer != null) renderer.enabled = visible;
         }
 
         private void FitOverlay(SpriteRenderer overlay)
