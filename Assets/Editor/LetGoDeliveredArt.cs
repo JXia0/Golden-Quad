@@ -13,7 +13,7 @@ using Object = UnityEngine.Object;
 public static class LetGoDeliveredArt
 {
     private const string Root = "Assets/Sprites/";
-    private static Sprite Load(string name) => AssetDatabase.LoadAllAssetsAtPath(name.StartsWith("fx_soft_") || name.StartsWith("view_")
+    private static Sprite Load(string name) => AssetDatabase.LoadAllAssetsAtPath(name.StartsWith("fx_soft_") || name.StartsWith("fx_black") || name.StartsWith("view_")
             ? "Assets/Art/Generated/" + name + ".asset" : Root + name.Split(':')[0] + ".png")
         .OfType<Sprite>().FirstOrDefault(s => !name.Contains(':') || s.name == name.Split(':')[1]);
 
@@ -49,7 +49,8 @@ public static class LetGoDeliveredArt
         switch (scene)
         {
             case "01_Kindergarten":
-                Reframe("Classroom Hand Gate", "prop_kindergarten_door", new Vector2(0, -0.05f), new Vector2(1.8f, 4.4f));
+                Reframe("Classroom Hand Gate", "prop_kindergarten_door", new Vector2(0, -0.03f), new Vector2(1.05f, 2.4f));
+                Hide("Warm Light");
                 Hide("Teacher Safe Area");
                 Replace("Oversized Blocks", "deco_kindergarden_bricks:bricks_scattered", true);
                 var wall = Find("Classroom Wall");
@@ -63,12 +64,20 @@ public static class LetGoDeliveredArt
                 Add(wall, "Wall Rainbow", "deco_kindergarden_pattern:patterns_03", new Vector2(9.5f, 1.6f), new Vector2(0.8f, 0.6f), -2);
                 break;
             case "03_Stage":
+                HideRecursive("Curtain Left");
+                HideRecursive("Curtain Right");
                 Replace("Forward Platform", "prop_stage_box", true);
-                // Keep the gameplay platform at its original height; a pair of legs visually supports it.
+                // Layered planks make the raised gameplay platform read as a solid stage riser.
                 var platform = Find("Forward Platform");
-                Add(platform, "Riser Left Support", "view_riser_legs", new Vector2(-0.75f, -0.7f), new Vector2(1.5f, 1.4f), -1).color = new Color(0.65f, 0.59f, 0.52f);
-                Add(platform, "Riser Right Support", "view_riser_legs", new Vector2(0.75f, -0.7f), new Vector2(1.5f, 1.4f), -1).color = new Color(0.65f, 0.59f, 0.52f);
-                Reframe("Stage Background", "bg_stage_auditorium", new Vector2(0, 2.25f), new Vector2(34f, 11.33f));
+                Hide("Riser Left Support");
+                Hide("Riser Right Support");
+                for (var i = 1; i <= 4; i++)
+                {
+                    var layer = Add(platform, "Riser Layer " + i, "prop_stage_box", new Vector2(0, -0.3f * i), new Vector2(3f, 0.38f), -i);
+                    var shade = 1f - i * 0.07f;
+                    layer.color = new Color(shade, shade, shade, 1f);
+                }
+                Reframe("Stage Background", "bg_stage_auditorium", new Vector2(0, 2.25f), new Vector2(38f, 12.7f));
                 FloorMark("First Breath Cue", -2.72f);
                 FloorMark("Steady Route", -2.72f);
                 FloorMark("Forward Route", -1.18f);
@@ -78,6 +87,7 @@ public static class LetGoDeliveredArt
                 Add(Find("Final Release Cue"), "Stage Microphone", "prop_stage_microphone", new Vector2(0.75f, -0.25f), new Vector2(0.55f, 2f), 0);
                 break;
             case "05_Research":
+                Reframe("Finished Report", "prop_meeting_door", Vector2.zero, new Vector2(1.18f, 2.68f));
                 Reframe("Research Desk", "prop_research_desk", Vector2.zero, new Vector2(6f, 1.4f));
                 foreach (var board in new[] { "Question Board", "Evidence Board", "Conclusion Board" })
                 {
@@ -89,22 +99,21 @@ public static class LetGoDeliveredArt
                 Add(desk, "Desk Lamp", "prop_researchlight", new Vector2(-1.4f, 1.05f), new Vector2(0.75f, 0.7f), 1);
                 Add(desk, "Reference Books", "prop_research_book", new Vector2(1.8f, 0.925f), new Vector2(0.9f, 0.45f), 1);
                 Add(Find("Research Background"), "Research Notes", "prop_researchnote", new Vector2(5f, 1.1f), new Vector2(1.7f, 1.6f), -2);
-                Add(Find("Research Background"), "Report Hallway", "view_office_wall", new Vector2(22f, 0), new Vector2(10f, 5.5f), -5);
+                // The wider office panel covers the painted research-room exit, leaving one usable door.
+                Add(Find("Research Background"), "Report Hallway", "view_office_wall", new Vector2(15f, 0), new Vector2(14f, 5.5f), -5);
                 Add(Find("Research Background"), "Mentor Hallway", "view_office_wall", new Vector2(-22f, 0), new Vector2(10f, 5.5f), -5);
                 break;
             case "06_FinalWalk":
                 Hide("Memory Hand Gate");
+                Reframe("Unknown Door", "prop_meeting_door", Vector2.zero, new Vector2(1.18f, 2.68f));
                 FloorMark("Remembered Steady Route", -2.72f);
                 FloorMark("Remembered Forward Route", -2.72f);
                 Reframe("Kindergarten Memory", "view_memory_kindergarten", Vector2.zero, new Vector2(14f, 5.5f));
                 Reframe("Stage Memory", "view_memory_stage", Vector2.zero, new Vector2(14f, 5.5f));
                 Reframe("Research Memory", "view_memory_research", Vector2.zero, new Vector2(14f, 5.5f));
                 Reframe("Unknown Wall", "view_memory_office", Vector2.zero, new Vector2(14f, 5.5f));
-                var memory = Find("Kindergarten Memory");
-                string[] images = { "montage01_stayupwithfriends", "montage04_firstraisehand", "montage02_takebus",
-                    "montage03_parentstired", "montage_growth_rejected", "montage_growth_conflict" };
-                for (var i = 0; i < images.Length; i++)
-                    Add(memory, "Memory Picture " + (i + 1), images[i], new Vector2(-3f + i * 6.7f, 3.45f), new Vector2(6.3f, 1.1f), -1);
+                foreach (var transform in Object.FindObjectsByType<Transform>(FindObjectsInactive.Include))
+                    if (transform.name.StartsWith("Memory Picture ")) transform.gameObject.SetActive(false);
                 break;
         }
         GroundActors();
@@ -113,13 +122,22 @@ public static class LetGoDeliveredArt
         overlay.transform.localPosition = new Vector3(0, 0, 1);
         overlay.sharedMaterial = AssetDatabase.LoadAssetAtPath<Material>("Packages/com.unity.render-pipelines.universal/Runtime/Materials/Sprite-Unlit-Default.mat");
         overlay.color = new Color(1, 1, 1, 0);
+        SpriteRenderer blackout = null;
+        if (scene == "06_FinalWalk")
+        {
+            blackout = Add(camera.transform, "Passage Blackout", "fx_black", Vector2.zero, Vector2.one, 31000);
+            blackout.transform.localPosition = new Vector3(0, 0, 0.8f);
+            blackout.sharedMaterial = AssetDatabase.LoadAssetAtPath<Material>("Packages/com.unity.render-pipelines.universal/Runtime/Materials/Sprite-Unlit-Default.mat");
+            blackout.color = new Color(0, 0, 0, 0);
+        }
+        camera.orthographicSize = 2.95f;
         var presentation = camera.GetComponent<SceneArtPresentation>();
         if (presentation == null) presentation = camera.gameObject.AddComponent<SceneArtPresentation>();
         var limits = scene switch {
             "00_Prologue" => new Vector2(-13, 17), "01_Kindergarten" => new Vector2(-18, 26),
             "03_Stage" => new Vector2(-11, 23), "05_Research" => new Vector2(-19, 35),
             _ => new Vector2(-9, 47) };
-        presentation.Configure(overlay, limits);
+        presentation.Configure(overlay, limits, blackout);
     }
 
     private static void GroundActors()
@@ -128,24 +146,40 @@ public static class LetGoDeliveredArt
         {
             if (!slot.SlotId.StartsWith("char_") || slot.GetComponent<PlayerController2D>() != null) continue;
             var source = slot.GetComponent<SpriteRenderer>();
-            if (source == null || source.sprite == null || slot.transform.Find("Grounded Visual") != null) continue;
-            var go = new GameObject("Grounded Visual", typeof(SpriteRenderer));
+            if (source == null || source.sprite == null) continue;
+            var existing = slot.transform.Find("Grounded Visual");
+            var go = existing == null ? new GameObject("Grounded Visual", typeof(SpriteRenderer)) : existing.gameObject;
             var visible = go.GetComponent<SpriteRenderer>();
             visible.sprite = source.sprite;
             visible.sharedMaterial = source.sharedMaterial;
             visible.color = source.color;
             visible.sortingOrder = source.sortingOrder;
-            go.transform.position = source.transform.position;
-            go.transform.localScale = source.transform.lossyScale;
+            go.transform.SetParent(source.transform, false);
+            go.transform.localPosition = Vector3.zero;
+            var height = ActorHeight(source.name, slot.SlotId);
+            var parentScale = source.transform.lossyScale;
+            var factor = height / visible.sprite.bounds.size.y;
+            go.transform.localScale = new Vector3(factor / Mathf.Max(0.0001f, Mathf.Abs(parentScale.x)),
+                factor / Mathf.Max(0.0001f, Mathf.Abs(parentScale.y)), 1f);
             go.transform.position += Vector3.up * (-2.72f - visible.bounds.min.y);
-            go.transform.SetParent(source.transform, true);
             source.enabled = false;
             slot.Configure(slot.SlotId, visible, slot.TargetAnimator);
         }
     }
 
-    private static Transform Find(string name) => Object.FindObjectsByType<Transform>(FindObjectsInactive.Include,
-        FindObjectsSortMode.None).FirstOrDefault(t => t.name == name);
+    private static float ActorHeight(string actorName, string slotId)
+    {
+        if (actorName.Contains("Crying")) return 0.9f;
+        if (actorName.Contains("Young Presenter") || slotId.Contains("teen")) return 1.48f;
+        if (actorName.Contains("Parent") || slotId.Contains("parent")) return 1.68f;
+        if (actorName.Contains("Mentor") || slotId.Contains("adult")) return 1.78f;
+        if (actorName.Contains("Teacher")) return 1.62f;
+        if (slotId.Contains("child")) return 1.02f;
+        return 1.55f;
+    }
+
+    private static Transform Find(string name) => Object.FindObjectsByType<Transform>(FindObjectsInactive.Include)
+        .FirstOrDefault(t => t.name == name);
 
     private static void FloorMark(string name, float groundY)
     {
@@ -160,6 +194,13 @@ public static class LetGoDeliveredArt
     {
         var renderer = Find(name)?.GetComponent<SpriteRenderer>();
         if (renderer != null) renderer.enabled = false;
+    }
+
+    private static void HideRecursive(string name)
+    {
+        var root = Find(name);
+        if (root == null) return;
+        foreach (var renderer in root.GetComponentsInChildren<SpriteRenderer>(true)) renderer.enabled = false;
     }
 
     private static void Reframe(string name, string asset, Vector2 offset, Vector2 size)
@@ -177,21 +218,23 @@ public static class LetGoDeliveredArt
     {
         if (anchor == null) throw new InvalidOperationException("Missing anchor for " + name);
         var existing = anchor.Find(name);
-        if (existing != null) return existing.GetComponent<SpriteRenderer>();
         var sprite = Load(asset);
         if (sprite == null) throw new InvalidOperationException("Missing delivered sprite " + asset);
-        var go = new GameObject(name, typeof(SpriteRenderer), typeof(ArtSlot));
-        go.transform.position = anchor.position + (Vector3)offset;
+        var go = existing == null ? new GameObject(name, typeof(SpriteRenderer), typeof(ArtSlot)) : existing.gameObject;
         var renderer = go.GetComponent<SpriteRenderer>();
         renderer.sprite = sprite;
         var anchorRenderer = anchor.GetComponent<SpriteRenderer>();
         renderer.sharedMaterial = anchorRenderer != null ? anchorRenderer.sharedMaterial
             : AssetDatabase.LoadAssetAtPath<Material>("Packages/com.unity.render-pipelines.universal/Runtime/Materials/Sprite-Unlit-Default.mat");
         renderer.sortingOrder = order;
+        go.transform.SetParent(anchor, false);
+        go.transform.localPosition = new Vector3(offset.x, offset.y, 0);
         var factor = Mathf.Min(size.x / sprite.bounds.size.x, size.y / sprite.bounds.size.y);
-        go.transform.localScale = new Vector3(factor, factor, 1f);
-        go.transform.SetParent(anchor, true);
-        go.GetComponent<ArtSlot>().Configure(asset, renderer);
+        var parentScale = anchor.lossyScale;
+        go.transform.localScale = new Vector3(factor / Mathf.Max(0.0001f, Mathf.Abs(parentScale.x)),
+            factor / Mathf.Max(0.0001f, Mathf.Abs(parentScale.y)), 1f);
+        var slot = go.GetComponent<ArtSlot>();
+        if (slot != null) slot.Configure(asset, renderer);
         return renderer;
     }
 
@@ -225,6 +268,7 @@ public static class LetGoDeliveredArt
         MakeSoftSprite("fx_soft_spotlight", true);
         MakeSoftSprite("fx_soft_pool", false);
         MakeSoftSprite("fx_soft_vignette", false);
+        MakeSolidSprite("fx_black", Color.black);
         var vignetteImporter = (TextureImporter)AssetImporter.GetAtPath(Root + "fx_fear_vignette.png");
         vignetteImporter.GetSourceTextureWidthAndHeight(out var vignetteWidth, out var vignetteHeight);
         Crop("fx_fear_vignette", new Rect(0, 0, vignetteWidth, vignetteHeight));
@@ -254,6 +298,20 @@ public static class LetGoDeliveredArt
         MakePanel("view_memory_office", "bg_office_hallway", 14f / 5.5f);
         MakePanel("view_office_wall", "bg_office_hallway", 10f / 5.5f);
         MakeView("view_kindergarten_entry", "bg_kindergarten_hall", new Rect(0, 0, 10f / 34f, 1));
+    }
+
+    private static void MakeSolidSprite(string name, Color color)
+    {
+        var path = "Assets/Art/Generated/" + name + ".asset";
+        if (AssetDatabase.LoadAssetAtPath<Texture2D>(path) != null) return;
+        var texture = new Texture2D(2, 2, TextureFormat.RGBA32, false) { name = name };
+        texture.SetPixels(Enumerable.Repeat(color, 4).ToArray());
+        texture.Apply();
+        AssetDatabase.CreateAsset(texture, path);
+        var sprite = Sprite.Create(texture, new Rect(0, 0, 2, 2), Vector2.one * 0.5f, 2, 0, SpriteMeshType.FullRect);
+        sprite.name = name;
+        AssetDatabase.AddObjectToAsset(sprite, texture);
+        AssetDatabase.SaveAssets();
     }
 
     private static void MakePanel(string name, string source, float aspect)

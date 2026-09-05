@@ -2555,7 +2555,7 @@ Camera:
   far clip plane: 1000
   field of view: 60
   orthographic: 1
-  orthographic size: 5.3
+  orthographic size: 2.95
   m_Depth: 0
   m_CullingMask:
     serializedVersion: 2
@@ -2600,6 +2600,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LetGo.SceneArtPresentation
   vignette: {fileID: 1636773516}
+  passageBlackout: {fileID: 0}
   backdropLimits: {x: -13, y: 17}
 --- !u!1 &1791752765
 GameObject:
