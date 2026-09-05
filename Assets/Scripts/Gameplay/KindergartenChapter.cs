@@ -20,6 +20,7 @@ namespace LetGo
         {
             director = sceneDirector;
             hand = director.Player.GetComponent<HandConnection>();
+            gameObject.AddComponent<ParentEscort>().Initialize(director);
             child = EmotionalJourney.Target("crying-child");
             chair = EmotionalJourney.Named("Oversized Chair");
             var gate = FindAnyObjectByType<ReleaseGate>();

@@ -94,11 +94,34 @@ public sealed class JourneyPlaythroughDriver : MonoBehaviour
         yield return UseDoor("Meeting Door", "01_Kindergarten");
         if (finished) yield break;
         phase = "kindergarten parent release";
+        var escort = FindAnyObjectByType<ParentEscort>();
+        var parent = EmotionalJourney.Target("parent");
+        var childStart = Player.transform.position.x;
+        yield return Keys(2.5f, Key.E);
+        if (!Check(escort != null && escort.IsLeading && Player.transform.position.x > childStart + 0.8f &&
+            parent.transform.position.x > Player.transform.position.x,
+            "holding E alone lets the parent lead the child toward school")) yield break;
+        Capture("01-parent-leads");
+        yield return Keys(0.2f);
+        var stoppedParent = parent.transform.position.x;
+        var stoppedChild = Player.transform.position.x;
+        yield return Keys(0.5f);
+        if (!Check(Mathf.Abs(parent.transform.position.x - stoppedParent) < 0.02f &&
+            Mathf.Abs(Player.transform.position.x - stoppedChild) < 0.02f,
+            "releasing the hand stops both people without requiring a movement key")) yield break;
+        yield return Keys(0.4f, Key.A);
+        if (!Check(Player.transform.position.x < stoppedChild - 0.5f,
+            "after release the child's movement belongs to the player again")) yield break;
+        yield return Keys(0.4f, Key.D);
         yield return Keys(0.2f, Key.E);
-        yield return Walk(-2.7f, true);
+        if (!Check(escort.ReturnsToHand == 1, "the child can reach back and receive help again")) yield break;
+        for (var i = 0; i < 60 && !escort.WaitingAtDoor; i++) yield return Keys(0.2f, Key.E);
+        if (!Check(escort.WaitingAtDoor && StorySceneDirector.Instance.CompletedObjectives == 0,
+            "the parent stops at the doorway and waits for the child's own step")) yield break;
+        Capture("01-parent-waits");
         yield return Keys(0.15f);
         yield return Walk(-1.25f);
-        if (!Check(StorySceneDirector.Instance.CompletedObjectives == 1, "parent gate requires a deliberate release")) yield break;
+        if (!Check(StorySceneDirector.Instance.CompletedObjectives == 1, "after parental help the child crosses the doorway with an empty hand")) yield break;
         yield return Keys(0.25f, Key.E);
         yield return Walk(1.8f, true);
         yield return Keys(0.25f);
@@ -326,6 +349,9 @@ public sealed class JourneyPlaythroughDriver : MonoBehaviour
         yield return Keys(0.15f, Key.H);
         yield return Keys(0.15f);
         if (!Check(!guide.HelpVisible, "H can dismiss the extra guidance")) yield break;
+        if (!Check(!research.ShowingLampRange && GameObject.Find("Desk Lamp") == null && GameObject.Find("Pinned Draft") == null &&
+            GameObject.Find("Research Desk") == null && GameObject.Find("Research Notes") == null,
+            "the workshop removes misleading old props and does not show an idle lamp range")) yield break;
         if (!Check(research != null && research.Toy == null, "leaving the childhood toy leaves the workshop without that tool")) yield break;
         yield return Walk(3.1f);
         yield return Keys(0.2f, Key.E);
@@ -343,7 +369,7 @@ public sealed class JourneyPlaythroughDriver : MonoBehaviour
         yield return Keys(0.2f, Key.F);
         yield return Keys(2f);
         if (!Check(research.State == LearnerState.NeedsBridge, "trying before preparation exposes the missing crossing")) yield break;
-        if (!Check(guide.Step == ResearchGuideStep.Bridge && guide.SituationText.Contains("落脚点"), "the guide explains why the learner stopped at the gap")) yield break;
+        if (!Check(guide.Step == ResearchGuideStep.Bridge && guide.SituationText.Contains("落脚点") && guide.GoalText.Contains("缺口"), "the visible goal explains why the learner stopped at the gap")) yield break;
         Capture("05-guide-gap");
         yield return Carry(research.Crate, 16f);
         if (finished) yield break;
@@ -394,6 +420,14 @@ public sealed class JourneyPlaythroughDriver : MonoBehaviour
         yield return Walk(item.transform.position.x + side * reach);
         yield return Keys(0.2f, Key.E);
         if (!Check(Hand.CurrentTarget == item, "pick up " + item.TargetId)) yield break;
+        if (item.TargetId == "workshop-lamp")
+        {
+            var coverageObject = GameObject.Find("Portable lamp coverage");
+            var coverage = coverageObject == null ? null : coverageObject.GetComponent<LineRenderer>();
+            if (!Check(coverage != null && coverage.gameObject.activeInHierarchy && FindAnyObjectByType<ResearchExpedition>().ShowingLampRange && coverage.positionCount == 4,
+                "carrying the lamp shows a floor-level reach marker instead of a screen-sized circle")) yield break;
+            Capture("05-lamp-placement");
+        }
         yield return Walk(dropX - item.CarryOffset.x, true);
         yield return Keys(0.3f, Key.E);
         yield return Keys(0.3f);
@@ -402,6 +436,7 @@ public sealed class JourneyPlaythroughDriver : MonoBehaviour
 
     private IEnumerator ReturnReport(ResearchExpedition research)
     {
+        if (!Check(FindAnyObjectByType<ResearchGuide>().GoalText.Contains("报告"), "arrival visibly replaces the crossing goal with returning the report")) yield break;
         yield return Walk(22.6f);
         yield return Keys(0.2f, Key.E);
         if (!Check(Hand.CurrentTarget == research.Report, "the report only exists after a successful experiment")) yield break;
@@ -468,7 +503,7 @@ public sealed class JourneyPlaythroughDriver : MonoBehaviour
         yield return Walk(21f);
         yield return Keys(1f);
         if (!Check(!research.LampWorking && !research.ShortcutOpen, "an open window disables the lamp in the dark area")) yield break;
-        if (!Check(FindAnyObjectByType<ResearchGuide>().SituationText.Contains("风"), "the guide identifies wind as the cause of the failed lamp")) yield break;
+        if (!Check(FindAnyObjectByType<ResearchGuide>().GoalText.Contains("风"), "the visible goal identifies wind as the cause of the failed lamp")) yield break;
         yield return Keys(0.2f, Key.F);
         yield return Keys(3.5f);
         if (!Check(research.ShortcutOpen && JourneyChoices.LearnedIndependentDeparture && JourneyChoices.TestedResearchModel == "lamp" && JourneyChoices.CrossingTool == "plank", "closing the window lets a prepared environment support an independent crossing")) yield break;

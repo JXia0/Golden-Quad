@@ -37,6 +37,7 @@ namespace LetGo
         private float walkRemaining;
         private Vector3 walkDestination;
         public bool GentleCompanion { get; set; }
+        public bool ExternallyGuided { get; set; }
         public bool AllowReclaim { get; set; }
         public float? DropFloorY { get; set; }
         public Vector3 CarryOffset { get; set; } = new Vector3(0.8f, 0.55f);
@@ -127,6 +128,7 @@ namespace LetGo
             }
             else if (mode == HoldTargetMode.Companion)
             {
+                if (ExternallyGuided) return;
                 if (GentleCompanion)
                 {
                     var distance = Mathf.Abs(playerPosition.x - transform.position.x);

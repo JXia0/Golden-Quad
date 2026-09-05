@@ -70,6 +70,12 @@ public static class JourneyPlaythroughChecks
         RunBatch();
     }
 
+    public static void ValidateWorkshopAndBuildWindowsBatch()
+    {
+        SessionState.SetBool(BuildAfterKey, true);
+        ValidateWorkshopBatch();
+    }
+
     public static void ValidateTransitionsBatch()
     {
         SessionState.SetBool("LetGo.QA.TransitionsOnly", true);

@@ -120,6 +120,14 @@ public static class JourneyRegressionChecks
             Require(hand.LastSelfReleaseTime == selfReleaseBefore && !hand.IsSelfAnchoring,
                 "reset cannot play a charged stage note");
             results.Add("PASS: cancelling a full breath emits no note or rhythm progress.");
+            var entry = new GameObject("Independent school entry").AddComponent<ReleaseGate>();
+            entry.Configure(hand, "parent-test", 1200f, "");
+            var beforeEntry = director.CompletedObjectives;
+            Call(entry, "Update");
+            Call(entry, "Update");
+            Require(director.CompletedObjectives == beforeEntry + 1,
+                "independent entry is possible without a parental hand checklist and counts only once");
+            results.Add("PASS: parental help is optional and independent entry counts once.");
             ValidateExperiments(results);
             ValidateInterludes(results);
             ValidateScenes(results);

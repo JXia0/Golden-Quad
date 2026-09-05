@@ -1,6 +1,6 @@
 # 《放开我的手》最终游戏流程
 
-> 本文为早期流程存档。当前探索地图、工具复用、跨幕选择及结尾分支以 [可改变后续的玩法版本](MeaningfulChoicesPlayable.md) 为准。五场景 Build 顺序保持不变。
+> 本文为早期流程存档。当前探索地图、工具复用、跨幕选择及结尾分支以 [可改变后续的玩法版本](MeaningfulChoicesPlayable.md) 为准。当前为七场景；最新父母带路及研究室调整见 [父母带路与研究室减负](ParentSupportAndResearchFocus.md)。
 
 ## 游戏规格
 

@@ -11,7 +11,7 @@ namespace LetGo
         private bool reachedDoorTogether;
         private bool completed;
         private const string ReleasePrompt = "松开 E，自己跨过这扇门";
-        private const string BringHandPrompt = "先牵着父母的手，一起走到门前";
+        private const string BringHandPrompt = "可以自己进去，也可以回头牵住父母的手";
 
         public void Configure(HandConnection handConnection, string requiredTargetId, float x, string line)
         {
@@ -43,7 +43,8 @@ namespace LetGo
                 else StorySceneDirector.Instance?.ClearPrompt(BringHandPrompt);
             }
 
-            if (!reachedDoorTogether || connection.transform.position.x < boundaryX || connection.CurrentTarget != null) return;
+            // Accept independent entry too: parental help is an offer, not a key for this door.
+            if (connection.transform.position.x < boundaryX || connection.CurrentTarget != null) return;
             completed = true;
             StorySceneDirector.Instance?.ClearPrompt(ReleasePrompt);
             StorySceneDirector.Instance?.ClearPrompt(BringHandPrompt);

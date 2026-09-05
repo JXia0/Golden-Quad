@@ -17,6 +17,8 @@ namespace LetGo
         private BoxCollider2D crateCollider, shutter;
         private Transform shutterVisual;
         private LineRenderer wire, gap, comfort, wind, map, toySound;
+        private ResearchGuide guide;
+        public bool ShowingLampRange => comfort != null && comfort.enabled;
         private float gateGrace, toyUntil;
         private string activePrompt;
         private bool arrived, gateWasOpen, clearingShutter;
@@ -57,9 +59,13 @@ namespace LetGo
             // Retire the delivery chain, including its invisible socket acceptance rules.
             foreach (var old in FindObjectsByType<HoldTarget>()) old.gameObject.SetActive(false);
             foreach (var old in FindObjectsByType<HoldSocket>()) old.gameObject.SetActive(false);
+            // These belonged to the retired card-delivery puzzle and suggest false interactions.
+            foreach (var item in FindObjectsByType<Transform>())
+                if (item.name == "Pinned Draft" || item.name == "Desk Lamp" || item.name == "Research Notes" || item.name == "Research Desk")
+                    item.gameObject.SetActive(false);
             WindActive = JourneyChoices.BeginWorkshop() % 2 == 1;
 
-            crate = Tool("Workshop Crate", "workshop-crate", new Vector3(4f, -2.1f), new Vector2(1.1f, 1.3f), "prop_stage_box", "E · 搬箱子");
+            crate = Tool("Workshop Crate", "workshop-crate", new Vector3(4f, -2.1f), new Vector2(1.1f, 1.3f), "prop_research_crate", "E · 搬箱子");
             crate.CarryOffset = new Vector3(1.2f, 0.4f);
             crateCollider = Box(crate.transform, new Vector2(1.1f, 1.3f));
             toolSurface = new PhysicsMaterial2D("Workshop smooth tool edges") { friction = 0f, bounciness = 0f };
@@ -83,7 +89,7 @@ namespace LetGo
             actor.Configure("workshop-learner", HoldTargetMode.Recipient, "E · 牵住   F · 让它试走", 1.5f, 2.6f);
             report = Tool("Your Working Report", "workshop-report", new Vector3(22f, -2.1f), new Vector2(0.6f, 0.75f), "prop_research_report", "E · 带报告回工作台");
             report.gameObject.SetActive(false);
-            var bench = visuals.Prop("Return Workbench", new Vector3(1f, -1.9f), new Vector2(1.5f, 0.25f), JourneyVisuals.Warm, "workshop-desk");
+            var bench = visuals.Prop("Return Workbench", new Vector3(1f, -2.1f), new Vector2(2.4f, 1.1f), JourneyVisuals.Warm, "workshop-desk");
             desk = bench.gameObject.AddComponent<HoldSocket>();
             desk.Configure("workshop-report", "", 1.5f, 1, "");
             desk.Acceptance = target => arrived;
@@ -101,7 +107,8 @@ namespace LetGo
             wind = visuals.GameplayLine("Draft through the window", JourneyVisuals.Cool, 0.045f);
             map = visuals.GameplayLine("Workshop route sketch", JourneyVisuals.Warm, 0.04f);
             toySound = visuals.GameplayLine("Familiar toy sound range", JourneyVisuals.Warm, 0.025f);
-            gameObject.AddComponent<ResearchGuide>().Initialize(this, hand);
+            guide = gameObject.AddComponent<ResearchGuide>();
+            guide.Initialize(this, hand);
         }
 
         private HoldTarget Tool(string name, string id, Vector3 position, Vector2 size, string slot, string prompt)
@@ -193,7 +200,7 @@ namespace LetGo
             }
             if (At(1f))
             {
-                activePrompt = ReportReturned ? "F · 带着这次的经验去汇报" : hand.CurrentTarget == report ? "松开 E · 留下你的报告" : "这次要解决的事：让它走到出口，再带回你的办法。";
+                activePrompt = ReportReturned ? "F · 带着这次的经验去汇报" : hand.CurrentTarget == report ? "松开 E · 留下你的报告" : "让实验小人走到右侧出口";
                 if (ReportReturned && GameInput.UsePressed) director.LoadNextScene();
             }
             if (hand.CurrentTarget == toy && toy != null) activePrompt = "按住 E 上弦 · 松开后它会继续发声一阵子";
@@ -229,25 +236,39 @@ namespace LetGo
 
         private void DrawFeedback()
         {
+            var hints = guide != null && guide.HelpVisible;
+            wire.enabled = !GateLatched && (At(6.5f, 4f) || hints);
             wire.positionCount = 3;
             wire.SetPosition(0, new Vector3(6.5f, -2.6f));
             wire.SetPosition(1, new Vector3(9f, -2.6f));
             wire.SetPosition(2, new Vector3(9f, 1.2f));
             wire.startColor = wire.endColor = GateOpen ? JourneyVisuals.Warm : JourneyVisuals.Cool;
             gap.positionCount = 4;
+            gap.enabled = !arrived && (At(16f, 4f) || hints);
             gap.SetPosition(0, new Vector3(15.35f, -2.6f));
             gap.SetPosition(1, new Vector3(15.35f, -2.95f));
             gap.SetPosition(2, new Vector3(16.65f, -2.95f));
             gap.SetPosition(3, new Vector3(16.65f, -2.6f));
-            JourneyVisuals.Ring(comfort, lamp.transform.position, LampWorking ? 3.6f : 0.2f);
-            wind.enabled = WindActive;
+            // Show usable reach at floor level only while placing the tool or asking for help.
+            comfort.enabled = !arrived && (hand.CurrentTarget == lamp || hints && At(lamp.transform.position.x, 4f));
+            DrawRange(comfort, lamp.transform.position.x, LampWorking ? 3.6f : 0.2f);
+            wind.enabled = WindActive && !arrived && (At(21f, 3f) || hints);
             wind.positionCount = 3;
             wind.SetPosition(0, new Vector3(22f, -0.6f));
             wind.SetPosition(1, new Vector3(20f, -0.9f));
             wind.SetPosition(2, new Vector3(18.5f, -0.6f));
-            map.enabled = Time.time < clueUntil;
-            toySound.enabled = toy != null && ToySoundRemaining > 0f;
-            if (toySound.enabled) JourneyVisuals.Ring(toySound, toy.transform.position, 3.5f, Mathf.Clamp01(ToySoundRemaining / 12f));
+            map.enabled = false;
+            toySound.enabled = !arrived && toy != null && ToySoundRemaining > 0f && (hand.CurrentTarget == toy || hints);
+            if (toySound.enabled) DrawRange(toySound, toy.transform.position.x, 3.5f);
+        }
+
+        private static void DrawRange(LineRenderer line, float x, float radius)
+        {
+            line.positionCount = 4;
+            line.SetPosition(0, new Vector3(x - radius, -2.48f));
+            line.SetPosition(1, new Vector3(x - radius, -2.62f));
+            line.SetPosition(2, new Vector3(x + radius, -2.62f));
+            line.SetPosition(3, new Vector3(x + radius, -2.48f));
         }
 
         private void OnDestroy()

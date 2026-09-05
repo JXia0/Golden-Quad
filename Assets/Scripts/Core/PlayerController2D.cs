@@ -33,6 +33,8 @@ namespace LetGo
 
         public Vector2 Velocity => body == null ? Vector2.zero : body.linearVelocity;
         public float FacingDirection => facing;
+        // A companion can offer movement; explicit left input still lets the player pull back.
+        public float? AssistedHorizontal { get; set; }
         public void SetJumpForce(float value) => jumpForce = value;
         public SpriteRenderer CharacterRenderer => characterVisual == null
             ? null
@@ -66,10 +68,11 @@ namespace LetGo
                 if (body != null) body.linearVelocity = new Vector2(0f, body.linearVelocity.y);
                 return;
             }
-            body.linearVelocity = new Vector2(GameInput.Horizontal * moveSpeed, body.linearVelocity.y);
-            if (Mathf.Abs(GameInput.Horizontal) > 0.01f)
+            var horizontal = AssistedHorizontal ?? GameInput.Horizontal;
+            body.linearVelocity = new Vector2(horizontal * moveSpeed, body.linearVelocity.y);
+            if (Mathf.Abs(horizontal) > 0.01f)
             {
-                facing = Mathf.Sign(GameInput.Horizontal);
+                facing = Mathf.Sign(horizontal);
                 ApplyScale();
             }
         }
@@ -130,7 +133,7 @@ namespace LetGo
 
         private void UpdateFootsteps()
         {
-            if (Mathf.Abs(GameInput.Horizontal) < 0.1f || !IsGrounded())
+            if (Mathf.Abs(AssistedHorizontal ?? GameInput.Horizontal) < 0.1f || !IsGrounded())
             {
                 footstepTimer = 0f;
                 return;
