@@ -3,7 +3,8 @@ using UnityEngine;
 
 namespace LetGo
 {
-    /// <summary>A working draft can change; only releasing the conclusion makes it final.</summary>
+    /// <summary>Observe, revise, try the selected model, then commit what actually worked.</summary>
+    [DefaultExecutionOrder(50)]
     public sealed class ResearchDraft : MonoBehaviour
     {
         private HandConnection hand;
@@ -11,9 +12,14 @@ namespace LetGo
         private HoldSocket question, evidence, conclusion;
         private HoldTarget photo, data;
         private LineRenderer destination, observation;
-        private readonly LineRenderer[] models = new LineRenderer[2];
-        private readonly SpriteRenderer[] walkers = new SpriteRenderer[2];
-        private readonly SpriteRenderer[] doors = new SpriteRenderer[2];
+        private LineRenderer trialPath, trialResponse;
+        private Transform trialFigure;
+        private HoldTarget bridge;
+        private readonly LineRenderer[] gaps = new LineRenderer[2];
+        private readonly ResearchTrial trial = new();
+        private ResearchTrialState previousTrialState;
+        private PlayerController2D player;
+        private string trialPrompt;
         private readonly HashSet<string> observed = new();
         private float observationTime;
         private HoldTarget inspecting;
@@ -21,15 +27,25 @@ namespace LetGo
         public bool IsCommitted => conclusion != null && conclusion.Completed;
         public float Observation01 => Mathf.Clamp01(observationTime / 1.1f);
         public System.Action<HoldTarget> EvidenceObserved;
+        public ResearchTrialState TrialState => trial.State;
+        public float TrialProgress01 => trial.Progress01;
+        public float TrialResponse01 => trial.Response01;
+        public Transform TrialFigure => trialFigure;
+        public HoldTarget TrialBridge => bridge;
+        public bool TrialNeedsBridge => trial.WaitingForBridge;
+        public float RequiredBridgeX => trial.RequiredBridgeX;
+        public System.Action<ResearchTrialState> TrialStateChanged;
         private const string ObservePrompt = "拿到灯下 · 停下来看看";
         private const string PlacePrompt = "松开 E · 放上工作板";
         private const string RevisePrompt = "还可以换一份 · 提交结论后定稿";
         private const string CommitPrompt = "松开 E · 带着缺口定稿";
+        private const string PendingCommitPrompt = "先让模型走到终点 · 可以暂时放下结论";
 
         public void Initialize(StorySceneDirector sceneDirector, JourneyVisuals visuals)
         {
             director = sceneDirector;
             hand = director.Player.GetComponent<HandConnection>();
+            player = director.Player.GetComponent<PlayerController2D>();
             question = EmotionalJourney.Named("Question Board")?.GetComponent<HoldSocket>();
             evidence = EmotionalJourney.Named("Evidence Board")?.GetComponent<HoldSocket>();
             conclusion = EmotionalJourney.Named("Conclusion Board")?.GetComponent<HoldSocket>();
@@ -39,24 +55,48 @@ namespace LetGo
             { Debug.LogError("[LetGo] Research is missing a board or evidence card."); enabled = false; return; }
             evidence.Replaceable = true;
             evidence.Acceptance = target => observed.Contains(target.TargetId);
+            evidence.Placed += BeginTrial;
+            conclusion.Acceptance = target => trial.State == ResearchTrialState.Arrived;
             conclusion.Placed += target =>
             {
                 evidence.Locked = true;
+                JourneyChoices.RememberTest(evidence.Occupant.TargetId);
                 // The unused possibility remains visible on the table, with its own gaps.
                 var unused = evidence.Occupant == photo ? data : photo;
                 unused.MarkUnavailable();
                 var environment = FindAnyObjectByType<EmotionalEnvironment>();
                 if (environment != null) environment.Resolution01 = 0.85f;
             };
-            destination = visuals.Line("Draft destination", JourneyVisuals.Warm);
-            observation = visuals.Line("Reading under the lamp", JourneyVisuals.Warm);
+            destination = visuals.GameplayLine("Draft destination", JourneyVisuals.Warm);
+            observation = visuals.GameplayLine("Reading under the lamp", JourneyVisuals.Warm);
             foreach (var target in FindObjectsByType<HoldTarget>()) visuals.Track(target.transform, JourneyVisuals.Cool);
-            for (var i = 0; i < 2; i++)
+            trialPath = visuals.GameplayLine("Selected experiment route", JourneyVisuals.Cool);
+            trialResponse = visuals.GameplayLine("Experiment response", JourneyVisuals.Warm);
+            // This is a gameplay actor. The art slot can replace its placeholder independently of guides.
+            trialFigure = visuals.Prop("Research Trial Figure", evidence.transform.position,
+                new Vector2(0.42f, 0.65f), JourneyVisuals.Warm, "prop_research_model").transform;
+            trialFigure.gameObject.SetActive(false);
+            var bridgeVisual = visuals.Prop("Movable Experiment Bridge", evidence.transform.position + new Vector3(0.2f, -1.2f),
+                new Vector2(1.4f, 0.24f), JourneyVisuals.Warm, "prop_research_bridge");
+            bridge = bridgeVisual.gameObject.AddComponent<HoldTarget>();
+            bridge.Configure("experiment-bridge", HoldTargetMode.Carryable, "按住 E · 搬动支撑板", 1.5f, 3f, 2);
+            bridge.Released += value =>
             {
-                models[i] = visuals.Line(i == 0 ? "Observed path - with pauses" : "Measured path - direct", i == 0 ? JourneyVisuals.Warm : JourneyVisuals.Cool);
-                walkers[i] = visuals.Prop("First step in draft " + i, Vector3.zero, new Vector2(0.2f, 0.32f), JourneyVisuals.Warm);
-                doors[i] = visuals.Prop("Door in draft " + i, Vector3.zero, new Vector2(0.25f, 0.65f), JourneyVisuals.Cool);
-            }
+                var position = value.transform.position;
+                var gap = Mathf.Abs(position.x - trial.FirstGapX) < Mathf.Abs(position.x - trial.SecondGapX) ? trial.FirstGapX : trial.SecondGapX;
+                if (Mathf.Abs(position.x - gap) <= 1.1f) position.x = gap;
+                value.transform.position = position;
+            };
+            visuals.Track(bridge.transform, JourneyVisuals.Warm);
+            for (var i = 0; i < gaps.Length; i++) gaps[i] = visuals.GameplayLine("Experiment gap " + i, JourneyVisuals.Cool, 0.08f);
+        }
+
+        private void BeginTrial(HoldTarget card)
+        {
+            trial.Begin(evidence.transform.position.x + 1.2f, conclusion.transform.position.x - 1.4f, card == photo);
+            trialFigure.gameObject.SetActive(true);
+            trialFigure.position = new Vector3(trial.PositionX, -2.35f, evidence.transform.position.z);
+            NotifyTrialState();
         }
 
         private void Update()
@@ -66,6 +106,9 @@ namespace LetGo
             director.ClearPrompt(PlacePrompt);
             director.ClearPrompt(RevisePrompt);
             director.ClearPrompt(CommitPrompt);
+            director.ClearPrompt(PendingCommitPrompt);
+            director.ClearPrompt(trialPrompt);
+            trialPrompt = null;
             var target = hand.CurrentTarget;
             var isEvidence = target != null && (target == photo || target == data);
             if (target != inspecting) { inspecting = target; observationTime = 0f; }
@@ -96,41 +139,55 @@ namespace LetGo
             {
                 JourneyVisuals.Ring(destination, receiver.position, 0.9f + Mathf.Sin(Time.time * 2) * 0.04f);
                 if ((!isEvidence || observed.Contains(target.TargetId)) && Vector2.Distance(target.transform.position, receiver.position) < 1.7f)
-                    director.ShowPrompt(target.TargetId == "conclusion" ? CommitPrompt : PlacePrompt);
+                    director.ShowPrompt(target.TargetId == "conclusion" ?
+                        trial.State == ResearchTrialState.Arrived ? CommitPrompt : PendingCommitPrompt : PlacePrompt);
             }
             else if (evidence.Completed && !conclusion.Completed && underLamp) director.ShowPrompt(RevisePrompt);
-            DrawModel(0, photo);
-            DrawModel(1, data);
+            UpdateTrial();
         }
 
-        private void DrawModel(int index, HoldTarget card)
+        private void UpdateTrial()
         {
-            var visible = question.Completed;
-            models[index].enabled = visible;
-            walkers[index].enabled = visible;
-            doors[index].enabled = visible;
-            if (!visible) return;
-            var known = observed.Contains(card.TargetId);
-            var selected = evidence.Occupant == card;
-            var center = evidence.transform.position + new Vector3(index == 0 ? -1.8f : 1.8f, 1.35f, 0);
-            var color = index == 0 ? JourneyVisuals.Warm : JourneyVisuals.Cool;
-            color.a = known ? (selected ? 1f : 0.5f) : 0.14f;
-            models[index].startColor = models[index].endColor = color;
-            models[index].positionCount = 18;
-            for (var i = 0; i < 18; i++)
+            if (trial.State == ResearchTrialState.NotStarted) return;
+            if (player.ControlsEnabled)
+                trial.Tick(Time.deltaTime, player.transform.position.x, Mathf.Abs(player.Velocity.x) < 0.15f,
+                    hand.CurrentTarget == null && !GameInput.InteractHeld, bridge.transform.position.x, !bridge.IsHeld);
+            trialFigure.position = new Vector3(trial.PositionX, trialFigure.position.y, trialFigure.position.z);
+            NotifyTrialState();
+            trialPath.positionCount = 3;
+            trialPath.SetPosition(0, new Vector3(evidence.transform.position.x + 1.2f, trialFigure.position.y - 0.3f));
+            trialPath.SetPosition(1, new Vector3(conclusion.transform.position.x - 1.4f, trialFigure.position.y - 0.3f));
+            trialPath.SetPosition(2, new Vector3(conclusion.transform.position.x - 1.4f, trialFigure.position.y + 0.5f));
+            for (var i = 0; i < gaps.Length; i++)
             {
-                var t = i / 17f;
-                // The observational route has resting places but stops short of the door.
-                models[index].SetPosition(i, center + new Vector3(-1.1f + t * (index == 0 ? 1.6f : 2.2f),
-                    index == 0 ? Mathf.Sin(t * Mathf.PI * 2) * 0.22f : 0, 0));
+                var x = i == 0 ? trial.FirstGapX : trial.SecondGapX;
+                gaps[i].positionCount = 4;
+                gaps[i].SetPosition(0, new Vector3(x - 0.45f, -2.65f));
+                gaps[i].SetPosition(1, new Vector3(x - 0.45f, -2.95f));
+                gaps[i].SetPosition(2, new Vector3(x + 0.45f, -2.95f));
+                gaps[i].SetPosition(3, new Vector3(x + 0.45f, -2.65f));
             }
-            doors[index].transform.position = center + new Vector3(1.1f, 0.3f, 0);
-            doors[index].color = color;
-            var travel = Mathf.PingPong(Time.time * (index == 0 ? 0.24f : 0.4f), 1f);
-            // A hesitation is kept in the direct model; neither route erases uncertainty.
-            if (index == 1) travel = Mathf.Min(travel, 0.8f);
-            walkers[index].transform.position = center + new Vector3(-1.1f + travel * (index == 0 ? 1.6f : 2.2f), 0.25f, 0);
-            walkers[index].color = color;
+            var waiting = trial.State == ResearchTrialState.NeedsCompany || trial.State == ResearchTrialState.NeedsSpace;
+            trialResponse.enabled = waiting;
+            if (waiting) JourneyVisuals.Ring(trialResponse, trialFigure.position, 0.6f, Mathf.Max(0.04f, trial.Response01));
+            if (!IsCommitted && (hand.CurrentTarget == null || hand.CurrentTarget == bridge) && Mathf.Abs(player.transform.position.x - trial.PositionX) < 5f)
+            {
+                trialPrompt = trial.WaitingForBridge ? "把支撑板放在缺口上 · 走过去后，还能搬到下一处" : trial.State switch
+                {
+                    ResearchTrialState.NeedsCompany => "停在它身旁 · 空着手，陪它等一会儿",
+                    ResearchTrialState.NeedsSpace => "空出双手 · 向右走，给它迈步的空间",
+                    ResearchTrialState.Arrived => "走到了 · 可以带结论去定稿，也可以换个方案再试",
+                    _ => "跟着模型 · 看它在哪一步停下"
+                };
+                director.ShowPrompt(trialPrompt);
+            }
+        }
+
+        private void NotifyTrialState()
+        {
+            if (previousTrialState == trial.State) return;
+            previousTrialState = trial.State;
+            TrialStateChanged?.Invoke(trial.State);
         }
     }
 }

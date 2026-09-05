@@ -13,6 +13,7 @@ namespace LetGo
         private LineRenderer breath;
         private readonly List<(Transform target, LineRenderer ring)> targets = new();
         private readonly List<GameObject> guideObjects = new();
+        private readonly List<GameObject> gameplayCues = new();
         private bool guidesVisible = true;
 
         public void Initialize(StorySceneDirector director)
@@ -38,6 +39,21 @@ namespace LetGo
             guideObjects.Add(go);
             go.SetActive(guidesVisible);
             return line;
+        }
+
+        // Required aiming/placement feedback stays usable when presentation hides decorative guides.
+        public LineRenderer GameplayLine(string name, Color color, float width = 0.055f)
+        {
+            var line = Line(name, color, width);
+            guideObjects.Remove(line.gameObject);
+            gameplayCues.Add(line.gameObject);
+            line.gameObject.SetActive(true);
+            return line;
+        }
+
+        public void SetGameplayCuesVisible(bool visible)
+        {
+            foreach (var cue in gameplayCues) if (cue != null) cue.SetActive(visible);
         }
 
         public SpriteRenderer Prop(string name, Vector3 position, Vector2 size, Color color, string slot = "")

@@ -8,10 +8,19 @@ using UnityEngine;
 public sealed class JourneyArtImporter : AssetPostprocessor
 {
     private const string PalettePath = "Assets/Resources/JourneyArtPalette.asset";
-    private static readonly string[] Slots = { "prop_child_backpack" };
+    private static readonly string[] Slots = { "prop_child_backpack", "prop_research_model", "prop_research_bridge" };
     private static bool queued;
 
     [InitializeOnLoadMethod]
+    private static void Initialize()
+    {
+        Queue();
+        EditorApplication.playModeStateChanged += state =>
+        {
+            if (state == PlayModeStateChange.EnteredEditMode) Queue();
+        };
+    }
+
     private static void Queue() { if (queued) return; queued = true; EditorApplication.delayCall += Refresh; }
 
     private static void OnPostprocessAllAssets(string[] imported, string[] deleted, string[] moved, string[] movedFrom)

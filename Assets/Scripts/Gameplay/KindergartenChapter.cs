@@ -51,6 +51,7 @@ namespace LetGo
                 value.transform.position = child.transform.position + new Vector3(0.35f, -0.15f, 0);
                 JourneyChoices.Record("kindergarten", "shared-comfort", false);
             };
+            gameObject.AddComponent<ComfortToyPlay>().Initialize(director, toy, child, toySocket, visuals);
             child.GentleCompanion = true;
             teacher.Configure("crying-child", "", 1.8f, 3, "");
             teacher.Placed += value =>

@@ -18,7 +18,8 @@ namespace LetGo
 
         private void OnTriggerStay2D(Collider2D other)
         {
-            if (completed || !other.TryGetComponent<PlayerController2D>(out _)) return;
+            // Unity sends trigger messages to disabled behaviours as well.
+            if (!isActiveAndEnabled || completed || !other.TryGetComponent<PlayerController2D>(out _)) return;
             var director = StorySceneDirector.Instance;
             if (director == null || director.CompletedObjectives != 1) return;
             completed = true;

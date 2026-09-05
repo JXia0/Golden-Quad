@@ -32,6 +32,7 @@ namespace LetGo
         }
 
         public Vector2 Velocity => body == null ? Vector2.zero : body.linearVelocity;
+        public float FacingDirection => facing;
         public void SetJumpForce(float value) => jumpForce = value;
         public SpriteRenderer CharacterRenderer => characterVisual == null
             ? null

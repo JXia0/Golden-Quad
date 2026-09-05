@@ -113,6 +113,14 @@ public static class JourneyRegressionChecks
             Call(courage, "Update");
             Require(player.transform.position == position, "fear cannot respawn the player");
             results.Add("PASS: zero courage does not reset the player.");
+            var selfReleaseBefore = hand.LastSelfReleaseTime;
+            typeof(HandConnection).GetField("selfAnchoring", Private).SetValue(hand, true);
+            typeof(HandConnection).GetField("selfCharge", Private).SetValue(hand, 1.2f);
+            hand.CancelConnection();
+            Require(hand.LastSelfReleaseTime == selfReleaseBefore && !hand.IsSelfAnchoring,
+                "reset cannot play a charged stage note");
+            results.Add("PASS: cancelling a full breath emits no note or rhythm progress.");
+            ValidateExperiments(results);
             ValidateScenes(results);
             results.Add("ALL CHECKS PASSED. Editor logic/topology checks; manual playthrough still required.");
         }
@@ -136,6 +144,41 @@ public static class JourneyRegressionChecks
             File.WriteAllLines(ResultPath, results);
             Debug.Log("[LetGo] " + string.Join("\n", results));
         }
+    }
+
+    private static void ValidateExperiments(List<string> results)
+    {
+        var trial = new ResearchTrial();
+        trial.Begin(0f, 8f, true);
+        trial.Tick(3f, -5f, true, true, 0f, false);
+        Require(trial.WaitingForBridge && trial.PositionX < trial.FirstGapX, "a missing bridge blocks the figure");
+        trial.Tick(3f, -5f, true, true, trial.FirstGapX, true);
+        trial.Tick(5f, -5f, true, true, trial.FirstGapX, true);
+        Require(trial.State == ResearchTrialState.NeedsCompany, "company model cannot complete without company");
+        trial.Tick(1f, trial.PositionX, false, true, trial.FirstGapX, true);
+        Require(trial.State == ResearchTrialState.NeedsCompany, "running past is not companionship");
+        trial.Tick(1f, trial.PositionX, true, false, trial.FirstGapX, true);
+        Require(trial.State == ResearchTrialState.NeedsCompany, "hands must be free during the trial response");
+        trial.Tick(1f, trial.PositionX, true, true, trial.FirstGapX, true);
+        trial.Tick(3f, 8f, true, true, trial.FirstGapX, true);
+        Require(trial.WaitingForBridge && trial.PositionX < trial.SecondGapX, "the same bridge must move to the second gap");
+        trial.Tick(3f, 8f, true, true, trial.SecondGapX, true);
+        Require(trial.State == ResearchTrialState.Arrived, "company trial reaches its end after a nearby pause");
+        results.Add("PASS: observational trial requires a nearby pause with empty hands, then finishes independently.");
+        trial.Begin(0f, 8f, false);
+        Require(trial.State == ResearchTrialState.Approaching && trial.Progress01 == 0f,
+            "revision invalidates the previous test result");
+        trial.Tick(3f, 0f, true, true, trial.SecondGapX, true);
+        Require(trial.WaitingForBridge, "a revision needs its own crossing, not the previous model's bridge progress");
+        trial.Tick(3f, 0f, true, true, trial.FirstGapX, true);
+        trial.Tick(5f, trial.PositionX, true, true, trial.FirstGapX, true);
+        Require(trial.State == ResearchTrialState.NeedsSpace, "waiting beside the direct model cannot advance it");
+        trial.Tick(1f, trial.PositionX + 3f, true, false, trial.SecondGapX, true);
+        Require(trial.State == ResearchTrialState.NeedsSpace, "carrying the conclusion cannot substitute for letting go");
+        trial.Tick(1f, trial.PositionX + 3f, true, true, trial.SecondGapX, true);
+        trial.Tick(3f, 8f, true, true, trial.SecondGapX, true);
+        Require(trial.State == ResearchTrialState.Arrived, "direct trial reaches its end when given room");
+        results.Add("PASS: revised direct trial requires space and cannot reuse the observational result.");
     }
 
     private static void ValidateScenes(List<string> results)

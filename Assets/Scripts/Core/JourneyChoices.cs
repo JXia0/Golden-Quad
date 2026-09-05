@@ -5,12 +5,28 @@ namespace LetGo
         public static string KindergartenFirst { get; private set; }
         public static string StageStyle { get; private set; }
         public static string ResearchFirst { get; private set; }
+        public static bool HasStageRhythm { get; private set; }
+        public static bool FirstBeatLong { get; private set; }
+        public static bool SecondBeatLong { get; private set; }
+        public static string TestedResearchModel { get; private set; }
+
+        public static void RememberRhythm(bool firstLong, bool secondLong)
+        {
+            HasStageRhythm = true;
+            FirstBeatLong = firstLong;
+            SecondBeatLong = secondLong;
+        }
+
+        public static void RememberTest(string model) => TestedResearchModel = model;
 
         public static void Reset()
         {
             KindergartenFirst = string.Empty;
             StageStyle = string.Empty;
             ResearchFirst = string.Empty;
+            HasStageRhythm = false;
+            FirstBeatLong = SecondBeatLong = false;
+            TestedResearchModel = string.Empty;
         }
 
         public static void Record(string category, string value, bool onlyIfEmpty)

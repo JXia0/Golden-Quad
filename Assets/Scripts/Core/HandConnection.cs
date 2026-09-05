@@ -26,6 +26,8 @@ namespace LetGo
         public bool IsSelfAnchoring => selfAnchoring;
         public float SelfChargeNormalized => selfChargeSeconds <= 0f ? 1f : Mathf.Clamp01(selfCharge / selfChargeSeconds);
         public float LastFullSelfReleaseTime { get; private set; } = -100f;
+        public float LastSelfReleaseTime { get; private set; } = -100f;
+        public float LastSelfReleaseDuration { get; private set; }
         public float Stability01
         {
             get
@@ -141,6 +143,11 @@ namespace LetGo
         private void StopSelfAnchor(bool grantStableMovement)
         {
             if (!selfAnchoring) return;
+            if (grantStableMovement)
+            {
+                LastSelfReleaseTime = Time.time;
+                LastSelfReleaseDuration = selfCharge;
+            }
             if (grantStableMovement && SelfChargeNormalized >= 0.98f)
             {
                 stableRemaining = stableMoveSeconds;
