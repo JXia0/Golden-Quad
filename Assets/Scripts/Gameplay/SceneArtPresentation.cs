@@ -164,6 +164,8 @@ namespace LetGo
             GroundVisual("Workshop Learner", new Vector2(0.56f, 0.9f));
             GroundVisual("Workshop Shutter Frame", new Vector2(3.15f, 4.35f));
             GroundVisual("Workshop Shutter Door", new Vector2(2.8f, 3.75f));
+            NudgePresentationVisual("Workshop Shutter Frame", -0.23f);
+            NudgePresentationVisual("Workshop Shutter Door", -0.18f);
             BuildArchiveShelving();
 
             var notebook = GameObject.Find("Archive Notebook")?.GetComponent<SpriteRenderer>();
@@ -224,8 +226,17 @@ namespace LetGo
             renderer.color = new Color(0.62f, 0.56f, 0.48f, 1f);
             renderer.sortingOrder = source.sortingOrder - 1;
             renderer.transform.position = position;
-            FitWorld(renderer, size);
+            var parentScale = renderer.transform.parent == null ? Vector3.one : renderer.transform.parent.lossyScale;
+            renderer.transform.localScale = new Vector3(
+                size.x / renderer.sprite.bounds.size.x / Mathf.Max(0.0001f, Mathf.Abs(parentScale.x)),
+                size.y / renderer.sprite.bounds.size.y / Mathf.Max(0.0001f, Mathf.Abs(parentScale.y)), 1f);
             if (vertical) renderer.transform.rotation = Quaternion.Euler(0f, 0f, 90f);
+        }
+
+        private static void NudgePresentationVisual(string rootName, float y)
+        {
+            var visual = GameObject.Find(rootName)?.transform.Find("Presentation Visual");
+            if (visual != null) visual.position += Vector3.up * y;
         }
 
         private void AddPassageOverlay(string scene)

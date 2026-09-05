@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4ef8b2c9478147faad113fb19abe6ef4, type: 3}
+  m_Name: SceneAudioLibrary
+  m_EditorClassIdentifier: Assembly-CSharp::LetGo.SceneAudioLibrary
+  footstepOne: {fileID: 8300000, guid: f8a7be09c85e89b43990f7f3262c4039, type: 3}
+  footstepTwo: {fileID: 8300000, guid: b6c4980efa1636347afe3ac8b206d96d, type: 3}
+  interact: {fileID: 8300000, guid: 2c4098d3ce69d5a47842bf957183a3cd, type: 3}
+  itemMove: {fileID: 8300000, guid: b45f44f48dc443640bca358cd96552af, type: 3}
+  objectiveLight: {fileID: 8300000, guid: 5bfb0cdda05375d4dacb86f74e06b6d4, type: 3}
+  doorOpen: {fileID: 8300000, guid: 332b2fe2d972e774ca0f3601cd05d3bf, type: 3}
+  handRelease: {fileID: 8300000, guid: 31d17a74c36ea25438c65ccf1aa33173, type: 3}
+  heartbeat: {fileID: 8300000, guid: a9c2dc8883b125f4085f6ee52aa1e3f1, type: 3}
+  calmBreath: {fileID: 8300000, guid: 91d387a9cca536444b81da6ae78adc85, type: 3}
+  applause: {fileID: 8300000, guid: 14edc334ba1d67e428eb45880d937c50, type: 3}
+  paperRustle: {fileID: 8300000, guid: 9e339daf90f99ac48bd84c3accc00cab, type: 3}
+  finalLight: {fileID: 8300000, guid: 6fcc9a920f790554eab346de3d0b2031, type: 3}

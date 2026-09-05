@@ -39,6 +39,16 @@ namespace LetGo
             AudioClip objective, AudioClip door, AudioClip release, AudioClip heartbeatLoop, AudioClip breath,
             AudioClip audienceApplause, AudioClip paper, AudioClip ending, AudioClip ambienceLoop, AudioClip musicLoop)
         {
+            SetEffects(stepOne, stepTwo, interaction, moveItem, objective, door, release, heartbeatLoop, breath,
+                audienceApplause, paper, ending);
+            ambience = ambienceLoop;
+            music = musicLoop;
+        }
+
+        public void SetEffects(AudioClip stepOne, AudioClip stepTwo, AudioClip interaction, AudioClip moveItem,
+            AudioClip objective, AudioClip door, AudioClip release, AudioClip heartbeatLoop, AudioClip breath,
+            AudioClip audienceApplause, AudioClip paper, AudioClip ending)
+        {
             footstepOne = stepOne;
             footstepTwo = stepTwo;
             interact = interaction;
@@ -51,14 +61,13 @@ namespace LetGo
             applause = audienceApplause;
             paperRustle = paper;
             finalLight = ending;
-            ambience = ambienceLoop;
-            music = musicLoop;
         }
 
         private void Awake() => Instance = this;
 
         private void Start()
         {
+            Resources.Load<SceneAudioLibrary>("SceneAudioLibrary")?.Apply(this);
             StartLoop(ambienceSource, ambience, 0.22f);
             StartLoop(musicSource, music, 0.28f);
             StartLoop(tensionSource, heartbeat, 0f);
