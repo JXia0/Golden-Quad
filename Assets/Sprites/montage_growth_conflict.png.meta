@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 1f8c7a8c99223c6498156540c18755f7
+guid: 7db026b974be3c74fa3b50b8c94cca85
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 4824862111528359552
-    second: montage01_stayupwithfriends_0
+      213: 2249152513020209552
+    second: montage_growth_conflict_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -102,7 +102,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: montage01_stayupwithfriends
+      name: montage_growth_conflict
       rect:
         serializedVersion: 2
         x: 0
@@ -117,8 +117,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: ffefe7c12323d814bacf015e56677034
-      internalID: 1953963851
+      spriteID: fa60da3c754adfa4f8cf79556942da66
+      internalID: 142250809
       vertices: []
       indices: 
       edges: []
@@ -127,7 +127,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 2a55c2fdcd659d045acc2ee0c7da9e5d
+    spriteID: 12da06b1e3b32b740829a73c186b6815
     internalID: 0
     vertices: []
     indices: 
@@ -137,7 +137,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      montage01_stayupwithfriends: 1953963851
+      montage_growth_conflict: 142250809
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

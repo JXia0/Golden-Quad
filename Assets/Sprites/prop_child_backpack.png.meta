@@ -74,7 +74,7 @@ TextureImporter:
   platformSettings:
   - serializedVersion: 4
     buildTarget: DefaultTexturePlatform
-    maxTextureSize: 2048
+    maxTextureSize: 4096
     resizeAlgorithm: 0
     textureFormat: -1
     textureCompression: 1
@@ -102,23 +102,23 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: prop_child_backpack_0
+      name: prop_child_backpack
       rect:
         serializedVersion: 2
-        x: 143
-        y: 193
-        width: 883
-        height: 911
+        x: 140
+        y: 190
+        width: 889
+        height: 917
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: b19f16ddee707cfd0800000000000000
-      internalID: -2321878360388404965
+      spriteID: 33dfea92d21475e4b9629fdbcc4053ce
+      internalID: 872123929
       vertices: []
       indices: 
       edges: []
@@ -127,7 +127,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: df3b7f838396e3249a0ca3842bf0470c
     internalID: 0
     vertices: []
     indices: 
@@ -137,7 +137,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      prop_child_backpack_0: -2321878360388404965
+      prop_child_backpack: 872123929
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

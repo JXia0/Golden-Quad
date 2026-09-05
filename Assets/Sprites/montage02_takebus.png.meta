@@ -74,7 +74,7 @@ TextureImporter:
   platformSettings:
   - serializedVersion: 4
     buildTarget: DefaultTexturePlatform
-    maxTextureSize: 2048
+    maxTextureSize: 4096
     resizeAlgorithm: 0
     textureFormat: -1
     textureCompression: 1
@@ -102,7 +102,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: montage02_takebus_0
+      name: montage02_takebus
       rect:
         serializedVersion: 2
         x: 0
@@ -110,15 +110,15 @@ TextureImporter:
         width: 3400
         height: 550
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 6286720f4fefa31b0800000000000000
-      internalID: -5675944052392499162
+      spriteID: 7f66ad2f235441f4fbf1387e62fe4a6b
+      internalID: -1174279628
       vertices: []
       indices: 
       edges: []
@@ -127,7 +127,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: b7532110577f1a64abb56118523be47e
     internalID: 0
     vertices: []
     indices: 
@@ -137,7 +137,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      montage02_takebus_0: -5675944052392499162
+      montage02_takebus: -1174279628
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

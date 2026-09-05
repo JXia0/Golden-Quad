@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 1f8c7a8c99223c6498156540c18755f7
+guid: 3f0479bfe5abb0c4e897d1aae4e4a048
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 4824862111528359552
-    second: montage01_stayupwithfriends_0
+      213: 7455787514010063546
+    second: fx_fear_vignette_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -102,13 +102,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: montage01_stayupwithfriends
+      name: fx_fear_vignette
       rect:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 3400
-        height: 550
+        width: 2172
+        height: 724
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -117,8 +117,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: ffefe7c12323d814bacf015e56677034
-      internalID: 1953963851
+      spriteID: bde784a6560724441ab2891b8f6407fd
+      internalID: -776416625
       vertices: []
       indices: 
       edges: []
@@ -127,7 +127,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 2a55c2fdcd659d045acc2ee0c7da9e5d
+    spriteID: 1df7c806aa6486e469c188a4a4ebe2ce
     internalID: 0
     vertices: []
     indices: 
@@ -137,7 +137,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      montage01_stayupwithfriends: 1953963851
+      fx_fear_vignette: -776416625
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

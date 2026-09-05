@@ -74,7 +74,7 @@ TextureImporter:
   platformSettings:
   - serializedVersion: 4
     buildTarget: DefaultTexturePlatform
-    maxTextureSize: 2048
+    maxTextureSize: 4096
     resizeAlgorithm: 0
     textureFormat: -1
     textureCompression: 1
@@ -102,23 +102,23 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: prop_cubby_0
+      name: prop_cubby
       rect:
         serializedVersion: 2
-        x: 114
-        y: 144
-        width: 1174
-        height: 835
+        x: 111
+        y: 141
+        width: 1180
+        height: 841
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 3764ee3776917aea0800000000000000
-      internalID: -5861688457882089869
+      spriteID: 2b2be2bc1a403654ea11d0f30f945b9d
+      internalID: 1055572989
       vertices: []
       indices: 
       edges: []
@@ -127,7 +127,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: 38b435678170c474f9143ab4e6dd1cac
     internalID: 0
     vertices: []
     indices: 
@@ -137,7 +137,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      prop_cubby_0: -5861688457882089869
+      prop_cubby: 1055572989
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

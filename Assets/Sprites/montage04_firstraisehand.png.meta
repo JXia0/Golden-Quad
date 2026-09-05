@@ -74,7 +74,7 @@ TextureImporter:
   platformSettings:
   - serializedVersion: 4
     buildTarget: DefaultTexturePlatform
-    maxTextureSize: 2048
+    maxTextureSize: 4096
     resizeAlgorithm: 0
     textureFormat: -1
     textureCompression: 1
@@ -102,7 +102,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: montage04_firstraisehand_0
+      name: montage04_firstraisehand
       rect:
         serializedVersion: 2
         x: 0
@@ -110,15 +110,15 @@ TextureImporter:
         width: 3400
         height: 550
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: fdbdffe78b371df80800000000000000
-      internalID: -8083552619911455777
+      spriteID: a5eca4a8369884749ac5e2c04bce39dd
+      internalID: -1261813584
       vertices: []
       indices: 
       edges: []
@@ -127,7 +127,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: 743e6bf675423e549906ad66c94b283b
     internalID: 0
     vertices: []
     indices: 
@@ -137,7 +137,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      montage04_firstraisehand_0: -8083552619911455777
+      montage04_firstraisehand: -1261813584
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

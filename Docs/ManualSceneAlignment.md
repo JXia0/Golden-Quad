@@ -10,6 +10,19 @@
 
 构建器不再在脚本编译或打开 Unity 时自动重建场景。
 
+### 美术填充后的调整方式（2026-09-05）
+
+现在有些根对象只保留交互与碰撞，其 SpriteRenderer 关闭，美术放在子物体中：
+
+- `Aligned Visual`：已对齐的背景、门或桌子。
+- `Grounded Visual`：NPC 的脚底显示位置。
+- `Delivered Visual`：积木、木台板的实际图片。
+- `Floor Light`：舞台提示的地面光。
+
+只改观感时，选中这些子物体调整位置、比例；不要为了移图片而移动交互根对象。新增的彩旗、书、台灯、椅子等也能直接在 Hierarchy 中调整。主镜头上的 `Scene Art Presentation > Backdrop Limits` 控制镜头可见背景的左右边界；背景扩展后再更新这个范围。
+
+`Tools > Let Go > Fill Delivered Art (Preserve Layout)` 会保留已存在子物体的手动位置，补齐缺少的装饰。
+
 ## 按背景调整物体
 
 以 Prologue 为例：

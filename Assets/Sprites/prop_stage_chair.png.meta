@@ -1,10 +1,88 @@
 fileFormatVersion: 2
-guid: 1f8c7a8c99223c6498156540c18755f7
+guid: c5d0938f98d52a4408f3296015b0437e
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 4824862111528359552
-    second: montage01_stayupwithfriends_0
+      213: -1173251967985764864
+    second: prop_stage_chair_0
+  - first:
+      213: 2766401068075202689
+    second: prop_stage_chair_1
+  - first:
+      213: 7529677512053372544
+    second: prop_stage_chair_2
+  - first:
+      213: 1486610566202600008
+    second: prop_stage_chair_3
+  - first:
+      213: -4884549001615788705
+    second: prop_stage_chair_4
+  - first:
+      213: -7766442622741432858
+    second: prop_stage_chair_5
+  - first:
+      213: -7885961970415494418
+    second: prop_stage_chair_6
+  - first:
+      213: -3599583251930075441
+    second: prop_stage_chair_7
+  - first:
+      213: 8559271998420146093
+    second: prop_stage_chair_8
+  - first:
+      213: -4656035520589298424
+    second: prop_stage_chair_9
+  - first:
+      213: 1154803294779736122
+    second: prop_stage_chair_10
+  - first:
+      213: 2543707052283855621
+    second: prop_stage_chair_11
+  - first:
+      213: 9097521443715450298
+    second: prop_stage_chair_12
+  - first:
+      213: -2273522336702846604
+    second: prop_stage_chair_13
+  - first:
+      213: -3398721583538300340
+    second: prop_stage_chair_14
+  - first:
+      213: 4726455935693343368
+    second: prop_stage_chair_15
+  - first:
+      213: 3354439121905241826
+    second: prop_stage_chair_16
+  - first:
+      213: -5552828519135257106
+    second: prop_stage_chair_17
+  - first:
+      213: 457931193424980688
+    second: prop_stage_chair_18
+  - first:
+      213: 434242916999570435
+    second: prop_stage_chair_19
+  - first:
+      213: -8933736285157647523
+    second: prop_stage_chair_20
+  - first:
+      213: 7520808563467751761
+    second: prop_stage_chair_21
+  - first:
+      213: 8245486291575325565
+    second: prop_stage_chair_22
+  - first:
+      213: -6654444556552622258
+    second: prop_stage_chair_23
+  - first:
+      213: 2222831277484441936
+    second: prop_stage_chair_24
+  - first:
+      213: 8208195963354247678
+    second: prop_stage_chair_25
+  - first:
+      213: -7952272433191005117
+    second: prop_stage_chair_26
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -102,13 +180,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: montage01_stayupwithfriends
+      name: prop_stage_chair
       rect:
         serializedVersion: 2
-        x: 0
-        y: 0
-        width: 3400
-        height: 550
+        x: 131
+        y: 37
+        width: 839
+        height: 1342
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -117,8 +195,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: ffefe7c12323d814bacf015e56677034
-      internalID: 1953963851
+      spriteID: 1f76b08973482c549a711531315ee436
+      internalID: 992900924
       vertices: []
       indices: 
       edges: []
@@ -127,7 +205,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 2a55c2fdcd659d045acc2ee0c7da9e5d
+    spriteID: 98a223ae44e670a4d9766bd1c04f0218
     internalID: 0
     vertices: []
     indices: 
@@ -137,7 +215,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      montage01_stayupwithfriends: 1953963851
+      prop_stage_chair: 992900924
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

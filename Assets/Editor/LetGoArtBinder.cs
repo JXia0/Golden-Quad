@@ -15,21 +15,25 @@ public static class LetGoArtBinder
     [MenuItem("Tools/Let Go/Apply Final Art By Filename")]
     public static void ApplyFinalArt()
     {
+        if (EditorApplication.isPlayingOrWillChangePlaymode) return;
+        if (!Application.isBatchMode && !EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo()) return;
         Directory.CreateDirectory(ArtRoot);
         Directory.CreateDirectory(AudioRoot);
         AssetDatabase.Refresh();
         LetGoSpriteAssetIntegrator.BuildAvailableControllers();
+        LetGoDeliveredArt.PrepareSprites();
         var previousScenes = EditorSceneManager.GetSceneManagerSetup();
         var changedSlots = 0;
 
         foreach (var sceneSetting in EditorBuildSettings.scenes.Where(scene => scene.enabled))
         {
             var scene = EditorSceneManager.OpenScene(sceneSetting.path, OpenSceneMode.Single);
-            var sceneChanged = false;
+            LetGoDeliveredArt.FillScene(scene.name);
+            var sceneChanged = true;
             foreach (var slot in Object.FindObjectsByType<ArtSlot>(FindObjectsInactive.Include))
             {
                 var sprite = FindSprite(slot.SlotId);
-                if (sprite != null && slot.TargetRenderer != null)
+                if (sprite != null && slot.TargetRenderer != null && slot.TargetRenderer.sprite != sprite)
                 {
                     var targetBounds = GetTargetBounds(slot, slot.TargetRenderer);
                     slot.TargetRenderer.sprite = sprite;
@@ -121,6 +125,10 @@ public static class LetGoArtBinder
     private static Sprite FindSprite(string slotId)
     {
         if (string.IsNullOrWhiteSpace(slotId)) return null;
+        var slice = slotId.Split(':');
+        if (slice.Length == 2)
+            return AssetDatabase.LoadAllAssetsAtPath($"{SpriteRoot}/{slice[0]}.png")
+                .OfType<Sprite>().FirstOrDefault(sprite => sprite.name == slice[1]);
         var exact = FindSpriteFile(slotId, new[] { ArtRoot, SpriteRoot });
         if (exact != null) return exact;
         if (slotId == "char_child")

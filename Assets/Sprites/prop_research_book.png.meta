@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 1f8c7a8c99223c6498156540c18755f7
+guid: 3f7fb1e2bd5ec9e429645debe12a22c1
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 4824862111528359552
-    second: montage01_stayupwithfriends_0
+      213: -5446423777352781454
+    second: prop_research_book_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -102,13 +102,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: montage01_stayupwithfriends
+      name: prop_research_book
       rect:
         serializedVersion: 2
-        x: 0
-        y: 0
-        width: 3400
-        height: 550
+        x: 72
+        y: 118
+        width: 1375
+        height: 698
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -117,8 +117,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: ffefe7c12323d814bacf015e56677034
-      internalID: 1953963851
+      spriteID: 90caeb18031d36646a8d780371af6def
+      internalID: 2129806188
       vertices: []
       indices: 
       edges: []
@@ -127,7 +127,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 2a55c2fdcd659d045acc2ee0c7da9e5d
+    spriteID: 7a5968c0cb9f7a947b9859589f67adbe
     internalID: 0
     vertices: []
     indices: 
@@ -137,7 +137,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      montage01_stayupwithfriends: 1953963851
+      prop_research_book: 2129806188
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

@@ -74,7 +74,7 @@ TextureImporter:
   platformSettings:
   - serializedVersion: 4
     buildTarget: DefaultTexturePlatform
-    maxTextureSize: 2048
+    maxTextureSize: 4096
     resizeAlgorithm: 0
     textureFormat: -1
     textureCompression: 1
@@ -102,7 +102,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: montage03_parentstired_0
+      name: montage03_parentstired
       rect:
         serializedVersion: 2
         x: 0
@@ -110,15 +110,15 @@ TextureImporter:
         width: 3400
         height: 550
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 956566376db8ff250800000000000000
-      internalID: 5980652583346656857
+      spriteID: 4c13a59b3f5dba54e88ba3c6d4912903
+      internalID: -1593526372
       vertices: []
       indices: 
       edges: []
@@ -127,7 +127,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: 7b9ced9783b558441ab4187a6c0feffa
     internalID: 0
     vertices: []
     indices: 
@@ -137,7 +137,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      montage03_parentstired_0: 5980652583346656857
+      montage03_parentstired: -1593526372
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
