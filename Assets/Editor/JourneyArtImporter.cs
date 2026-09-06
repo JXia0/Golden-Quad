@@ -121,17 +121,28 @@ public sealed class JourneyArtImporter : AssetPostprocessor
             {
                 var path = AssetDatabase.GUIDToAssetPath(guid);
                 if (Path.GetFileNameWithoutExtension(path) != assetName) continue;
-                foreach (var asset in AssetDatabase.LoadAllAssetsAtPath(path))
-                    if (asset is Sprite sprite) return sprite;
+                var sprite = FirstSprite(path);
+                if (sprite != null) return sprite;
             }
             foreach (var file in Directory.GetFiles(root, "*.png", SearchOption.AllDirectories))
             {
                 if (Path.GetFileNameWithoutExtension(file) != assetName) continue;
                 var assetPath = file.Replace('\\', '/');
-                foreach (var asset in AssetDatabase.LoadAllAssetsAtPath(assetPath))
-                    if (asset is Sprite sprite) return sprite;
+                var sprite = FirstSprite(assetPath);
+                if (sprite != null) return sprite;
             }
         }
         return null;
+    }
+
+    private static Sprite FirstSprite(string path)
+    {
+        // Unity does not guarantee sub-asset enumeration order between imports or machines.
+        // Start a delivered sprite strip on its named first pose consistently.
+        Sprite first = null;
+        foreach (var asset in AssetDatabase.LoadAllAssetsAtPath(path))
+            if (asset is Sprite sprite && (first == null ||
+                string.CompareOrdinal(sprite.name, first.name) < 0)) first = sprite;
+        return first;
     }
 }

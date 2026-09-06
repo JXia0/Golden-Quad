@@ -1,0 +1,22 @@
+Golden Quad Narration Regular
+
+Derived from Noto Serif SC, Copyright 2017-2023 Adobe (http://www.adobe.com/).
+The source font's name-table license identifies SIL Open Font License 1.1.
+The accompanying OFL-NotoSerifSC.txt is the unmodified official Noto Serif license.
+
+Official upstream: https://github.com/notofonts/noto-cjk/tree/main/Serif
+Official license: https://raw.githubusercontent.com/notofonts/noto-cjk/main/Serif/LICENSE
+Google Fonts metadata: https://github.com/google/fonts/blob/main/ofl/notoserifsc/METADATA.pb
+
+Local source: C:/Windows/Fonts/NotoSerifSC-VF.ttf
+Modification: fixed wght=400; subset for current Assets/Scripts, Assets/Scenes,
+and Docs text plus printable ASCII; renamed Golden Quad Narration Regular.
+Generated with fontTools 4.64.0 on 2026-09-06.
+This modified font remains under SIL Open Font License 1.1.
+
+The static TrueType file includes 1,160 Unicode codepoints and 1,200 glyphs.
+All Chinese characters currently found in the scanned project text are included.
+The complete opening narration is explicitly verified to be covered.
+Future text additions may require regenerating the subset.
+
+Keep this notice and OFL-NotoSerifSC.txt with redistributed game builds.

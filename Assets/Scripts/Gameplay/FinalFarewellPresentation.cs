@@ -8,7 +8,7 @@ namespace LetGo
     {
         private const float GroundY = -2.72f;
         private const float ActorHeight = 1.48f;
-        private const float EntrySeconds = 0.65f;
+        private const float EntrySeconds = 1.15f;
         private static readonly int SpeedId = Animator.StringToHash("Speed");
         private static readonly int MovingId = Animator.StringToHash("Moving");
         private static readonly int SelfAnchoringId = Animator.StringToHash("SelfAnchoring");
@@ -97,6 +97,14 @@ namespace LetGo
             SetAnimationSpeed(Mathf.Abs(horizontalSpeed));
         }
 
+        public void SetThresholdGoodbye(bool faceLeft, bool handOnChest)
+        {
+            if (!configured || entering || DoorEntryComplete) return;
+            SetMotion(0f, faceLeft);
+            // The existing four-frame breath is a small acknowledgement, without a new gesture asset.
+            if (hasSelfAnchoring) animator.SetBool(SelfAnchoringId, handOnChest);
+        }
+
         public void BeginDoorEntry()
         {
             if (!configured || entering || DoorEntryComplete) return;
@@ -163,7 +171,7 @@ namespace LetGo
             if (character == null || character.sprite == null) return;
             // Stay in front while the door starts opening, then pass behind its frame.
             character.sortingOrder = entering && entryProgress < 0.24f ? 17 : 12;
-            var depth = entering ? Mathf.SmoothStep(0f, 1f, entryProgress) : 0f;
+            var depth = entering ? Mathf.SmoothStep(0f, 1f, Mathf.InverseLerp(0.12f, 0.85f, entryProgress)) : 0f;
             var size = ActorHeight * Mathf.Lerp(1f, 0.91f, depth) / Mathf.Max(0.001f, character.sprite.bounds.size.y);
             var parentScale = target.transform.lossyScale;
             character.transform.localScale = new Vector3(size / Mathf.Max(0.001f, Mathf.Abs(parentScale.x)),
@@ -175,7 +183,7 @@ namespace LetGo
             character.transform.position = position;
             var lift = entering ? 0f : Mathf.Sin(hop * Mathf.PI) * 0.36f;
             character.transform.position += Vector3.up * (GroundY + lift - character.bounds.min.y);
-            var alpha = entering ? 1f - Mathf.SmoothStep(0f, 1f, Mathf.InverseLerp(0.38f, 0.88f, entryProgress)) : 1f;
+            var alpha = entering ? 1f - Mathf.SmoothStep(0f, 1f, Mathf.InverseLerp(0.55f, 0.94f, entryProgress)) : 1f;
             character.color = new Color(1f, 1f, 1f, alpha);
             character.enabled = alpha > 0.001f;
         }
@@ -196,7 +204,9 @@ namespace LetGo
             SetDoorRect(rightJamb, new Vector3(x + width * 0.5f, y, z), jambWidth, height);
             SetDoorRect(lintel, new Vector3(x, GroundY + height, z), width + jambWidth, height * 0.024f);
             // A fixed hinge, narrowing door leaf and dark interior make the exit read as depth.
-            var open = Mathf.Sin(Mathf.PI * Mathf.SmoothStep(0f, 1f, progress));
+            var open = progress < 0.3f
+                ? Mathf.SmoothStep(0f, 1f, Mathf.InverseLerp(0f, 0.3f, progress))
+                : 1f - Mathf.SmoothStep(0f, 1f, Mathf.InverseLerp(0.7f, 1f, progress));
             var leafWidth = width * Mathf.Lerp(1f, 0.13f, open);
             SetDoorRect(doorLeaf, new Vector3(x + width * 0.5f - leafWidth * 0.5f, y, z), leafWidth, height);
             doorLeaf.color = Color.Lerp(Color.white, new Color(0.57f, 0.62f, 0.7f), open * 0.45f);

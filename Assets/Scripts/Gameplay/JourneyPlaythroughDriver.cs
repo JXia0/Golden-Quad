@@ -60,6 +60,36 @@ public sealed partial class JourneyPlaythroughDriver : MonoBehaviour
     private IEnumerator Run()
     {
         yield return new WaitForSeconds(1.4f);
+        if (SessionState.GetBool("LetGo.QA.ReleaseHandoff", false))
+        {
+            SessionState.EraseBool("LetGo.QA.ReleaseHandoff");
+            yield return ReviewReportedPresentation();
+            if (finished) yield break;
+            if (SessionState.GetBool("LetGo.QA.RoomCorrection", false))
+            {
+                SessionState.EraseBool("LetGo.QA.RoomCorrection");
+                Finish("ALL PLAYTHROUGH CHECKS PASSED for corrected room composition and the complete reversible goodbye.");
+                yield break;
+            }
+            yield return ReviewEndingPainting();
+            if (finished) yield break;
+            Finish("ALL PLAYTHROUGH CHECKS PASSED for the corrected rooms, reversible goodbye and narrated release ending.");
+            yield break;
+        }
+        if (SessionState.GetBool("LetGo.QA.FinalPolish", false))
+        {
+            SessionState.EraseBool("LetGo.QA.FinalPolish");
+            yield return ReviewDeliveredVoice();
+            if (finished) yield break;
+            yield return ReviewStageSpatialJourney();
+            if (finished) yield break;
+            yield return ReviewReportedPresentation();
+            if (finished) yield break;
+            yield return ReviewEndingPainting();
+            if (finished) yield break;
+            Finish("ALL PLAYTHROUGH CHECKS PASSED for the final grounded stage, parent hand poses, research doorway and complete narrated film.");
+            yield break;
+        }
         if (SessionState.GetBool("LetGo.QA.FinalAssets", false))
         {
             SessionState.EraseBool("LetGo.QA.FinalAssets");
@@ -1206,6 +1236,11 @@ public sealed partial class JourneyPlaythroughDriver : MonoBehaviour
     {
         var presentation = FindAnyObjectByType<HandTetherPresentation>();
         var line = presentation == null ? null : presentation.GetComponent<LineRenderer>();
+        var target = Hand.CurrentTarget;
+        if (target != null && (target.TargetId == "parent" || target.TargetId == "stage-parent"))
+            return Check(target.IsHeld && presentation != null && line != null &&
+                !presentation.IsVisible && !line.enabled,
+                "parent handholding stays connected without a visible thread " + moment);
         return Check(Hand.CurrentTarget != null && presentation != null && presentation.IsVisible &&
             line.positionCount == 16 && line.startWidth <= 0.0281f && line.endWidth <= 0.0221f &&
             Vector3.Distance(line.GetPosition(0), presentation.StartPoint) < 0.001f &&

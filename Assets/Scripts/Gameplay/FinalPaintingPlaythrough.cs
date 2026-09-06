@@ -1,5 +1,6 @@
 #if UNITY_EDITOR
 using System.Collections;
+using System.Collections.Generic;
 using LetGo;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -56,6 +57,10 @@ public sealed partial class JourneyPlaythroughDriver
 
         var sceneSources = new AudioSource[4];
         var originalMute = new bool[4];
+        var sceneCameras = new List<(Camera camera, int mask, CameraClearFlags clearFlags)>();
+        foreach (var sceneCamera in FindObjectsByType<Camera>())
+            if (sceneCamera.isActiveAndEnabled && sceneCamera.gameObject.scene == director.gameObject.scene)
+                sceneCameras.Add((sceneCamera, sceneCamera.cullingMask, sceneCamera.clearFlags));
         var sceneAudio = SceneAudio.Instance;
         if (sceneAudio != null)
         {
@@ -85,6 +90,12 @@ public sealed partial class JourneyPlaythroughDriver
         if (!Check(flashback != null && flashback.Playing && video != null && video.isPlaying && video.frame > 0 &&
             !director.EndingVisible && !director.ReplayAvailable && !Player.ControlsEnabled && !AudioListener.pause,
             "the final step starts real decoded video with controls locked and no premature art or replay")) yield break;
+        var onlyFilmDraws = sceneCameras.Count > 0;
+        foreach (var saved in sceneCameras)
+            onlyFilmDraws &= saved.camera != null && saved.camera.isActiveAndEnabled &&
+                saved.camera.cullingMask == 0 && saved.camera.clearFlags == saved.clearFlags;
+        if (!Check(onlyFilmDraws,
+            "the film suppresses scene-camera object drawing while retaining enabled cameras and their clear settings")) yield break;
 
         var picture = GameObject.Find("Flashback Picture")?.GetComponent<RawImage>();
         var music = video.GetTargetAudioSource(0);
@@ -136,6 +147,9 @@ public sealed partial class JourneyPlaythroughDriver
             foreach (var source in FindObjectsByType<AudioSource>())
                 if (source.clip == voiceClip && source.isPlaying) narratorCount++;
             if (!Check(narratorCount == 1, "exactly one source plays the recorded flashback narration at " + second + "s")) yield break;
+            if (!Check(second < 18f ? Mathf.Approximately(picture.rectTransform.localScale.x, 1f) :
+                picture.rectTransform.localScale.x > 1.001f && picture.rectTransform.localScale.x < 1.0151f,
+                "the film preserves moving shots and gives the held final shot its restrained camera push at " + second + "s")) yield break;
             lastFrame = video.frame;
             lastVoiceSample = voice.timeSamples;
             yield return SaveMemoryReviewCapture("06-flashback-" + second.ToString("00") + "s");
@@ -155,6 +169,12 @@ public sealed partial class JourneyPlaythroughDriver
         var restored = true;
         for (var i = 0; i < sceneSources.Length; i++)
             restored &= sceneSources[i] == null || sceneSources[i].mute == originalMute[i];
+        var cameraMasksRestored = true;
+        foreach (var saved in sceneCameras)
+            cameraMasksRestored &= saved.camera != null && saved.camera.isActiveAndEnabled &&
+                saved.camera.cullingMask == saved.mask && saved.camera.clearFlags == saved.clearFlags;
+        if (!Check(cameraMasksRestored,
+            "actual film EOF restores every captured scene camera's original culling mask without disabling it or changing its clear settings")) yield break;
         if (!Check(naturalEnd && director.EndingVisible && !director.ReplayAvailable &&
             GameObject.Find("Ending Flashback") == null && GameObject.Find(EndingFlashbackPlayer.NarrationObjectName) == null &&
             video == null && voice == null && music == null && renderTarget == null && restored && !AudioListener.pause,

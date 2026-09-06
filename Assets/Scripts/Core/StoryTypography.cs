@@ -28,11 +28,10 @@ namespace LetGo
                 "KaiTi", "STKaiti", "FangSong", "Microsoft YaHei UI", "Microsoft YaHei"
             }, 26);
 
-        // A restrained Song/Ming face gives memory narration the tone of a printed page while
-        // keeping full simplified-Chinese coverage. The fallbacks preserve that character on
-        // Windows machines that do not have the bundled workstation's Noto family installed.
+        // Ship the licensed static subset so the same printed-page face reaches the player's
+        // machine. OS families remain a fallback for older projects without this resource.
         public static Font NarrationFont => narrationFont != null ? narrationFont : narrationFont =
-            Font.CreateDynamicFontFromOSFont(new[]
+            Resources.Load<Font>("Fonts/GoldenQuadNarration-Regular") ?? Font.CreateDynamicFontFromOSFont(new[]
             {
                 "Noto Serif SC", "Source Han Serif SC", "SimSun", "NSimSun", "FangSong",
                 "Microsoft YaHei UI"

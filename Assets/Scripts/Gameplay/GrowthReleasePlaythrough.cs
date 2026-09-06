@@ -33,6 +33,14 @@ public sealed partial class JourneyPlaythroughDriver
         if (!Check(voice != null && voice.clip == clip && voice.isPlaying && voice.spatialBlend == 0f &&
             narration != null && narration.text.StartsWith("小时候"),
             "Start plays the user's actual opening recording together with its complete subtitle")) yield break;
+        var bundledFont = Resources.Load<Font>("Fonts/GoldenQuadNarration-Regular");
+        if (!Check(bundledFont != null && narration.font == bundledFont,
+            "the opening uses its bundled book-style Chinese font without depending on the judge's installed fonts")) yield break;
+        bundledFont.RequestCharactersInTexture(narration.text, narration.fontSize);
+        var allGlyphs = true;
+        foreach (var character in narration.text)
+            if (!char.IsWhiteSpace(character)) allGlyphs &= bundledFont.HasCharacter(character);
+        if (!Check(allGlyphs, "every character of the delivered opening narration is present in the bundled font")) yield break;
         if (!Check(music.volume < musicBefore * 0.5f && ambience.volume < ambienceBefore && music.isPlaying && ambience.isPlaying,
             "the running music and room sound become quieter while the user's voice speaks")) yield break;
         var samples = voice.timeSamples;
@@ -292,8 +300,18 @@ public sealed partial class JourneyPlaythroughDriver
             "the parent starts with a complete idle pose beside the independently rendered child")) yield break;
         Capture("01-parent-full-idle");
         yield return Keys(0.8f, Key.E);
-        if (!Check(parents.PoseName == "Hold" && parents.CompositeIncludesPlayer && !Player.CharacterRenderer.enabled,
-            "taking the hand uses the delivered composite pose without drawing a duplicate child")) yield break;
+        // Keys resumes between Update and LateUpdate, when HandConnection has temporarily
+        // enabled the shared line. Read the previous finished presentation before the next
+        // Update; unlike WaitForEndOfFrame this also advances reliably in batch QA.
+        yield return new WaitForFixedUpdate();
+        var parentThread = FindAnyObjectByType<HandTetherPresentation>();
+        if (!Check(parents.PoseName == "Hold" && parents.CompositeIncludesPlayer && !Player.CharacterRenderer.enabled &&
+            Hand.CurrentTarget?.TargetId == "parent" && Hand.CurrentTarget.IsHeld &&
+            parentThread != null && !parentThread.IsVisible,
+            "taking the parent's hand keeps the real connection and composite pose without a duplicate child or visible thread" +
+            " (pose=" + parents.PoseName + ", childVisible=" + Player.CharacterRenderer.enabled +
+            ", target=" + Hand.CurrentTarget?.TargetId + ", held=" + Hand.CurrentTarget?.IsHeld +
+            ", thread=" + parentThread?.IsVisible + ")")) yield break;
         Capture("01-parent-holding-action");
         yield return Keys(0.3f);
         if (!Check(parents.PoseName == "Wait" && Player.CharacterRenderer.enabled,
@@ -303,8 +321,15 @@ public sealed partial class JourneyPlaythroughDriver
         yield return Keys(1.4f);
         parents = FindAnyObjectByType<ParentVisualPresentation>();
         yield return Keys(0.4f, Key.E);
-        if (!Check(parents != null && parents.PoseName == "Shoulder" && Player.CharacterRenderer.enabled,
-            "the backstage support moment uses the shoulder gesture while keeping the teenager visible")) yield break;
+        yield return new WaitForFixedUpdate();
+        parentThread = FindAnyObjectByType<HandTetherPresentation>();
+        if (!Check(parents != null && parents.PoseName == "Shoulder" && Player.CharacterRenderer.enabled &&
+            Hand.CurrentTarget?.TargetId == "stage-parent" && Hand.CurrentTarget.IsHeld &&
+            parentThread != null && !parentThread.IsVisible,
+            "backstage parent support keeps the real hand connection, shoulder gesture and visible teenager without a thread" +
+            " (pose=" + parents?.PoseName + ", childVisible=" + Player.CharacterRenderer.enabled +
+            ", target=" + Hand.CurrentTarget?.TargetId + ", held=" + Hand.CurrentTarget?.IsHeld +
+            ", thread=" + parentThread?.IsVisible + ")")) yield break;
         Capture("03-parent-shoulder-action");
         yield return Keys(0.3f);
         phase = "the workbench's painted feet reach the research floor";
@@ -332,6 +357,18 @@ public sealed partial class JourneyPlaythroughDriver
         yield return SaveMemoryReviewCapture("05-final-research-plate-open");
         if (finished) yield break;
 
+        phase = "the research office wall covers the misleading painted gold door";
+        var hallway = GameObject.Find("Report Hallway")?.GetComponent<SpriteRenderer>();
+        if (!Check(hallway != null && hallway.enabled && hallway.sortingOrder == -4,
+            "the office wall draws above the research painting's narrow false doorway")) yield break;
+        // Camera composition review only; the real gate and full research routes are checked separately.
+        var body = Player.GetComponent<Rigidbody2D>();
+        body.position = new Vector2(24f, -2.1f);
+        body.linearVelocity = Vector2.zero;
+        yield return Keys(0.8f);
+        yield return SaveMemoryReviewCapture("05-final-office-doorway");
+        if (finished) yield break;
+
         phase = "shortened black passages retain the invisible age changes";
         JourneyChoices.RememberWorkshop("breath", "jump", true);
         JourneyChoices.RememberLearnedHabit(new LearnedHabitSnapshot(LearnedHabitKind.Jump, 0f, 15f, "", 1));
@@ -354,12 +391,54 @@ public sealed partial class JourneyPlaythroughDriver
             "the black passage is shorter while retaining a margin beyond the full camera width")) yield break;
         var recipient = EmotionalJourney.Target("young-presenter");
         var ending = FindAnyObjectByType<ReleaseEndingGoal>();
-        yield return Walk(recipient.transform.position.x - 1.8f);
-        for (var i = 0; i < 130 && !ending.HasEnteredDoor; i++) yield return Keys(0.1f);
         var farewell = recipient.GetComponent<FinalFarewellPresentation>();
-        if (!Check(ending.HasEnteredDoor && farewell.DoorEntryComplete && !farewell.CharacterRenderer.enabled,
-            "the next child finishes its learned action and goes fully inside the door")) yield break;
         var door = GameObject.Find("Unknown Door");
+        if (!Check(ending != null && farewell != null && farewell.CharacterRenderer != null && door != null,
+            "the final room has its real farewell actor, doorway and departure controller")) yield break;
+        Capture("06-final-door-room-arrival");
+        yield return Walk(recipient.transform.position.x - 1.8f);
+        yield return Walk(door.transform.position.x - 1f);
+        phase = "the child stops at the door and looks back before entering";
+        var goodbyeDeadline = Time.time + 20f;
+        while (!ending.IsLookingBackAtDoor && !ending.HasEnteredDoor && Time.time < goodbyeDeadline)
+            yield return Keys(0.025f);
+        yield return new WaitForFixedUpdate();
+        if (!Check(ending.IsLookingBackAtDoor && ending.HasReplayedHabit && !ending.IsEnteringDoor &&
+            !ending.HasEnteredDoor && !farewell.DoorEntryComplete && farewell.CharacterRenderer.enabled &&
+            Mathf.Abs(recipient.transform.position.x - door.transform.position.x) < 0.1f &&
+            Mathf.Abs(farewell.CharacterRenderer.bounds.min.y + 2.72f) < 0.08f,
+            "after its learned action, the visible child settles at the real threshold and looks back before any door entry")) yield break;
+        yield return SaveMemoryReviewCapture("06-final-door-lookback");
+        if (finished) yield break;
+        yield return Keys(0.12f, Key.E);
+        if (!Check(Hand.CurrentTarget == recipient && ending.IsHeldBack && !ending.IsEnteringDoor &&
+            !ending.HasEnteredDoor && farewell.CharacterRenderer.enabled,
+            "the player can take the child's hand again during the doorway goodbye without hiding or placing the child")) yield break;
+        var pausedGoodbye = ending.DoorGoodbyeElapsed;
+        yield return Keys(0.3f, Key.E);
+        if (!Check(Mathf.Abs(ending.DoorGoodbyeElapsed - pausedGoodbye) < 0.01f &&
+            !ending.IsEnteringDoor && !ending.HasEnteredDoor,
+            "holding the hand freezes the actual doorway-goodbye progress")) yield break;
+        yield return Keys(0.05f);
+        var sawTurnToDoor = false;
+        while (!ending.IsEnteringDoor && !ending.HasEnteredDoor && Time.time < goodbyeDeadline)
+        {
+            sawTurnToDoor |= ending.IsSayingGoodbye && !ending.IsLookingBackAtDoor &&
+                !ending.IsHeldBack && ending.DoorGoodbyeElapsed >= 1.25f;
+            yield return Keys(0.025f);
+        }
+        yield return new WaitForFixedUpdate();
+        if (!Check(sawTurnToDoor && ending.DoorGoodbyeElapsed > pausedGoodbye && ending.IsEnteringDoor &&
+            !ending.HasEnteredDoor && !farewell.DoorEntryComplete && farewell.CharacterRenderer.enabled &&
+            Hand.CurrentTarget == null,
+            "releasing resumes the same goodbye, turns back toward the door and starts a visible entry before disappearance")) yield break;
+        Capture("06-final-door-entry-start");
+        var entryDeadline = Time.time + 5f;
+        while ((!ending.HasEnteredDoor || !farewell.DoorEntryComplete) && Time.time < entryDeadline)
+            yield return Keys(0.025f);
+        yield return new WaitForFixedUpdate();
+        if (!Check(ending.HasEnteredDoor && farewell.DoorEntryComplete && !farewell.CharacterRenderer.enabled,
+            "the child becomes gone only after its actual doorway-entry animation completes")) yield break;
         yield return Walk(door.transform.position.x);
         yield return Keys(0.25f);
         var inFront = true;
@@ -369,6 +448,8 @@ public sealed partial class JourneyPlaythroughDriver
         if (!Check(inFront && !farewell.CharacterRenderer.enabled && Player.ControlsEnabled,
             "the adult walks in front of the closed door while the departed child stays hidden")) yield break;
         Capture("06-adult-in-front-of-closed-door");
+        yield return SaveMemoryReviewCapture("06-final-door-room-after-farewell");
+        if (finished) yield break;
         yield return Walk(ending.OnwardPositionX + 0.2f);
     }
 }

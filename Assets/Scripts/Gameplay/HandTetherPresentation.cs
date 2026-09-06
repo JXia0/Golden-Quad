@@ -42,7 +42,9 @@ namespace LetGo
             }
 
             var target = connection.CurrentTarget;
-            if (target == null || target.Mode == HoldTargetMode.Carryable)
+            // The parent artwork already shows the joined hands; it needs no extra thread.
+            if (target == null || target.Mode == HoldTargetMode.Carryable ||
+                target.TargetId == "parent" || target.TargetId == "stage-parent")
             {
                 line.enabled = false;
                 cachedTarget = null;

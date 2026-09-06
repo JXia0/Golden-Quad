@@ -44,6 +44,10 @@ namespace LetGo
         private Sprite researchCrateSprite;
         private Sprite researchReportSprite;
         private Sprite researchWorkbenchSprite;
+        private Sprite researchOfficeWallSprite;
+        private Sprite researchOfficePillarSprite;
+        private Texture2D finalOfficeEdgeTexture;
+        private Sprite finalOfficeEdgeSprite;
         private Sprite stageAuditoriumSprite;
         private Sprite stageLeftWingSprite;
         private Sprite stageLeftForegroundFold;
@@ -183,21 +187,14 @@ namespace LetGo
                 AlignResearchEntrance(research);
                 var hallway = research?.Find("Report Hallway")?.GetComponent<SpriteRenderer>();
                 if (hallway != null)
-                {
-                    FitWorld(hallway, new Vector2(14f, 5.5f));
-                    hallway.transform.position = research.position + Vector3.right * 15f;
-                    // This crop is the office-side wall that replaces the gold doorway painted
-                    // into the research backdrop. Draw it one layer above that backdrop so the
-                    // player sees a continuous office wall and the authored meeting door.
-                    hallway.sortingOrder = -4;
-                }
+                    SetupResearchOfficeTransition(research, hallway);
                 NormalizeResearchPresentation();
                 AddPassageOverlay(scene);
             }
             else if (scene == "06_FinalWalk")
             {
                 if (view != null) view.backgroundColor = Color.black;
-                FitDoor("Unknown Door", new Vector2(1.18f, 2.68f));
+                SetupFinalOfficeRoom();
                 foreach (var transform in FindObjectsByType<Transform>(FindObjectsInactive.Include))
                     if (transform.name.StartsWith("Memory Picture ")) transform.gameObject.SetActive(false);
                 BuildMemoryBlackPassages();
@@ -258,6 +255,7 @@ namespace LetGo
             NudgePresentationVisual("Workshop Shutter Frame", -0.23f);
             NudgePresentationVisual("Workshop Shutter Door", -0.18f);
             BuildArchiveShelving();
+            BlendResearchWindowIntoWall();
 
             var notebook = GameObject.Find("Archive Notebook")?.GetComponent<SpriteRenderer>();
             if (notebook != null && notebook.sprite != null)
@@ -278,6 +276,87 @@ namespace LetGo
             var doorRoot = GameObject.Find("Workshop Shutter Door")?.transform;
             researchShutterSource = doorRoot?.GetComponent<SpriteRenderer>();
             researchShutterVisual = doorRoot?.Find("Presentation Visual")?.GetComponent<SpriteRenderer>();
+        }
+
+        private void SetupResearchOfficeTransition(Transform researchRoom, SpriteRenderer hallway)
+        {
+            if (researchRoom == null || hallway == null || hallway.sprite == null) return;
+            var roomRenderer = researchRoom.Find("Aligned Visual")?.GetComponent<SpriteRenderer>() ??
+                researchRoom.GetComponent<SpriteRenderer>();
+            var texture = roomRenderer?.sprite?.texture;
+            if (texture == null) return;
+
+            // Continue the research wall past its painted gold exit. Switching to the office
+            // texture here produced half windows, a hard seam and two competing doors. This
+            // full-height section has the same hanging-paper wall and no baked doorway.
+            var sourceRect = roomRenderer.sprite.rect;
+            var sourceBounds = roomRenderer.bounds;
+            var wallRect = new Rect(texture.width * 0.6f, sourceRect.y, texture.width * 0.22f, sourceRect.height);
+            if (researchOfficeWallSprite != null) Destroy(researchOfficeWallSprite);
+            researchOfficeWallSprite = Sprite.Create(texture, wallRect, Vector2.one * 0.5f,
+                hallway.sprite.pixelsPerUnit, 0, SpriteMeshType.FullRect);
+            researchOfficeWallSprite.name = "research_exit_continuous_wall";
+            hallway.sprite = researchOfficeWallSprite;
+            hallway.color = Color.white;
+            hallway.sortingOrder = -4;
+            // Preserve the source painting's vertical mapping so its gold skirting line
+            // continues at the same height across the replacement, including its lower floor.
+            FitWorldExact(hallway, new Vector2(12f, sourceBounds.size.y));
+            hallway.transform.position = new Vector3(29.4f, sourceBounds.center.y, researchRoom.position.z);
+            var retiredPillar = researchRoom.Find("Office Threshold Pillar");
+            if (retiredPillar != null) retiredPillar.gameObject.SetActive(false);
+
+            var door = GameObject.Find("Finished Report")?.transform.Find("Aligned Visual")?.GetComponent<SpriteRenderer>();
+            if (door != null && door.sprite != null)
+            {
+                FitWorldExact(door, new Vector2(1.02f, 2.5f));
+                door.transform.position += Vector3.up * (GroundY - door.bounds.min.y);
+                door.sortingOrder = 1;
+                var shadow = GameObject.Find("Meeting Door Floor Shadow")?.GetComponent<SpriteRenderer>();
+                if (shadow == null) shadow = new GameObject("Meeting Door Floor Shadow", typeof(SpriteRenderer)).GetComponent<SpriteRenderer>();
+                shadow.sprite = EnsureRadialGlow();
+                shadow.color = new Color(0f, 0f, 0f, 0.42f);
+                shadow.sortingOrder = 0;
+                FitWorldExact(shadow, new Vector2(1.45f, 0.22f));
+                shadow.transform.position = new Vector3(door.bounds.center.x, GroundY + 0.04f, door.transform.position.z);
+            }
+        }
+
+        private void SetupFinalOfficeRoom()
+        {
+            var room = GameObject.Find("Unknown Wall")?.transform;
+            var wall = room?.Find("Aligned Visual")?.GetComponent<SpriteRenderer>() ?? room?.GetComponent<SpriteRenderer>();
+            if (room == null || wall == null || wall.sprite == null) return;
+            var texture = wall.sprite.texture;
+            var wallRect = new Rect(texture.width * 0.425f, 0f, texture.width * 0.145f, texture.height);
+            if (researchOfficeWallSprite != null) Destroy(researchOfficeWallSprite);
+            researchOfficeWallSprite = Sprite.Create(texture, wallRect, Vector2.one * 0.5f,
+                wall.sprite.pixelsPerUnit, 0, SpriteMeshType.FullRect);
+            researchOfficeWallSprite.name = "final_office_plain_wall";
+            wall.sprite = researchOfficeWallSprite;
+            wall.color = Color.white;
+            wall.sortingOrder = -10;
+            FitWorldExact(wall, new Vector2(16.4f, 5.9f));
+            // AddMemoryBackdrop centres an authored child again while assembling visibility
+            // groups, so ground the background root itself and keep the child at local zero.
+            room.position = new Vector3(room.position.x, GroundY + 2.95f, room.position.z);
+            wall.transform.localPosition = Vector3.zero;
+            wall.enabled = true;
+
+            var door = GameObject.Find("Unknown Door")?.transform.Find("Aligned Visual")?.GetComponent<SpriteRenderer>();
+            if (door == null || door.sprite == null) return;
+            FitWorldExact(door, new Vector2(1.02f, 2.5f));
+            door.transform.position += Vector3.up * (GroundY - door.bounds.min.y);
+            door.sortingOrder = 1;
+        }
+
+        private static void BlendResearchWindowIntoWall()
+        {
+            var window = GameObject.Find("Draft Window Handle")?.GetComponent<SpriteRenderer>();
+            if (window == null || window.sprite == null) return;
+            FitWorld(window, new Vector2(1.14f, 1.23f));
+            window.color = new Color(0.68f, 0.75f, 0.8f, 0.88f);
+            window.sortingOrder = 3;
         }
 
         private void SetupStageCurtains()
@@ -952,6 +1031,8 @@ namespace LetGo
             AddMemoryBackdrop(finalResearchGroup, "Research Memory");
             AddResearchMemoryStillLife(palette);
             // The farewell owns the next person's animation and disappearance at the doorway.
+            AddMemoryBackdrop(finalUnknownGroup, "Unknown Wall");
+            AddFinalOfficeEdge(finalUnknownGroup);
             CaptureEnabledRenderers(finalUnknownGroup, "Unknown Door");
             RememberAuthoredAlpha(finalStageGroup);
             RememberAuthoredAlpha(finalResearchGroup);
@@ -959,6 +1040,37 @@ namespace LetGo
             SetAuthoredOpacity(finalStageGroup, 0f);
             SetAuthoredOpacity(finalResearchGroup, 0f);
             SetAuthoredOpacity(finalUnknownGroup, 0f);
+        }
+
+        private void AddFinalOfficeEdge(List<SpriteRenderer> destination)
+        {
+            var room = GameObject.Find("Unknown Wall")?.transform;
+            if (room == null) return;
+            if (finalOfficeEdgeTexture == null)
+            {
+                const int width = 64;
+                finalOfficeEdgeTexture = new Texture2D(width, 4, TextureFormat.RGBA32, false)
+                    { name = "Final Office Edge Fade", wrapMode = TextureWrapMode.Clamp };
+                for (var y = 0; y < finalOfficeEdgeTexture.height; y++)
+                for (var x = 0; x < width; x++)
+                {
+                    var alpha = Mathf.Pow(1f - x / (width - 1f), 1.7f);
+                    finalOfficeEdgeTexture.SetPixel(x, y, new Color(0f, 0f, 0f, alpha));
+                }
+                finalOfficeEdgeTexture.Apply();
+                finalOfficeEdgeSprite = Sprite.Create(finalOfficeEdgeTexture,
+                    new Rect(0, 0, width, finalOfficeEdgeTexture.height), Vector2.one * 0.5f, 1f,
+                    0, SpriteMeshType.FullRect);
+                finalOfficeEdgeSprite.name = "final_office_edge_fade";
+            }
+            var edge = GameObject.Find("Final Office Shadow Threshold")?.GetComponent<SpriteRenderer>();
+            if (edge == null) edge = new GameObject("Final Office Shadow Threshold", typeof(SpriteRenderer)).GetComponent<SpriteRenderer>();
+            edge.sprite = finalOfficeEdgeSprite;
+            edge.color = Color.white;
+            edge.sortingOrder = -2;
+            FitWorldExact(edge, new Vector2(2.4f, 5.9f));
+            edge.transform.position = new Vector3(room.position.x - 7f, GroundY + 2.95f, room.position.z);
+            destination.Add(edge);
         }
 
         private static void AddMemoryBackdrop(List<SpriteRenderer> destination, string rootName)
@@ -1190,6 +1302,10 @@ namespace LetGo
             if (researchCrateSprite != null) Destroy(researchCrateSprite);
             if (researchReportSprite != null) Destroy(researchReportSprite);
             if (researchWorkbenchSprite != null) Destroy(researchWorkbenchSprite);
+            if (researchOfficeWallSprite != null) Destroy(researchOfficeWallSprite);
+            if (researchOfficePillarSprite != null) Destroy(researchOfficePillarSprite);
+            if (finalOfficeEdgeSprite != null) Destroy(finalOfficeEdgeSprite);
+            if (finalOfficeEdgeTexture != null) Destroy(finalOfficeEdgeTexture);
             if (stageAuditoriumSprite != null) Destroy(stageAuditoriumSprite);
             if (stageLeftWingSprite != null) Destroy(stageLeftWingSprite);
             if (stageLeftForegroundFold != null) Destroy(stageLeftForegroundFold);

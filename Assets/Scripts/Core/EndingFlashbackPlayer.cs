@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Video;
@@ -29,6 +30,7 @@ namespace LetGo
         private bool narrationStarted;
         private bool previousRunInBackground;
         private bool restoreRunInBackground;
+        private Dictionary<Camera, int> suppressedCameraMasks;
         private string failure;
 
         public bool Playing { get; private set; }
@@ -52,6 +54,7 @@ namespace LetGo
                 previousRunInBackground = Application.runInBackground;
                 restoreRunInBackground = true;
                 Application.runInBackground = true;
+                SuppressSceneRendering();
                 if (!TryPrepare(clip)) yield break;
                 var deadline = Time.realtimeSinceStartupAsDouble + PrepareTimeout;
                 while (Playing && video != null && !video.isPrepared && failure == null &&
@@ -83,6 +86,7 @@ namespace LetGo
                     // Never show an uninitialized render target while the decoder starts.
                     if (receivedFrame && !picture.enabled) picture.enabled = true;
                     UpdateNarration();
+                    UpdateStillShot(now - lastProgressAt);
                     if (now - lastProgressAt >= FrameTimeout)
                     {
                         failure = receivedFrame ? "Playback stopped producing frames." : "First frame timed out.";
@@ -101,6 +105,43 @@ namespace LetGo
             {
                 Cleanup();
             }
+        }
+
+        private void SuppressSceneRendering()
+        {
+            suppressedCameraMasks = new Dictionary<Camera, int>();
+            foreach (var camera in FindObjectsByType<Camera>())
+                if (camera.isActiveAndEnabled && camera.gameObject.scene == gameObject.scene)
+                    suppressedCameraMasks.Add(camera, camera.cullingMask);
+            foreach (var saved in suppressedCameraMasks)
+                saved.Key.cullingMask = 0;
+        }
+
+        private void UpdateStillShot(double sinceFrame)
+        {
+            // The delivered film holds two nearly static shots after 18s. A restrained camera
+            // push keeps that pause alive without changing decoded frames or the voice timeline.
+            var scale = 1f;
+            if (receivedFrame && video.time >= 18d)
+            {
+                var lastShot = video.time >= 25d;
+                var start = lastShot ? 25d : 18d;
+                var seconds = lastShot ? 5d : 7d;
+                var subframe = Math.Min(1d / Math.Max(1d, video.frameRate), Math.Max(0d, sinceFrame));
+                var progress = Mathf.Clamp01((float)((video.time + subframe - start) / seconds));
+                scale = Mathf.Lerp(1f, lastShot ? 1.015f : 1.018f, Mathf.SmoothStep(0f, 1f, progress));
+            }
+            picture.rectTransform.localScale = Vector3.one * scale;
+        }
+
+        private void RestoreSceneRendering()
+        {
+            var savedMasks = suppressedCameraMasks;
+            // Cleanup may run through the coroutine, OnDisable and OnDestroy.
+            suppressedCameraMasks = null;
+            if (savedMasks == null) return;
+            foreach (var saved in savedMasks)
+                if (saved.Key != null) saved.Key.cullingMask = saved.Value;
         }
 
         private bool TryPrepare(VideoClip clip)
@@ -263,6 +304,7 @@ namespace LetGo
         private void Cleanup()
         {
             Playing = false;
+            RestoreSceneRendering();
             if (restoreRunInBackground)
             {
                 restoreRunInBackground = false;

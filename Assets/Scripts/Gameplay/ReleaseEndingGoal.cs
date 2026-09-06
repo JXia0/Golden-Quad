@@ -26,6 +26,14 @@ namespace LetGo
         private float habitTime;
         private bool habitFinished;
         private bool enteringDoor;
+        private float doorGoodbyeTime;
+        private const float DoorSettleSeconds = 0.25f;
+        private const float DoorLookBackSeconds = 1f;
+        private const float DoorTurnSeconds = 0.3f;
+        public float DoorGoodbyeElapsed => doorGoodbyeTime;
+        public bool IsSayingGoodbye => doorGoodbyeTime > 0f && !enteringDoor && !gone;
+        public bool IsLookingBackAtDoor => IsSayingGoodbye && !IsHeldBack &&
+            doorGoodbyeTime >= DoorSettleSeconds && doorGoodbyeTime < DoorSettleSeconds + DoorLookBackSeconds;
         public bool IsEnteringDoor => enteringDoor && !gone;
         public bool IsReplayingHabit { get; private set; }
         public bool HasReplayedHabit => habitFinished && learnedHabit.Kind != LearnedHabitKind.None;
@@ -108,16 +116,34 @@ namespace LetGo
                 if (!gone && !enteringDoor)
                 {
                     if (held) SettleHeldHabit();
-                    else if (PlayRememberedHabit()) StepTowards(door.position.x);
+                    else if (PlayRememberedHabit())
+                    {
+                        var remaining = Mathf.Abs(recipient.transform.position.x - door.position.x);
+                        if (remaining >= 0.1f)
+                        {
+                            // Let the last footfall settle before the child turns back.
+                            var pace = Mathf.Lerp(0.65f, 1.25f, Mathf.Clamp01(remaining / 0.55f));
+                            StepTowards(door.position.x, pace);
+                        }
+                    }
                 }
                 if (held) StorySceneDirector.Instance?.ShowPrompt(ReleasePrompt);
                 else StorySceneDirector.Instance?.ClearPrompt(ReleasePrompt);
                 if (!gone && !enteringDoor && !held && habitFinished && Mathf.Abs(recipient.transform.position.x - door.position.x) < 0.1f)
                 {
-                    enteringDoor = true;
-                    recipient.MarkPlaced(recipient.transform.position);
-                    farewell.BeginDoorEntry();
-                    SceneAudio.Instance?.PlayDoor();
+                    // Only unheld time advances this farewell. A second hand pauses it;
+                    // release resumes the same beat without replaying or bypassing it.
+                    doorGoodbyeTime += Time.deltaTime;
+                    var responding = IsLookingBackAtDoor;
+                    var faceLeft = responding && connection.transform.position.x < recipient.transform.position.x;
+                    farewell.SetThresholdGoodbye(faceLeft, responding);
+                    if (doorGoodbyeTime >= DoorSettleSeconds + DoorLookBackSeconds + DoorTurnSeconds)
+                    {
+                        enteringDoor = true;
+                        recipient.MarkPlaced(recipient.transform.position);
+                        farewell.BeginDoorEntry();
+                        SceneAudio.Instance?.PlayDoor();
+                    }
                 }
                 if (enteringDoor && !gone && farewell.DoorEntryComplete)
                 {
@@ -194,11 +220,11 @@ namespace LetGo
             RecipientDeparted?.Invoke();
         }
 
-        private void StepTowards(float x)
+        private void StepTowards(float x, float pace = 1.25f)
         {
             var position = recipient.transform.position;
             var previousX = position.x;
-            position.x = Mathf.MoveTowards(position.x, x, 1.25f * Time.deltaTime);
+            position.x = Mathf.MoveTowards(position.x, x, pace * Time.deltaTime);
             recipient.transform.position = position;
             farewell?.SetMotion(Mathf.Abs(position.x - previousX) / Mathf.Max(0.0001f, Time.deltaTime), false);
         }

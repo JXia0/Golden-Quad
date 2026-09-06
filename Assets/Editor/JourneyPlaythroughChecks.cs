@@ -175,6 +175,26 @@ public static class JourneyPlaythroughChecks
         RunBatch();
     }
 
+    public static void ValidateFinalPolishAndBuildWindowsBatch()
+    {
+        SessionState.SetBool(BuildAfterKey, true);
+        SessionState.SetBool("LetGo.QA.FinalPolish", true);
+        RunBatch();
+    }
+
+    public static void ValidateReleaseHandoffAndBuildWindowsBatch()
+    {
+        SessionState.SetBool(BuildAfterKey, true);
+        SessionState.SetBool("LetGo.QA.ReleaseHandoff", true);
+        RunBatch();
+    }
+
+    public static void ValidateRoomCorrectionAndBuildWindowsBatch()
+    {
+        SessionState.SetBool("LetGo.QA.RoomCorrection", true);
+        ValidateReleaseHandoffAndBuildWindowsBatch();
+    }
+
     public static void BuildWindowsBatch()
     {
         LetGoSpriteAssetIntegrator.BuildAvailableControllers();
