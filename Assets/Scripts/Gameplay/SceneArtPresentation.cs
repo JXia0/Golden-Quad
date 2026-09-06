@@ -48,6 +48,7 @@ namespace LetGo
         private Sprite stageLeftWingSprite;
         private Sprite stageLeftForegroundFold;
         private Sprite stageRightWingSprite;
+        private Sprite stageRiserFaceSprite;
         private LearnerState? researchLearnerPose;
         private SpriteRenderer researchShutterSource;
         private SpriteRenderer researchShutterVisual;
@@ -185,6 +186,10 @@ namespace LetGo
                 {
                     FitWorld(hallway, new Vector2(14f, 5.5f));
                     hallway.transform.position = research.position + Vector3.right * 15f;
+                    // This crop is the office-side wall that replaces the gold doorway painted
+                    // into the research backdrop. Draw it one layer above that backdrop so the
+                    // player sees a continuous office wall and the authored meeting door.
+                    hallway.sortingOrder = -4;
                 }
                 NormalizeResearchPresentation();
                 AddPassageOverlay(scene);
@@ -606,25 +611,52 @@ namespace LetGo
             overlay.Configure(scene);
         }
 
-        private static void BuildSolidRiser(Transform platform)
+        private void BuildSolidRiser(Transform platform)
         {
             var top = platform?.Find("Delivered Visual")?.GetComponent<SpriteRenderer>();
             if (top == null || top.sprite == null) return;
+            // The old version repeated the same perspective top four times, which looked like
+            // floating cards. Keep one correctly proportioned platform and extend only its front
+            // panel to the floor, preserving the top perspective and the gameplay collider.
             for (var i = 1; i <= 4; i++)
             {
                 var child = platform.Find("Riser Layer " + i);
-                var layer = child == null
-                    ? new GameObject("Riser Layer " + i, typeof(SpriteRenderer)).GetComponent<SpriteRenderer>()
-                    : child.GetComponent<SpriteRenderer>();
-                layer.transform.SetParent(platform, false);
-                layer.sprite = top.sprite;
-                layer.sharedMaterial = top.sharedMaterial;
-                layer.sortingOrder = top.sortingOrder - i;
-                FitWorld(layer, new Vector2(top.bounds.size.x, 0.38f));
-                layer.transform.position = top.bounds.center + Vector3.down * (0.3f * i);
-                var shade = 1f - i * 0.07f;
-                layer.color = new Color(shade, shade, shade, 1f);
+                if (child != null) child.gameObject.SetActive(false);
             }
+            const float colliderTop = -1.2f;
+            const float width = 2.8f;
+            var naturalHeight = width * top.sprite.bounds.size.y / top.sprite.bounds.size.x;
+            const float surfaceFromBottom = 0.454f;
+            var visualBottom = colliderTop - naturalHeight * surfaceFromBottom;
+            FitWorldExact(top, new Vector2(width, naturalHeight));
+            top.transform.position = new Vector3(platform.position.x, visualBottom + naturalHeight * 0.5f,
+                top.transform.position.z);
+            top.color = Color.white;
+            top.sortingOrder = 0;
+            top.enabled = true;
+
+            var face = platform.Find("Riser Face")?.GetComponent<SpriteRenderer>();
+            if (face == null)
+            {
+                face = new GameObject("Riser Face", typeof(SpriteRenderer)).GetComponent<SpriteRenderer>();
+                face.transform.SetParent(platform, false);
+            }
+            var sourceRect = top.sprite.rect;
+            var faceRect = new Rect(sourceRect.x, sourceRect.y, sourceRect.width,
+                Mathf.Max(1f, sourceRect.height * 0.46f));
+            if (stageRiserFaceSprite != null) Destroy(stageRiserFaceSprite);
+            stageRiserFaceSprite = Sprite.Create(top.sprite.texture, faceRect, Vector2.one * 0.5f,
+                top.sprite.pixelsPerUnit, 0, SpriteMeshType.FullRect);
+            stageRiserFaceSprite.name = "prop_stage_box_front_extension";
+            face.sprite = stageRiserFaceSprite;
+            face.sharedMaterial = top.sharedMaterial;
+            face.color = Color.white;
+            face.sortingOrder = top.sortingOrder - 1;
+            var faceHeight = Mathf.Max(0.01f, visualBottom - GroundY + 0.04f);
+            FitWorldExact(face, new Vector2(width * 0.965f, faceHeight));
+            face.transform.position = new Vector3(platform.position.x,
+                GroundY + faceHeight * 0.5f, top.transform.position.z);
+            face.enabled = true;
         }
 
         private static void ReplaceCourageGlow()
@@ -1162,6 +1194,7 @@ namespace LetGo
             if (stageLeftWingSprite != null) Destroy(stageLeftWingSprite);
             if (stageLeftForegroundFold != null) Destroy(stageLeftForegroundFold);
             if (stageRightWingSprite != null) Destroy(stageRightWingSprite);
+            if (stageRiserFaceSprite != null) Destroy(stageRiserFaceSprite);
         }
 
         private static float ActorHeight(string actorName)
