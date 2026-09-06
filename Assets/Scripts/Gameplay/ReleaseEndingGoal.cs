@@ -56,6 +56,7 @@ namespace LetGo
 
         private void Update()
         {
+            if (GameInput.IsPaused) return;
             if (finished || connection == null || recipient == null) return;
             if (door == null)
             {

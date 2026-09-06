@@ -248,6 +248,10 @@ public static class LetGoSpriteAssetIntegrator
         var importer = AssetImporter.GetAtPath(path) as TextureImporter;
         if (importer == null) return;
         importer.GetSourceTextureWidthAndHeight(out var sourceWidth, out var sourceHeight);
+        // Sprite rects are authored in original PNG pixels. On a texture wider than the current
+        // import limit Unity can report the downscaled dimensions here, which previously turned
+        // the 2172 x 724 parent sheet into 512 x 683 frames and removed the top of every head.
+        TryReadPngDimensions(path, ref sourceWidth, ref sourceHeight);
 
         var factory = new SpriteDataProviderFactories();
         factory.Init();
@@ -298,6 +302,18 @@ public static class LetGoSpriteAssetIntegrator
         names?.SetNameFileIdPairs(pairs);
         provider.Apply();
         importer.SaveAndReimport();
+    }
+
+    private static void TryReadPngDimensions(string path, ref int width, ref int height)
+    {
+        if (!File.Exists(path)) return;
+        using var stream = File.OpenRead(path);
+        var header = new byte[24];
+        if (stream.Read(header, 0, header.Length) != header.Length ||
+            header[0] != 0x89 || header[1] != 0x50 || header[2] != 0x4E || header[3] != 0x47)
+            return;
+        width = header[16] << 24 | header[17] << 16 | header[18] << 8 | header[19];
+        height = header[20] << 24 | header[21] << 16 | header[22] << 8 | header[23];
     }
 
     private static void EnsureSingleSprite(string path, SpriteAlignment alignment)

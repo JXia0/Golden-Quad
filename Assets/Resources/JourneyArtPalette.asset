@@ -16,7 +16,7 @@ MonoBehaviour:
   - id: prop_child_backpack
     sprite: {fileID: 872123929, guid: e90f2de1fcdb59b46ba44ee9cc821f43, type: 3}
   - id: prop_research_model
-    sprite: {fileID: -4694568971126195842, guid: 364c8b579fee614499bdc6c6154b87f3, type: 3}
+    sprite: {fileID: 4464182519705312368, guid: 364c8b579fee614499bdc6c6154b87f3, type: 3}
   - id: prop_research_crate
     sprite: {fileID: 21300000, guid: 0e74be713ebabd3498415a6b5a13a657, type: 3}
   - id: prop_research_bridge
@@ -69,7 +69,29 @@ MonoBehaviour:
     sprite: {fileID: -787814576, guid: 6d7e29097d0a91e4d930a57079477079, type: 3}
   - id: montage_growth_conflict
     sprite: {fileID: 142250809, guid: 7db026b974be3c74fa3b50b8c94cca85, type: 3}
+  - id: montage_growth_story
+    sprite: {fileID: 21300000, guid: 7a48008eb2e4333499bfca02fed095de, type: 3}
   - id: bg_research_room
     sprite: {fileID: -6751144742328248299, guid: ca9dc9f4508bb2f4d835f6a82e326535, type: 3}
   - id: ui_interact_e
     sprite: {fileID: 21300000, guid: 09734219bfb7c334abbd4e37d2f21376, type: 3}
+  - id: char_parent_hold
+    sprite: {fileID: 21300000, guid: e1a3637779b7a99429501aba63a81f1a, type: 3}
+  - id: char_parent_shoulder
+    sprite: {fileID: 21300000, guid: 3ded60480fc57a84693ecb3dafcecb6a, type: 3}
+  - id: char_parent_wait
+    sprite: {fileID: 21300000, guid: 320ca56435d791744bb77fc791bd00fc, type: 3}
+  - id: menu_background
+    sprite: {fileID: 21300000, guid: 4d51b20c857a59c488e8489fa96e50aa, type: 3}
+  - id: menu_start
+    sprite: {fileID: 21300000, guid: c6653698f2a718445883a874d1012bb4, type: 3}
+  - id: pause_background
+    sprite: {fileID: 21300000, guid: dde7c3e2b6d76694eb58bbb71afab782, type: 3}
+  - id: pause_play
+    sprite: {fileID: 21300000, guid: 60a93ad5bfed3e54487f413ff14a66c0, type: 3}
+  - id: pause_pause
+    sprite: {fileID: 21300000, guid: 7f28138b7631e5d469f2b28d7040dfcf, type: 3}
+  - id: ui_interact_f
+    sprite: {fileID: 21300000, guid: 5c28fe667c0e4b248166b095f566d902, type: 3}
+  - id: ending_background
+    sprite: {fileID: 21300000, guid: f127b4451dba1694ab8094d476b01494, type: 3}

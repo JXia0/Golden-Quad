@@ -14,7 +14,10 @@ namespace LetGo
         private readonly List<(Transform target, LineRenderer ring)> targets = new();
         private readonly List<GameObject> guideObjects = new();
         private readonly List<GameObject> gameplayCues = new();
-        private bool guidesVisible = true;
+        // Explanatory rings and construction guides are editor-era aids. Keep them dark by
+        // default so a slow first frame or a missing presentation component can never expose
+        // them in the shipped game.
+        private bool guidesVisible;
 
         public void Initialize(StorySceneDirector director)
         {
@@ -83,6 +86,12 @@ namespace LetGo
                     renderer.color = Color.white;
                     var scale = Mathf.Min(size.x / sprite.bounds.size.x, size.y / sprite.bounds.size.y);
                     go.transform.localScale = Vector3.one * scale;
+                }
+                else
+                {
+                    // A missing binding should leave an invisible gameplay collider rather than
+                    // putting a bright white square or coloured bar into a finished scene.
+                    renderer.enabled = false;
                 }
             }
             return renderer;

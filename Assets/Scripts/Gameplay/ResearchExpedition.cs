@@ -94,6 +94,8 @@ namespace LetGo
             plank.Configure("workshop-plank", HoldTargetMode.Carryable, "E · 拿折叠板", 1f, 3f);
             plank.DropFloorY = -2.5f;
             PrepareDeliveredBridge();
+            if (JourneyChoices.PaperBridgeIndependent)
+                plank.transform.position = new Vector3(2.7f, plank.DropFloorY ?? -2.5f);
             lamp = Tool("Portable Lamp", "workshop-lamp", new Vector3(12.6f, -2.2f), new Vector2(0.55f, 0.7f), "prop_researchlight", "E · 拿灯");
             if (JourneyChoices.TookChildhoodToy)
             {
@@ -180,6 +182,7 @@ namespace LetGo
 
         private void Update()
         {
+            if (GameInput.IsPaused) return;
             if (player == null) return;
             if (!string.IsNullOrEmpty(activePrompt)) director.ClearPrompt(activePrompt);
             activePrompt = null;
@@ -260,7 +263,7 @@ namespace LetGo
             }
             if (At(1f))
             {
-                activePrompt = ReportReturned ? "F · 带着这次的经验去汇报" : hand.CurrentTarget == report ? "松开 E · 留下你的报告" : "让实验小人走到右侧出口";
+                activePrompt = ReportReturned ? "F · 带着这次的经验去汇报" : hand.CurrentTarget == report ? "松开 E · 留下你的报告" : null;
                 if (ReportReturned && GameInput.UsePressed) director.LoadNextScene();
             }
             if (hand.CurrentTarget == toy && toy != null) activePrompt = "按住 E 上弦 · 松开后它会继续发声一阵子";
@@ -286,7 +289,7 @@ namespace LetGo
                 demonstration.Sample(Time.deltaTime, player.transform.position, player.Velocity,
                     GameInput.JumpPressed && player.Velocity.y > 1f, support,
                     hand.IsSelfAnchoring && hand.SelfChargeNormalized >= 0.98f);
-                if (UnityEngine.InputSystem.Keyboard.current != null && UnityEngine.InputSystem.Keyboard.current.tKey.wasPressedThisFrame ||
+                if (GameInput.DemonstratePressed ||
                     player.transform.position.x >= 22.8f && Mathf.Abs(player.Velocity.y) < 0.15f)
                 {
                     var complete = demonstration.Finish();
@@ -302,7 +305,7 @@ namespace LetGo
                 }
                 return;
             }
-            if (UnityEngine.InputSystem.Keyboard.current == null || !UnityEngine.InputSystem.Keyboard.current.tKey.wasPressedThisFrame) return;
+            if (!GameInput.DemonstratePressed) return;
             if (!GateLatched) return;
             if (learner.State != LearnerState.Waiting || learner.X > 12.05f || !At(12f, 1.8f))
             {

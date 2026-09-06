@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace LetGo
 {
-    /// <summary>Breathe, compose a two-note phrase, then speak it again in your own rhythm.</summary>
+    /// <summary>Compose a phrase, then choose whether to own its ending or leave room for another voice.</summary>
     [DefaultExecutionOrder(50)]
     public sealed class StagePerformance : MonoBehaviour
     {
@@ -25,8 +25,14 @@ namespace LetGo
         private int repriseBeat;
         private float retryUntil;
         private bool revising;
-        private float audienceTime;
-        private int audienceBeat;
+        private readonly StageAudienceRelay relay = new StageAudienceRelay();
+        private Transform relayMark;
+        private Vector3 relayOrigin;
+        private StageRelayPhase presentedRelayPhase;
+        private StageEncorePhase presentedEncorePhase;
+        private float firstComposedNoteAt;
+        private float composedNoteSpacing = 1.3f;
+        private bool tookBackLead;
         public bool AudienceLeading { get; private set; }
         public bool ReadyForCurtain { get; private set; }
         public int Revisions { get; private set; }
@@ -38,13 +44,25 @@ namespace LetGo
         public bool SecondBeatLong => rhythm[1];
         public int RepriseRetries { get; private set; }
         public float VoiceAim => aim;
+        public StageAudienceRelay Relay => relay;
+        public StageRelaySnapshot FinishedRelay { get; private set; }
+        public int AudienceHandoffs { get; private set; }
+        public int LeadTakebacks { get; private set; }
+        public bool LastNoteWasAudience { get; private set; }
+        public int LastSingingListener { get; private set; } = -1;
+        public Vector3 RelayOrigin => relayOrigin;
+        public bool AudienceContinuedWithoutPlayer => relay.AudienceContinuedWithoutPlayer;
+        public int IndependentAudienceNotes => relay.EncoreNotesSung;
         private int ActiveStep => revising ? 1 : director.CompletedObjectives;
-        public int ExpectedListener => ActiveStep == 2 && repriseBeat < 2 ? addressedListeners[repriseBeat] : -1;
+        public int ExpectedListener => AudienceLeading ? relay.Receiver :
+            ActiveStep == 2 && repriseBeat < 2 ? addressedListeners[repriseBeat] : -1;
         public int AddressedListener(int beat) => addressedListeners[Mathf.Clamp(beat, 0, 1)];
         public System.Action<int, Transform> PhraseSpoken;
         public System.Action<int, bool> NoteReleased;
         public System.Action RepriseMistimed;
         public System.Action<int, Vector3> AudienceAnswered;
+        public System.Action<int, bool, Vector3> AudiencePreparing;
+        public System.Action<StageRelayOutcome, int, Vector3> RelayResponse;
         private const string BreathPrompt = "按住 E · 吸气";
         private const string ReleasePrompt = "松开 E · 把声音送出去";
 
@@ -98,52 +116,62 @@ namespace LetGo
 
         private void Update()
         {
+            if (GameInput.IsPaused) return;
             if (hand == null) return;
             var mark = NearestMark();
-            if (director.CompletedObjectives == 2 && mark != null)
+            if (director.CompletedObjectives == 2 && (mark != null || AudienceLeading))
             {
                 if (GameInput.ReconsiderPressed)
                 {
                     revising = true; composingBeat = repriseBeat = 0;
                     ReadyForCurtain = AudienceLeading = false;
+                    relay.Cancel();
+                    FinishedRelay = default;
+                    tookBackLead = false;
                     Revisions++;
                 }
                 if (!revising && GameInput.UsePressed && !hand.IsSelfAnchoring)
                 {
                     if (ReadyForCurtain) { Speak(mark); return; }
-                    if (!AudienceLeading) { AudienceLeading = true; audienceTime = Time.time; audienceBeat = 0; }
+                    if (AudienceLeading)
+                    {
+                        AudienceLeading = false;
+                        relay.Cancel();
+                        repriseBeat = 0;
+                        tookBackLead = true;
+                        LeadTakebacks++;
+                    }
+                    else BeginRelay(mark);
                 }
             }
+            // This remains alive after the bow: walking into the exit wing can reveal that
+            // the room no longer needs the performer to carry its next phrase.
+            if (GameInput.ReconsiderPressed) relay.CancelEncore();
+            relay.TickEncore(Time.deltaTime, hand.transform.position.x - relayOrigin.x, hand.IsSelfAnchoring);
+            PresentEncorePhase();
             if (AudienceLeading)
             {
-                if (GameInput.InteractPressed) { AudienceLeading = false; repriseBeat = 0; }
-                else
-                {
-                    var elapsedReply = Time.time - audienceTime;
-                    var secondAt = (rhythm[0] ? 0.85f : 0.45f) + 0.6f;
-                    if (audienceBeat == 0 || audienceBeat == 1 && elapsedReply >= secondAt)
-                    {
-                        var index = audienceBeat++;
-                        AudienceAnswered?.Invoke(addressedListeners[index], ListenerPosition(mark != null ? mark : final, addressedListeners[index]));
-                        NoteReleased?.Invoke(index, rhythm[index]);
-                    }
-                    if (elapsedReply >= secondAt + (rhythm[1] ? 0.85f : 0.45f) + 0.6f)
-                    { AudienceLeading = false; ReadyForCurtain = true; }
-                }
+                mark = relayMark;
+                var responseReleasing = hand.LastSelfReleaseTime > consumedRelease &&
+                    Time.time - hand.LastSelfReleaseTime < 0.25f;
+                relay.Tick(Time.deltaTime, hand.transform.position.x - relayOrigin.x,
+                    hand.IsSelfAnchoring || responseReleasing);
+                PresentRelayPhase();
             }
             var addressing = mark != null && director.CompletedObjectives > 0 && director.CompletedObjectives < 3;
             aimLine.enabled = addressing && hand.IsSelfAnchoring;
             for (var i = 0; i < listeners.Length; i++)
             {
                 listeners[i].enabled = addressing;
-                if (addressing) JourneyVisuals.Ring(listeners[i], ListenerPosition(mark, i), ExpectedListener == i ? 0.45f : 0.28f);
+                if (addressing) JourneyVisuals.Ring(listeners[i], AudienceLeading ? RelayListenerPosition(i) : ListenerPosition(mark, i),
+                    ExpectedListener == i ? 0.45f : 0.28f);
             }
             if (addressing && hand.IsSelfAnchoring)
             {
                 aim = Mathf.Clamp(aim + GameInput.Horizontal * Time.deltaTime * 1.6f, -0.65f, 0.65f);
                 aimLine.positionCount = 2;
                 aimLine.SetPosition(0, hand.transform.position + Vector3.up * 0.4f);
-                aimLine.SetPosition(1, mark.position + new Vector3(aim * 3f, 2f));
+                aimLine.SetPosition(1, (AudienceLeading ? relayOrigin : mark.position) + new Vector3(aim * 3f, 2f));
             }
             cue.enabled = mark != null;
             if (mark == null || hand.CurrentTarget != null)
@@ -178,15 +206,32 @@ namespace LetGo
 
         private string PromptForStep()
         {
-            if (AudienceLeading) return "你的两拍，从观众席传回来。\nE · 一起唱";
-            if (ReadyForCurtain) return "这一句唱完了。\nF · 谢幕　Q · 改写　按住 E · 再唱一次";
+            if (AudienceLeading)
+            {
+                if (relay.Phase == StageRelayPhase.FirstVoice)
+                    return "声音从观众席传回来。\n先听一听　F · 接回领唱";
+                if (relay.Phase == StageRelayPhase.OfferedVoice)
+                {
+                    var direction = relay.Receiver == 0 ? "左边" : "右边";
+                    if (hand.IsSelfAnchoring)
+                        return hand.SelfChargeNormalized >= 0.58f ?
+                            "松开 E · 陪他把这一拍唱长" : "朝" + direction + "松开 E · 给他起音";
+                    return direction + "想接下一拍。\n走近 · 鼓励　E + A D · 起音或合唱　留在原地 · 听他唱完";
+                }
+                return relay.Outcome == StageRelayOutcome.Shared ? "这一拍，由你们一起唱完。" : "现在，听他的声音。";
+            }
+            if (ReadyForCurtain) return (FinishedRelay.Outcome == StageRelayOutcome.Accepted ? "最后一拍，成了他的声音。" :
+                FinishedRelay.Outcome == StageRelayOutcome.Shared ? "你们一起把这句话唱完了。" :
+                FinishedRelay.Outcome == StageRelayOutcome.Encouraged ? "你给了起点，他自己唱到了最后。" : "这一句唱完了。") +
+                (relay.EncorePhase == StageEncorePhase.WaitingForSpace ? "\n可以退一步，听他们接下去。" : "") +
+                "\nF · 谢幕　Q · 改写　按住 E · 再唱一次";
             if (ActiveStep == 0)
                 return hand.SelfChargeNormalized >= 0.98f ? ReleasePrompt : BreathPrompt;
             if (ActiveStep == 1)
                 return (composingBeat == 0 ? "第一拍，唱给谁听？" : "第二拍，留在这一侧，或转向另一侧。") +
                     "\n按住 E · 吸气　A D · 转向　松开 E · 唱出短音或长音";
             var score = ScoreNote(0) + "  " + ScoreNote(1);
-            return (Time.time < retryUntil ? "再来一次：" : "你的两拍：") + score +
+            return (Time.time < retryUntil ? "再来一次：" : tookBackLead ? "你接回了领唱：" : "你的两拍：") + score +
                 (repriseBeat == 0 ? "　从第一拍开始" : "　接上第二拍") +
                 "\n按住 E · 重唱　A D · 转向　F · 请观众接唱　Q · 改写";
         }
@@ -205,6 +250,18 @@ namespace LetGo
             }
             // Ignore accidental taps. Long and short are broad gestures, not a metronome test.
             if (duration < 0.12f) return;
+            if (AudienceLeading)
+            {
+                var aimedAt = Mathf.Abs(aim) >= 0.3f ? (aim < 0f ? 0 : 1) : -1;
+                var offset = (hand.transform.position.x - relayOrigin.x) * (relay.Receiver == 0 ? -1f : 1f);
+                if (relay.Respond(duration, aimedAt, offset >= 1.05f))
+                {
+                    PlayNote(1, duration >= 0.7f, false, -1);
+                    PresentRelayPhase();
+                }
+                aim = 0f;
+                return;
+            }
             if (repriseBeat >= 2) repriseBeat = 0;
             var listener = aim < 0f ? 0 : 1;
             var received = Mathf.Abs(aim - (listener == 0 ? -0.65f : 0.65f)) <= 0.18f;
@@ -214,9 +271,11 @@ namespace LetGo
             var isLong = duration >= 0.7f;
             if (step == 1)
             {
+                if (composingBeat == 0) firstComposedNoteAt = Time.time;
+                else composedNoteSpacing = Time.time - firstComposedNoteAt;
                 rhythm[composingBeat] = isLong;
                 addressedListeners[composingBeat] = listener;
-                NoteReleased?.Invoke(composingBeat, isLong);
+                PlayNote(composingBeat, isLong, false, -1);
                 composingBeat++;
                 DrawNotes(phrases[1], mark.position, composingBeat);
                 if (composingBeat < 2) return;
@@ -230,6 +289,7 @@ namespace LetGo
             }
             else if (step == 2)
             {
+                ReadyForCurtain = false;
                 // A generous overlap avoids classifying a borderline hold as a failure.
                 var matches = rhythm[repriseBeat] ? duration >= 0.55f : duration <= 0.85f;
                 if (!matches)
@@ -240,15 +300,91 @@ namespace LetGo
                     RepriseMistimed?.Invoke();
                     return;
                 }
-                NoteReleased?.Invoke(repriseBeat, rhythm[repriseBeat]);
+                PlayNote(repriseBeat, rhythm[repriseBeat], false, -1);
                 repriseBeat++;
                 DrawNotes(phrases[2], mark.position, repriseBeat);
-                if (repriseBeat == 2) ReadyForCurtain = true;
+                if (repriseBeat == 2)
+                {
+                    ReadyForCurtain = true;
+                    RememberFinishedPhrase(new StageRelaySnapshot(StageRelayOutcome.Solo, rhythm[0], rhythm[1],
+                        addressedListeners[0], addressedListeners[1], 2));
+                }
             }
+        }
+
+        private void BeginRelay(Transform mark)
+        {
+            if (mark == null) return;
+            relayMark = mark;
+            relayOrigin = mark.position;
+            relayOrigin.x = hand.transform.position.x;
+            AudienceLeading = true;
+            ReadyForCurtain = false;
+            tookBackLead = false;
+            repriseBeat = 0;
+            aim = 0f;
+            AudienceHandoffs++;
+            relay.Begin(rhythm[0], rhythm[1], addressedListeners[0], composedNoteSpacing);
+            presentedRelayPhase = StageRelayPhase.Idle;
+            presentedEncorePhase = StageEncorePhase.None;
+            PresentRelayPhase();
+        }
+
+        private void PresentEncorePhase()
+        {
+            if (presentedEncorePhase == relay.EncorePhase) return;
+            presentedEncorePhase = relay.EncorePhase;
+            if (relay.EncorePhase != StageEncorePhase.FirstVoice && relay.EncorePhase != StageEncorePhase.SecondVoice) return;
+            var firstVoice = relay.EncorePhase == StageEncorePhase.FirstVoice;
+            var listener = firstVoice ? relay.EncoreLeader : relay.FirstListener;
+            AudienceAnswered?.Invoke(listener, RelayListenerPosition(listener));
+            PlayNote(firstVoice ? 0 : 1, firstVoice ? relay.EncoreFirstLong : relay.EncoreSecondLong, true, listener);
+        }
+
+        private void PresentRelayPhase()
+        {
+            if (presentedRelayPhase == relay.Phase) return;
+            presentedRelayPhase = relay.Phase;
+            switch (relay.Phase)
+            {
+                case StageRelayPhase.FirstVoice:
+                    AudienceAnswered?.Invoke(relay.FirstListener, RelayListenerPosition(relay.FirstListener));
+                    PlayNote(0, relay.FirstLong, true, relay.FirstListener);
+                    break;
+                case StageRelayPhase.OfferedVoice:
+                    AudiencePreparing?.Invoke(relay.Receiver, relay.ProposedLong, RelayListenerPosition(relay.Receiver));
+                    break;
+                case StageRelayPhase.Answering:
+                    var position = RelayListenerPosition(relay.Receiver);
+                    RelayResponse?.Invoke(relay.Outcome, relay.Receiver, position);
+                    AudienceAnswered?.Invoke(relay.Receiver, position);
+                    PlayNote(1, relay.SecondLong, true, relay.Receiver);
+                    break;
+                case StageRelayPhase.Complete:
+                    AudienceLeading = false;
+                    ReadyForCurtain = true;
+                    RememberFinishedPhrase(relay.Snapshot);
+                    break;
+            }
+        }
+
+        private void PlayNote(int beat, bool isLong, bool audience, int listener)
+        {
+            LastNoteWasAudience = audience;
+            LastSingingListener = listener;
+            NoteReleased?.Invoke(beat, isLong);
+        }
+
+        private void RememberFinishedPhrase(StageRelaySnapshot snapshot)
+        {
+            FinishedRelay = snapshot;
+            JourneyChoices.RememberStageRelay(snapshot);
+            JourneyChoices.RememberRhythm(snapshot.FirstLong, snapshot.SecondLong);
         }
 
         private string ScoreNote(int index) => (addressedListeners[index] == 0 ? "← " : "→ ") + (rhythm[index] ? "━" : "●");
         private static Vector3 ListenerPosition(Transform mark, int listener) => mark.position + new Vector3(listener == 0 ? -1.95f : 1.95f, 2f);
+        private Vector3 RelayListenerPosition(int listener) => relayOrigin + new Vector3(listener == 0 ? -1.95f : 1.95f, 2f);
 
         private void DrawNotes(LineRenderer line, Vector3 origin, int count)
         {

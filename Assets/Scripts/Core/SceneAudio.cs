@@ -25,6 +25,10 @@ namespace LetGo
         [SerializeField] private AudioClip ambience;
         [SerializeField] private AudioClip music;
         private bool alternateFootstep;
+        private AudioSource[] filmMutedSources;
+        private bool[] previousFilmMute;
+        private AudioSource[] openingDuckedSources;
+        private float[] previousOpeningVolumes;
         public AudioClip AmbienceClip => ambience;
         public bool IsAmbiencePlaying => ambienceSource != null && ambienceSource.isPlaying && ambienceSource.loop;
         public AudioClip MusicClip => music;
@@ -107,6 +111,59 @@ namespace LetGo
             if (tensionSource != null) tensionSource.volume = Mathf.Lerp(0f, 0.42f, Mathf.Clamp01(value));
         }
 
+        // Only the background beds move underneath the opening voice; loop playback stays continuous.
+        public void SetOpeningVoiceDucked(bool ducked)
+        {
+            if (ducked)
+            {
+                if (openingDuckedSources != null) return;
+                openingDuckedSources = new[] { musicSource, ambienceSource };
+                previousOpeningVolumes = new float[openingDuckedSources.Length];
+                for (var i = 0; i < openingDuckedSources.Length; i++)
+                {
+                    var source = openingDuckedSources[i];
+                    if (source != null) previousOpeningVolumes[i] = source.volume;
+                }
+                for (var i = 0; i < openingDuckedSources.Length; i++)
+                    if (openingDuckedSources[i] != null)
+                        openingDuckedSources[i].volume = previousOpeningVolumes[i] * (i == 0 ? 0.3f : 0.5f);
+                return;
+            }
+
+            if (openingDuckedSources == null) return;
+            for (var i = 0; i < openingDuckedSources.Length; i++)
+                if (openingDuckedSources[i] != null)
+                    openingDuckedSources[i].volume = previousOpeningVolumes[i];
+            openingDuckedSources = null;
+            previousOpeningVolumes = null;
+        }
+
+        // Keep the film's own AudioSource audible without stopping or restarting scene loops.
+        public void SetFilmPlaybackMuted(bool muted)
+        {
+            if (muted)
+            {
+                if (filmMutedSources != null) return;
+                filmMutedSources = new[] { effectsSource, ambienceSource, musicSource, tensionSource };
+                previousFilmMute = new bool[filmMutedSources.Length];
+                for (var i = 0; i < filmMutedSources.Length; i++)
+                {
+                    var source = filmMutedSources[i];
+                    if (source == null) continue;
+                    previousFilmMute[i] = source.mute;
+                }
+                foreach (var source in filmMutedSources)
+                    if (source != null) source.mute = true;
+                return;
+            }
+
+            if (filmMutedSources == null) return;
+            for (var i = 0; i < filmMutedSources.Length; i++)
+                if (filmMutedSources[i] != null) filmMutedSources[i].mute = previousFilmMute[i];
+            filmMutedSources = null;
+            previousFilmMute = null;
+        }
+
         private void Play(AudioClip clip, float volume)
         {
             if (effectsSource != null && clip != null) effectsSource.PlayOneShot(clip, volume);
@@ -121,5 +178,7 @@ namespace LetGo
             source.volume = volume;
             source.Play();
         }
+
+        private void OnDisable() => SetOpeningVoiceDucked(false);
     }
 }

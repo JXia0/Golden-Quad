@@ -3,7 +3,18 @@ namespace LetGo
     public static class JourneyChoices
     {
         public static string KindergartenFirst { get; private set; }
+        public static bool KindergartenGaveSpace { get; private set; }
+        public static void RememberKindergartenPlay(bool gaveSpace) => KindergartenGaveSpace = gaveSpace;
+        public static bool PaperBridgeIndependent { get; private set; }
+        public static int PaperBridgeAttempts { get; private set; }
+        public static void RememberPaperBridge(bool independent, int attempts)
+        {
+            PaperBridgeIndependent = independent;
+            PaperBridgeAttempts = attempts;
+        }
         public static string StageStyle { get; private set; }
+        public static StageRelaySnapshot StageRelay { get; private set; }
+        public static void RememberStageRelay(StageRelaySnapshot relay) => StageRelay = relay;
         public static string ResearchFirst { get; private set; }
         public static bool HasStageRhythm { get; private set; }
         public static bool FirstBeatLong { get; private set; }
@@ -40,7 +51,11 @@ namespace LetGo
         public static void Reset()
         {
             KindergartenFirst = string.Empty;
+            KindergartenGaveSpace = false;
+            PaperBridgeIndependent = false;
+            PaperBridgeAttempts = 0;
             StageStyle = string.Empty;
+            StageRelay = default;
             ResearchFirst = string.Empty;
             HasStageRhythm = false;
             FirstBeatLong = SecondBeatLong = false;

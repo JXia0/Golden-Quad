@@ -26,8 +26,10 @@ namespace LetGo
         private int completedObjectives;
         private Coroutine narrationRoutine;
         private bool transitioning;
+        private bool fadingIn;
         public bool EndingVisible { get; private set; }
         public bool ReplayAvailable { get; private set; }
+        public bool IsTransitioning => transitioning || fadingIn;
         public bool NarrationEnabled { get; set; } = true;
         public Transform Player => player;
 
@@ -54,17 +56,20 @@ namespace LetGo
             if (gameObject.scene.name == "00_Prologue")
                 foreach (var label in FindObjectsByType<TextMesh>())
                     if (label.name.StartsWith("Label -")) label.gameObject.SetActive(false);
-            StoryTypography.Apply(narrationText, 22);
+            StoryTypography.ApplyNarration(narrationText);
             if (narrationText != null)
             {
                 narrationText.rectTransform.anchorMin = narrationText.rectTransform.anchorMax = new Vector2(0.5f, 0.5f);
-                narrationText.rectTransform.anchoredPosition = new Vector2(0f, 234f);
-                narrationText.rectTransform.sizeDelta = new Vector2(960f, 104f);
+                narrationText.rectTransform.anchoredPosition = new Vector2(0f, 222f);
+                narrationText.rectTransform.sizeDelta = new Vector2(920f, 120f);
             }
             // Keep restored transitions authoritative even in older, manually laid out scenes.
             if (gameObject.scene.name == "01_Kindergarten") nextScene = "02_Interlude_Firsts";
             if (gameObject.scene.name == "03_Stage") nextScene = "04_Interlude_Growing";
             EmotionalJourney.Install(this);
+            if (gameObject.scene.name == "00_Prologue")
+                gameObject.AddComponent<MainMenuController>().Initialize(this);
+            gameObject.AddComponent<PauseMenuController>().Initialize(this);
             if (fadeImage != null) StartCoroutine(FadeFromBlack());
         }
 
@@ -152,6 +157,7 @@ namespace LetGo
 
         private IEnumerator FadeFromBlack()
         {
+            fadingIn = true;
             var color = fadeImage.color;
             color.a = 1f;
             fadeImage.color = color;
@@ -164,6 +170,7 @@ namespace LetGo
             color.a = 0f;
             fadeImage.color = color;
             fadeImage.raycastTarget = false;
+            fadingIn = false;
         }
 
         private IEnumerator FadeToBlack(float seconds)
@@ -205,31 +212,46 @@ namespace LetGo
             yield return new WaitForSeconds(0.8f);
             yield return FadeToBlack(1.6f);
             yield return new WaitForSeconds(0.65f);
+            // The film belongs after the player's last step, before the final painting.
+            // Until it is delivered this returns immediately, without an empty timed wait.
+            var flashback = gameObject.AddComponent<EndingFlashbackPlayer>();
+            yield return flashback.PlayIfAvailable();
+            Destroy(flashback);
             var closing = JourneyOverlay.Create("Closing Credits");
             closing.GetComponent<Canvas>().sortingOrder = 32760;
-            var title = closing.Label("Closing Title", new Vector2(0f, 28f), new Vector2(800f, 86f), 40);
-            StoryTypography.ApplyTitle(title, 40);
-            title.text = "放开我的手";
-            var thanks = closing.Label("Closing Thanks", new Vector2(0f, -52f), new Vector2(760f, 42f), 19);
-            thanks.text = "谢谢你，陪我们走到这里。";
-            var replay = closing.Label("Closing Replay", new Vector2(0f, -260f), new Vector2(480f, 36f), 16);
+            var backing = closing.Picture("Closing Letterbox", Vector2.zero, Vector2.zero, null, Color.black);
+            backing.rectTransform.anchorMin = Vector2.zero;
+            backing.rectTransform.anchorMax = Vector2.one;
+            backing.rectTransform.sizeDelta = Vector2.zero;
+            var palette = Resources.Load<JourneyArtPalette>("JourneyArtPalette");
+            var artwork = closing.Picture("Delivered Ending Art", Vector2.zero, Vector2.zero,
+                palette == null ? null : palette.Find("ending_background"), Color.white);
+            artwork.rectTransform.anchorMin = Vector2.zero;
+            artwork.rectTransform.anchorMax = Vector2.one;
+            artwork.rectTransform.sizeDelta = Vector2.zero;
+            // Keep the child, the backward glance and the sunlight in the delivered composition.
+            artwork.preserveAspect = true;
+            artwork.color = new Color(1f, 1f, 1f, 0f);
+            var replay = closing.Label("Closing Replay", new Vector2(-430f, -318f), new Vector2(320f, 32f), 16,
+                TextAnchor.MiddleLeft);
             replay.text = "Enter　再走一次";
             replay.gameObject.SetActive(false);
-            title.color = new Color(0.94f, 0.91f, 0.85f, 0f);
-            thanks.color = new Color(0.7f, 0.7f, 0.69f, 0f);
-            replay.color = new Color(0.6f, 0.62f, 0.62f, 0f);
+            replay.color = new Color(0.76f, 0.75f, 0.69f, 0f);
             EndingVisible = true;
             for (var t = 0f; t < 2.8f; t += Time.deltaTime)
             {
-                SetTextAlpha(title, Mathf.SmoothStep(0f, 1f, t / 1.2f));
-                SetTextAlpha(thanks, Mathf.SmoothStep(0f, 1f, (t - 0.8f) / 1.2f));
-                SetTextAlpha(replay, Mathf.SmoothStep(0f, 1f, (t - 1.8f)));
+                artwork.color = new Color(1f, 1f, 1f, Mathf.SmoothStep(0f, 1f, t / 2.8f));
                 yield return null;
             }
-            SetTextAlpha(title, 1f);
-            SetTextAlpha(thanks, 1f);
-            SetTextAlpha(replay, 1f);
+            artwork.color = Color.white;
+            yield return new WaitForSeconds(1.4f);
             replay.gameObject.SetActive(true);
+            for (var t = 0f; t < 0.6f; t += Time.deltaTime)
+            {
+                SetTextAlpha(replay, Mathf.SmoothStep(0f, 1f, t / 0.6f));
+                yield return null;
+            }
+            SetTextAlpha(replay, 1f);
             ReplayAvailable = true;
             while (UnityEngine.InputSystem.Keyboard.current == null ||
                 !UnityEngine.InputSystem.Keyboard.current.enterKey.wasPressedThisFrame) yield return null;

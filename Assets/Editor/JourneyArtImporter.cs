@@ -15,7 +15,9 @@ public sealed class JourneyArtImporter : AssetPostprocessor
         "workshop-shutter_locked", "workshop-shutter_unlocked", "workshop-latch",
         "workshop-window", "workshop-report", "workshop-desk"
         , "prop_researchnote", "montage01_stayupwithfriends", "montage02_takebus", "montage03_parentstired",
-        "montage04_firstraisehand", "montage_growth_rejected", "montage_growth_conflict", "bg_research_room", "ui_interact_e"
+        "montage04_firstraisehand", "montage_growth_rejected", "montage_growth_conflict", "montage_growth_story", "bg_research_room", "ui_interact_e",
+        "char_parent_hold", "char_parent_shoulder", "char_parent_wait", "menu_background", "menu_start",
+        "pause_background", "pause_play", "pause_pause", "ui_interact_f", "ending_background"
     };
     private static readonly Dictionary<string, string> Fallbacks = new()
     {
@@ -28,14 +30,27 @@ public sealed class JourneyArtImporter : AssetPostprocessor
         { "workshop-latch", "workshop-shutter_locked" },
         { "workshop-window", "prop_office_doorsigns" },
         { "workshop-report", "prop_research_report" },
-        { "workshop-desk", "prop_research_desk" }
+        { "workshop-desk", "prop_research_desk" },
+        { "char_parent_hold", "char_parent_牵手 1" },
+        { "char_parent_shoulder", "char_parent_手放肩膀 1" },
+        { "char_parent_wait", "char_parent_门口等待 1" },
+        { "montage_growth_story", "montage_growth_" },
+        { "menu_background", "游戏开始界面" },
+        { "menu_start", "开始ui" },
+        { "pause_background", "暂停菜单界面" },
+        { "pause_play", "播放按钮" },
+        { "pause_pause", "暂停按钮" },
+        { "ending_background", "结束界面" }
     };
     private static bool queued;
 
     private void OnPreprocessTexture()
     {
         var file = Path.GetFileNameWithoutExtension(assetPath);
-        if (file != "prop_research_crate" && file != "ui_interact_e" && !file.StartsWith("workshop-")) return;
+        if (file != "prop_research_crate" && file != "ui_interact_e" && file != "ui_interact_f" &&
+            file != "游戏开始界面" && file != "开始ui" && file != "暂停菜单界面" &&
+            file != "播放按钮" && file != "暂停按钮" && file != "结束界面" &&
+            file != "montage_growth_" && !file.StartsWith("workshop-")) return;
         var importer = (TextureImporter)assetImporter;
         importer.textureType = TextureImporterType.Sprite;
         importer.spriteImportMode = SpriteImportMode.Single;

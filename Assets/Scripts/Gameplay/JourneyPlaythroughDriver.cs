@@ -11,7 +11,7 @@ using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.LowLevel;
 using UnityEngine.SceneManagement;
 
-public sealed class JourneyPlaythroughDriver : MonoBehaviour
+public sealed partial class JourneyPlaythroughDriver : MonoBehaviour
 {
     private Keyboard keyboard;
     private readonly List<string> results = new();
@@ -60,6 +60,86 @@ public sealed class JourneyPlaythroughDriver : MonoBehaviour
     private IEnumerator Run()
     {
         yield return new WaitForSeconds(1.4f);
+        if (SessionState.GetBool("LetGo.QA.FinalAssets", false))
+        {
+            SessionState.EraseBool("LetGo.QA.FinalAssets");
+            yield return ReviewDeliveredVoice();
+            if (finished) yield break;
+            yield return ReviewKindergartenGrowth();
+            if (finished) yield break;
+            yield return ReviewStageGrowth();
+            if (finished) yield break;
+            yield return ReviewStageSpatialJourney();
+            if (finished) yield break;
+            yield return ReviewFinalMemoryPresentation();
+            if (finished) yield break;
+            yield return ReviewReportedPresentation();
+            if (finished) yield break;
+            yield return ReviewEndingPainting();
+            if (finished) yield break;
+            Finish("ALL PLAYTHROUGH CHECKS PASSED for delivered recordings, learned play, independent stage voices, presentation and the complete ending film.");
+            yield break;
+        }
+        if (SessionState.GetBool("LetGo.QA.StageSpatial", false))
+        {
+            SessionState.EraseBool("LetGo.QA.StageSpatial");
+            yield return ReviewDeliveredVoice();
+            if (finished) yield break;
+            yield return ReviewStageSpatialJourney();
+            if (finished) yield break;
+            Finish("ALL PLAYTHROUGH CHECKS PASSED for the open stage, microphone, bow and exit wing.");
+            yield break;
+        }
+        if (SessionState.GetBool("LetGo.QA.DeliveredUI", false))
+        {
+            SessionState.EraseBool("LetGo.QA.DeliveredUI");
+            yield return ReviewInlineKeys();
+            if (finished) yield break;
+            yield return ReviewTitleMenu();
+            if (finished) yield break;
+            yield return ReviewPauseMenu();
+            if (finished) yield break;
+            yield return ReviewFinalMemoryPresentation();
+            if (finished) yield break;
+            yield return ReviewReportedPresentation();
+            if (finished) yield break;
+            yield return ReviewEndingPainting();
+            if (finished) yield break;
+            Finish("ALL PLAYTHROUGH CHECKS PASSED for delivered UI, narration entry, stage coverage, grounded memories and the final painting.");
+            yield break;
+        }
+        if (SessionState.GetBool("LetGo.QA.GrowthRelease", false))
+        {
+            SessionState.EraseBool("LetGo.QA.GrowthRelease");
+            yield return ReviewInlineKeys();
+            if (finished) yield break;
+            yield return ReviewTitleMenu();
+            if (finished) yield break;
+            yield return ReviewPauseMenu();
+            if (finished) yield break;
+            yield return ReviewKindergartenGrowth();
+            if (finished) yield break;
+            yield return ReviewStageGrowth();
+            if (finished) yield break;
+            SceneManager.LoadScene("02_Interlude_Firsts");
+            yield return Keys(1.2f);
+            yield return PlayFirsts();
+            if (finished) yield break;
+            SceneManager.LoadScene("04_Interlude_Growing");
+            yield return Keys(1.2f);
+            yield return PlayRepair(true);
+            if (finished) yield break;
+            SceneManager.LoadScene("04_Interlude_Growing");
+            yield return Keys(1.2f);
+            yield return PlayRepair(false);
+            if (finished) yield break;
+            yield return ReviewReportedPresentation();
+            if (finished) yield break;
+            yield return ReviewEndingPainting();
+            if (finished) yield break;
+            Finish("ALL PLAYTHROUGH CHECKS PASSED for the title, growth decisions, free paper bridges, reported placement and farewell depth.");
+            yield break;
+        }
         if (SessionState.GetBool("LetGo.QA.SceneStaging", false))
         {
             SessionState.EraseBool("LetGo.QA.SceneStaging");
@@ -177,6 +257,11 @@ public sealed class JourneyPlaythroughDriver : MonoBehaviour
             yield break;
         }
         phase = "prologue door";
+        if (FindAnyObjectByType<MainMenuController>()?.Visible == true)
+        {
+            yield return Keys(0.15f, Key.Enter);
+            yield return Keys(0.8f);
+        }
         yield return UseDoor("Meeting Door", "01_Kindergarten");
         if (finished) yield break;
         phase = "kindergarten parent release";
@@ -336,7 +421,7 @@ public sealed class JourneyPlaythroughDriver : MonoBehaviour
         var notesBefore = stageFeedback.PlayedNotes;
         yield return Keys(0.2f, Key.F);
         if (!Check(performance.AudienceLeading, "F hands the player's rhythm to the audience")) yield break;
-        yield return Keys(3f);
+        yield return Keys(6.3f);
         if (!Check(performance.ReadyForCurtain && !StorySceneDirector.Instance.ObjectivesComplete,
             "listening to the audience is a complete alternate performance and still waits for a bow")) yield break;
         if (!Check(stageFeedback.PlayedNotes == notesBefore + 2 && stageFeedback.PlayedAudienceAnswers == answersBefore + 2,
@@ -344,7 +429,8 @@ public sealed class JourneyPlaythroughDriver : MonoBehaviour
         yield return Keys(0.2f, Key.F);
         yield return Keys(0.2f);
         if (!Check(StorySceneDirector.Instance.ObjectivesComplete && JourneyChoices.StageStyle.Contains("幕布") &&
-            !JourneyChoices.FirstBeatLong && JourneyChoices.SecondBeatLong, "the final revised phrase is retained after the audience-led performance")) yield break;
+            !JourneyChoices.FirstBeatLong && !JourneyChoices.SecondBeatLong && JourneyChoices.StageRelay.Outcome == StageRelayOutcome.Accepted,
+            "accepting the audience preserves the version they actually finished")) yield break;
 
         phase = "workshop crate and held crossing";
         yield return UseDoor("Back Curtain", "04_Interlude_Growing");
@@ -426,6 +512,12 @@ public sealed class JourneyPlaythroughDriver : MonoBehaviour
         yield return Keys(0.2f);
         if (!Check(moment.Firsts.Phase == FirstsPhase.RaisingHand, "the player walks from the chosen stop to school")) yield break;
         yield return Keys(0.6f, Key.E);
+        var handBar = GameObject.Find("Raised hand")?.GetComponent<UnityEngine.UI.Image>();
+        var schoolLabel = GameObject.Find("Stop name 1")?.GetComponent<UnityEngine.UI.Text>();
+        if (!Check(handBar != null && schoolLabel != null &&
+            Mathf.Abs(handBar.rectTransform.anchoredPosition.x - schoolLabel.rectTransform.anchoredPosition.x) < 0.01f &&
+            handBar.rectTransform.pivot.x == 0.5f && Mathf.Abs(moment.Firsts.Position - FirstsJourney.Stops[1]) < 0.001f,
+            "the raised-hand line expands equally from the exact school node")) yield break;
         Capture("02-raising-hand");
         yield return Keys(0.8f, Key.E);
         yield return Keys(0.3f);
@@ -439,33 +531,72 @@ public sealed class JourneyPlaythroughDriver : MonoBehaviour
 
     private IEnumerator PlayRepair(bool send)
     {
-        phase = "growing playable interlude";
+        phase = send ? "an independently supported paper bridge" : "holding a paper route for someone else";
         var moment = FindAnyObjectByType<InterludeController>();
-        if (!Check(moment != null && moment.HasIllustration, "the second interlude displays the rejected-work artwork")) yield break;
+        if (!Check(moment != null && moment.HasIllustration && moment.Bridge != null,
+            "the growing interlude presents a playable paper construction")) yield break;
         if (!CheckInterludeText()) yield break;
-        Capture("04-paper-before");
-        for (var i = 0; i < 3; i++)
+        var bridge = moment.Bridge;
+        Capture("04-bridge-before");
+        yield return Keys(0.15f, Key.F);
+        yield return Keys(1.4f);
+        if (!Check(bridge.Phase == PaperBridgePhase.Blocked && bridge.Failure != PaperBridgeFailure.None,
+            "trying unsupported paper stops at a visible failure instead of advancing the story")) yield break;
+        Capture("04-bridge-failure");
+        yield return Keys(0.15f, Key.Q);
+        yield return Keys(0.15f);
+        if (send)
         {
-            if (i > 0) { yield return Keys(0.12f, Key.D); yield return Keys(0.12f); }
-            yield return Keys(0.12f, Key.E);
-            if (!Check(moment.Repair.Holding && moment.Repair.Selected == i, "pick up paper fragment " + i)) yield break;
-            if (i == 1) Capture("04-paper-in-hand");
-            yield return MovePaper(moment, RepairJourney.Target(i), false);
+            yield return Keys(0.15f, Key.Space);
             yield return Keys(0.15f);
-            if (!Check(moment.Repair.RepairedCount == i + 1, "align and release paper fragment " + i)) yield break;
+            yield return MoveBridgePaper(bridge, 0.20f);
+            yield return Keys(0.15f, Key.D);
+            yield return Keys(0.15f);
+            yield return Keys(0.15f, Key.D);
+            yield return Keys(0.15f);
+            yield return Keys(0.15f, Key.Space);
+            yield return Keys(0.15f);
+            yield return MoveBridgePaper(bridge, 0.80f);
+            yield return Keys(0.15f, Key.F);
+            yield return Keys(8f);
         }
-        if (!Check(!moment.Ready, "repairing the page still leaves its destination to the player")) yield break;
-        yield return Keys(0.12f, Key.E);
-        yield return MovePaper(moment, send ? 0.2f : 0.8f, true);
+        else
+        {
+            yield return Keys(0.15f, Key.D);
+            yield return Keys(0.15f);
+            yield return Keys(0.15f, Key.E, Key.F);
+            yield return Keys(3f, Key.E);
+            Capture("04-bridge-held-in-progress");
+            yield return Keys(5f, Key.E);
+        }
+        if (!Check(bridge.Ready && bridge.Independent == send && JourneyChoices.PaperBridgeIndependent == send &&
+            JourneyChoices.PaperBridgeAttempts >= 2,
+            "the actual trial records whether the route stood independently or needed the player's hand")) yield break;
+        Capture(send ? "04-bridge-independent" : "04-bridge-held-complete");
         yield return Keys(0.3f);
-        if (!Check(moment.Ready && JourneyChoices.RepairedNoteDestination == (send ? "home" : "notebook"), "the final placement remembers whether the page was sent or kept")) yield break;
-        Capture(send ? "04-restored-sent" : "04-restored-kept");
+        if (!send && !Check(!bridge.IsStable(1) && bridge.Ready,
+            "letting go after arrival collapses the supported paper without undoing the child's crossing")) yield break;
         yield return Keys(0.3f);
         yield return Keys(0.15f, Key.F);
         yield return Keys(1.4f);
-        Check(SceneManager.GetActiveScene().name == "05_Research", "the restored growing interlude leads into research");
+        var workshop = FindAnyObjectByType<ResearchExpedition>();
+        if (!Check(SceneManager.GetActiveScene().name == "05_Research" && workshop != null,
+            "the folded-paper trial leads into the real workshop")) yield break;
+        Check(Mathf.Abs(workshop.Plank.transform.position.x - (send ? 2.7f : -2f)) < 0.1f,
+            "an independent paper bridge brings the reusable folding plank to the workbench in the next scene");
     }
 
+    private IEnumerator MoveBridgePaper(PaperBridgeJourney bridge, float target)
+    {
+        var end = Time.time + 3f;
+        while (Mathf.Abs(bridge.Positions[bridge.Selected] - target) > 0.004f && Time.time < end)
+        {
+            InputSystem.QueueStateEvent(keyboard, new KeyboardState(Key.E,
+                bridge.Positions[bridge.Selected] < target ? Key.D : Key.A));
+            yield return null;
+        }
+        yield return Keys(0.15f);
+    }
     private bool CheckInterludeText()
     {
         foreach (var name in new[] { "Moment title", "Moment state", "Moment controls" })
@@ -872,12 +1003,13 @@ public sealed class JourneyPlaythroughDriver : MonoBehaviour
         Capture("06-doorway-empty");
         yield return Walk(ending.OnwardPositionX + 0.2f);
         for (var i = 0; i < 100 && !StorySceneDirector.Instance.ReplayAvailable; i++) yield return Keys(0.1f);
-        var title = GameObject.Find("Closing Title")?.GetComponent<UnityEngine.UI.Text>();
+        var artwork = GameObject.Find("Delivered Ending Art")?.GetComponent<UnityEngine.UI.Image>();
         var replay = GameObject.Find("Closing Replay")?.GetComponent<UnityEngine.UI.Text>();
-        if (!Check(title != null && replay != null && title.font == StoryTypography.BodyFont &&
-            title.fontSize > replay.fontSize && title.text == "放开我的手" && title.color.a > 0.99f,
-            "the closing title and delayed replay control use separate readable typography")) yield break;
-        Capture("06-refined-closing-title");
+        if (!Check(artwork != null && artwork.sprite != null && artwork.sprite.name.Contains("结束界面") &&
+            artwork.preserveAspect && artwork.color.a > 0.99f && replay != null && replay.color.a > 0.99f &&
+            GameObject.Find("Closing Title") == null && GameObject.Find("Closing Thanks") == null,
+            "the final frame preserves the delivered ending painting with only a delayed quiet replay hint")) yield break;
+        Capture("06-delivered-ending-painting");
         yield return Keys(0.2f, Key.Enter);
         yield return Keys(1.4f);
         if (!Check(SceneManager.GetActiveScene().name == "00_Prologue" && JourneyChoices.LearnedHabit.Kind == LearnedHabitKind.None,
@@ -887,7 +1019,7 @@ public sealed class JourneyPlaythroughDriver : MonoBehaviour
         audio = FindAnyObjectByType<SceneAudio>();
         var prompt = GameObject.Find("Prompt")?.GetComponent<UnityEngine.UI.Text>();
         if (!Check(audio.MusicClip != null && audio.MusicClip.name.Contains("v2_幼儿园关卡") && audio.IsMusicPlaying &&
-            prompt != null && prompt.fontSize == 22 && prompt.font == StoryTypography.BodyFont,
+            prompt != null && prompt.fontSize == 24 && prompt.font == StoryTypography.PromptFont,
             "kindergarten selects its own delivered music and shares the refined Chinese prompt style")) yield break;
         Capture("01-refined-prompt-and-music");
     }
@@ -1016,7 +1148,7 @@ public sealed class JourneyPlaythroughDriver : MonoBehaviour
         yield return Note(false, false);
         yield return Note(true, true);
         yield return Keys(0.2f, Key.F);
-        yield return Keys(3f);
+        yield return Keys(6.3f);
         yield return Keys(0.2f, Key.F);
         yield return Keys(0.2f);
         if (!Check(StorySceneDirector.Instance.ObjectivesComplete, "the restored curtains leave audience response and the player's bow playable")) yield break;
@@ -1052,7 +1184,7 @@ public sealed class JourneyPlaythroughDriver : MonoBehaviour
             "putting the crate down returns the actual visible base to the floor")) yield break;
         Capture("05-crate-after-drop");
         var prompt = GameObject.Find("Prompt")?.GetComponent<UnityEngine.UI.Text>();
-        if (!Check(prompt != null && prompt.font == StoryTypography.BodyFont && prompt.fontSize == 22 &&
+        if (!Check(prompt != null && prompt.font == StoryTypography.PromptFont && prompt.fontSize == 24 &&
             prompt.rectTransform.anchorMin == Vector2.zero && prompt.rectTransform.pivot == Vector2.zero,
             "the shared action text uses the readable left margin instead of covering the character")) yield break;
     }

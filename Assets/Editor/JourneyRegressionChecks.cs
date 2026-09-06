@@ -133,6 +133,9 @@ public static class JourneyRegressionChecks
             results.Add("PASS: parental help is optional and independent entry counts once.");
             ValidateExperiments(results);
             results.AddRange(LearnedHabitChecks.RunChecks());
+            results.AddRange(KindergartenPlayChecks.RunChecks());
+            results.AddRange(StageRelayChecks.RunChecks());
+            results.AddRange(PaperBridgeChecks.RunChecks());
             ValidateDeliveredAudio(results);
             ValidateInterludes(results);
             ValidateScenes(results);

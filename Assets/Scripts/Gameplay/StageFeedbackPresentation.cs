@@ -16,6 +16,8 @@ namespace LetGo
         private AudioClip shortNote, longNote, answerLeft, answerRight;
         private float pendingAudienceAt = -1f;
         private int pendingAudience = -1;
+        private int preparingAudience = -1;
+        private bool preparingLong;
         private static Sprite softPool;
         public int PlayedNotes { get; private set; }
         public int PlayedAudienceAnswers { get; private set; }
@@ -41,6 +43,8 @@ namespace LetGo
             audienceLights[1].transform.localScale = new Vector3(0.22f, 0.32f, 1f);
             performance.NoteReleased += OnNoteReleased;
             performance.AudienceAnswered += OnAudienceAnswered;
+            performance.AudiencePreparing += OnAudiencePreparing;
+            performance.RelayResponse += OnRelayResponse;
         }
 
         private void OnNoteReleased(int beat, bool isLong)
@@ -48,6 +52,18 @@ namespace LetGo
             PlayedNotes++;
             LastNoteLong = isLong;
             if (source != null) source.PlayOneShot(isLong ? longNote : shortNote);
+            if (performance != null && performance.LastNoteWasAudience)
+            {
+                var listener = performance.LastSingingListener;
+                if (listener >= 0 && listener < audienceLights.Length)
+                {
+                    preparingAudience = -1;
+                    audienceUntil[listener] = Time.time + (isLong ? 0.95f : 0.62f);
+                    audienceLights[listener].transform.localScale = new Vector3(isLong ? 1.15f : 0.58f, 0.22f, 1f);
+                }
+                voiceUntil = 0f;
+                return;
+            }
             voiceDuration = isLong ? 0.9f : 0.45f;
             voiceUntil = Time.time + voiceDuration;
             var player = FindAnyObjectByType<PlayerController2D>();
@@ -66,6 +82,28 @@ namespace LetGo
             audienceLights[listener].transform.position = position;
         }
 
+        private void OnAudiencePreparing(int listener, bool proposedLong, Vector3 position)
+        {
+            if (listener < 0 || listener >= audienceLights.Length) return;
+            preparingAudience = listener;
+            preparingLong = proposedLong;
+            audienceLights[listener].transform.position = position;
+            // A compact or wide pool previews the phrase length before the player answers.
+            audienceLights[listener].transform.localScale = new Vector3(proposedLong ? 1.25f : 0.64f, 0.25f, 1f);
+            SetRgb(audienceLights[listener], JourneyVisuals.Cool);
+        }
+
+        private void OnRelayResponse(StageRelayOutcome outcome, int listener, Vector3 position)
+        {
+            if (listener < 0 || listener >= audienceLights.Length) return;
+            preparingAudience = -1;
+            audienceLights[listener].transform.position = position;
+            audienceUntil[listener] = Time.time + 0.9f;
+            var color = outcome == StageRelayOutcome.Shared ? JourneyVisuals.Warm :
+                outcome == StageRelayOutcome.Encouraged ? new Color(0.72f, 0.73f, 0.62f) : JourneyVisuals.Cool;
+            SetRgb(audienceLights[listener], color);
+        }
+
         private void LateUpdate()
         {
             if (pendingAudience >= 0 && Time.time >= pendingAudienceAt)
@@ -78,7 +116,28 @@ namespace LetGo
             if (voiceLight != null)
                 SetPulse(voiceLight, voiceUntil, voiceDuration, 0.28f);
             for (var i = 0; i < audienceLights.Length; i++)
-                if (audienceLights[i] != null) SetPulse(audienceLights[i], audienceUntil[i], 0.7f, 0.22f);
+                if (audienceLights[i] != null)
+                {
+                    if (i == preparingAudience) SetWaiting(audienceLights[i], preparingLong);
+                    else SetPulse(audienceLights[i], audienceUntil[i], 0.7f, 0.22f);
+                }
+        }
+
+        private static void SetWaiting(SpriteRenderer renderer, bool longPhrase)
+        {
+            renderer.enabled = true;
+            var color = renderer.color;
+            color.a = 0.28f + 0.16f * (0.5f + 0.5f * Mathf.Sin(Time.time * (longPhrase ? 2.2f : 3.4f)));
+            renderer.color = color;
+        }
+
+        private static void SetRgb(SpriteRenderer renderer, Color value)
+        {
+            var color = renderer.color;
+            color.r = value.r;
+            color.g = value.g;
+            color.b = value.b;
+            renderer.color = color;
         }
 
         private static void SetPulse(SpriteRenderer renderer, float until, float duration, float maximumAlpha)
@@ -147,6 +206,8 @@ namespace LetGo
             if (performance == null) return;
             performance.NoteReleased -= OnNoteReleased;
             performance.AudienceAnswered -= OnAudienceAnswered;
+            performance.AudiencePreparing -= OnAudiencePreparing;
+            performance.RelayResponse -= OnRelayResponse;
             if (shortNote != null) Destroy(shortNote);
             if (longNote != null) Destroy(longNote);
             if (answerLeft != null) Destroy(answerLeft);

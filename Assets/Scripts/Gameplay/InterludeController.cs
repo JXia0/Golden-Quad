@@ -15,20 +15,15 @@ namespace LetGo
         private Image topShade, bottomShade;
         private Text title, instruction, status, markerLabel;
         private readonly Text[] stops = new Text[3];
-        private readonly RawImage[] pieces = new RawImage[3];
-        private readonly Image[] sockets = new Image[3];
-        private readonly Text[] pieceLabels = new Text[3];
-        private Image fullLetter;
-        private Text homeAddress, notebookAddress;
-        private Texture2D repairPaperTexture;
-        private Sprite repairPaperSprite;
+        private GrowingInterludePresentation bridgePresentation;
         private bool growing, leaving;
         private float readyAt;
         public FirstsJourney Firsts { get; private set; }
         public RepairJourney Repair { get; private set; }
+        public PaperBridgeJourney Bridge { get; private set; }
         public string Instruction => instruction == null ? "" : instruction.text;
         public bool HasIllustration => illustration != null && illustration.sprite != null;
-        public bool Ready => growing ? Repair.Ready : Firsts.Phase == FirstsPhase.Ready;
+        public bool Ready => growing ? Bridge != null && Bridge.Ready : Firsts != null && Firsts.Phase == FirstsPhase.Ready;
         public System.Action<string> MomentChanged;
         private string previousMoment;
         private static readonly string[] StopNames = { "朋友家", "学校", "家" };
@@ -41,6 +36,7 @@ namespace LetGo
             growing = gameObject.scene.name == "04_Interlude_Growing";
             Firsts = new FirstsJourney();
             Repair = new RepairJourney();
+            if (growing) Bridge = new PaperBridgeJourney();
             palette = Resources.Load<JourneyArtPalette>("JourneyArtPalette");
             var unusedCourage = GameObject.Find("Courage");
             if (unusedCourage != null) unusedCourage.SetActive(false);
@@ -57,13 +53,12 @@ namespace LetGo
             status = ui.Label("Moment state", new Vector2(0, -277), new Vector2(1120, 42), 21);
             instruction = ui.Label("Moment controls", new Vector2(0, -326), new Vector2(1120, 42), 20);
             instruction.color = StoryTypography.Secondary;
-            if (growing) BuildRepair(); else BuildRide();
+            if (growing) BuildBridge(); else BuildRide();
             Draw();
         }
 
         private Sprite Art(string id) => palette != null ? palette.Find(id) : null;
         private static float Along(float value) => -450f + 900f * value;
-        private static float PaperAlong(float value) => -320f + 640f * value;
 
         private void BuildRide()
         {
@@ -78,75 +73,31 @@ namespace LetGo
             marker = ui.Picture("Your position", new Vector2(Along(0.02f), -190), new Vector2(22, 22), null, JourneyVisuals.Warm);
             marker.rectTransform.localRotation = Quaternion.Euler(0f, 0f, 45f);
             markerLabel = ui.Label("Passenger", Vector2.zero, new Vector2(100, 30), 18);
-            handFill = ui.Picture("Raised hand", new Vector2(0, -188), new Vector2(0, 6), null, JourneyVisuals.Warm);
+            handFill = ui.Picture("Raised hand", new Vector2(Along(FirstsJourney.Stops[1]), -190), new Vector2(0, 6), null, JourneyVisuals.Warm);
             keepsake = ui.Picture("What you brought", new Vector2(-565, -192), new Vector2(52, 52), Art(JourneyChoices.TookChildhoodToy ? "prop_toy" : "prop_child_backpack"), Color.white);
         }
 
-        private void BuildRepair()
+        private void BuildBridge()
         {
             title.text = "被退回的那一页";
-            repairPaperTexture = CreateRepairPaper();
-            repairPaperSprite = Sprite.Create(repairPaperTexture,
-                new Rect(0, 0, repairPaperTexture.width, repairPaperTexture.height), Vector2.one * 0.5f, 100f,
-                0, SpriteMeshType.FullRect);
-            repairPaperSprite.name = "One repaired report page";
-            for (var i = 0; i < pieces.Length; i++)
-            {
-                sockets[i] = ui.Picture("Repair outline " + i, new Vector2(PaperAlong(RepairJourney.Target(i)), -100), new Vector2(160, 240), null, new Color(1f, 0.86f, 0.64f, 0.16f));
-                pieces[i] = ui.Rect("Paper fragment " + i, new Vector2(PaperAlong(Repair.Pieces[i]), -100), new Vector2(160, 240)).gameObject.AddComponent<RawImage>();
-                pieces[i].raycastTarget = false;
-                pieces[i].texture = repairPaperTexture;
-                pieces[i].uvRect = new Rect(i / 3f, 0f, 1f / 3f, 1f);
-                pieceLabels[i] = ui.Label("Fragment number " + i, Vector2.zero, new Vector2(90, 30), 21);
-            }
-            fullLetter = ui.Picture("Repaired letter", new Vector2(0, -100), new Vector2(480, 240), repairPaperSprite, Color.white);
-            fullLetter.gameObject.SetActive(false);
-            homeAddress = ui.Label("Send the page home", new Vector2(PaperAlong(0.2f), -224), new Vector2(280, 40), 22);
-            notebookAddress = ui.Label("Keep the page", new Vector2(PaperAlong(0.8f), -224), new Vector2(280, 40), 22);
-        }
-
-        private static Texture2D CreateRepairPaper()
-        {
-            const int width = 768;
-            const int height = 384;
-            var texture = new Texture2D(width, height, TextureFormat.RGBA32, false)
-                { name = "Runtime single rejected report", wrapMode = TextureWrapMode.Clamp };
-            var seed = new System.Random(1741);
-            for (var y = 0; y < height; y++)
-            for (var x = 0; x < width; x++)
-            {
-                var edge = Mathf.Min(Mathf.Min(x, width - 1 - x), Mathf.Min(y, height - 1 - y));
-                var roughEdge = 5 + (int)(3f * Mathf.Sin((x + y * 0.7f) * 0.11f));
-                var alpha = edge < roughEdge ? 0f : Mathf.Clamp01((edge - roughEdge) / 4f);
-                var grain = (float)(seed.NextDouble() - 0.5) * 0.035f;
-                texture.SetPixel(x, y, new Color(0.82f + grain, 0.76f + grain, 0.62f + grain, alpha));
-            }
-            DrawPaperLine(texture, 72, 300, 600, new Color(0.2f, 0.25f, 0.31f, 0.72f), 4);
-            DrawPaperLine(texture, 72, 254, 645, new Color(0.2f, 0.25f, 0.31f, 0.6f), 3);
-            DrawPaperLine(texture, 72, 208, 560, new Color(0.2f, 0.25f, 0.31f, 0.6f), 3);
-            DrawPaperLine(texture, 72, 162, 630, new Color(0.2f, 0.25f, 0.31f, 0.6f), 3);
-            DrawPaperLine(texture, 72, 116, 500, new Color(0.2f, 0.25f, 0.31f, 0.6f), 3);
-            DrawPaperLine(texture, 610, 68, 100, new Color(0.5f, 0.18f, 0.14f, 0.65f), 5);
-            texture.Apply();
-            return texture;
-        }
-
-        private static void DrawPaperLine(Texture2D texture, int x, int y, int length, Color color, int thickness)
-        {
-            for (var py = Mathf.Max(0, y - thickness); py <= Mathf.Min(texture.height - 1, y + thickness); py++)
-            for (var px = Mathf.Max(0, x); px < Mathf.Min(texture.width, x + length); px++)
-            {
-                var existing = texture.GetPixel(px, py);
-                texture.SetPixel(px, py, Color.Lerp(existing, color, color.a));
-            }
+            bridgePresentation = new GrowingInterludePresentation(ui, palette);
         }
 
         private void Update()
         {
+            if (GameInput.IsPaused) return;
             if (ui == null || leaving) return;
             var wasReady = Ready;
             if (growing)
-                Repair.Tick(Time.deltaTime, GameInput.Horizontal, GameInput.SelectionPressed, GameInput.InteractPressed, GameInput.InteractHeld, GameInput.InteractReleased);
+            {
+                var previousPhase = Bridge.Phase;
+                Bridge.Tick(Time.deltaTime, GameInput.Horizontal, GameInput.SelectionPressed, GameInput.InteractHeld,
+                    GameInput.JumpPressed, GameInput.UsePressed, GameInput.ReconsiderPressed);
+                if (GameInput.JumpPressed && previousPhase != PaperBridgePhase.Walking && previousPhase != PaperBridgePhase.Complete)
+                    SceneAudio.Instance?.PlayItemMove();
+                if (previousPhase == PaperBridgePhase.Walking && Bridge.Phase == PaperBridgePhase.Blocked)
+                    SceneAudio.Instance?.PlayRelease();
+            }
             else
             {
                 if (GameInput.UsePressed && Firsts.Phase == FirstsPhase.Riding) Firsts.Bell();
@@ -155,7 +106,7 @@ namespace LetGo
             if (!wasReady && Ready)
             {
                 readyAt = Time.time;
-                if (growing) JourneyChoices.RememberRepairedNote(Repair.Destination);
+                if (growing) JourneyChoices.RememberPaperBridge(Bridge.Independent, Bridge.AttemptCount);
                 else JourneyChoices.RememberBusStop(Firsts.ExitStop);
                 SceneAudio.Instance?.PlayObjective();
             }
@@ -199,28 +150,10 @@ namespace LetGo
             }
             else
             {
-                art = "bg_research_room";
-                for (var i = 0; i < pieces.Length; i++)
-                {
-                    var show = Repair.RepairedCount < 3;
-                    pieces[i].gameObject.SetActive(show);
-                    sockets[i].gameObject.SetActive(show);
-                    pieceLabels[i].gameObject.SetActive(show);
-                    pieces[i].rectTransform.anchoredPosition = new Vector2(PaperAlong(Repair.Pieces[i]), -100 + (Repair.Holding && Repair.Selected == i ? 16 : 0));
-                    pieces[i].color = Repair.Placed[i] ? new Color(0.8f, 1f, 0.8f) : Repair.Selected == i ? Color.white : new Color(0.65f, 0.65f, 0.65f);
-                    pieceLabels[i].rectTransform.anchoredPosition = new Vector2(PaperAlong(Repair.Pieces[i]), 35);
-                    pieceLabels[i].text = Repair.Placed[i] ? "✓" : "";
-                }
-                fullLetter.gameObject.SetActive(Repair.RepairedCount == 3);
-                fullLetter.rectTransform.anchoredPosition = new Vector2(PaperAlong(Repair.LetterPosition), -100);
-                homeAddress.text = Repair.RepairedCount == 3 ? "寄回家里" : "";
-                notebookAddress.text = Repair.RepairedCount == 3 ? "留在笔记里" : "";
-                status.text = Repair.Ready ? Repair.Destination == "home" ? "回信里，画着一扇窗和一盏灯。" : "这一页，留在了笔记里。" :
-                    Repair.RepairedCount == 3 ? "拼好的这一页，你想放在哪里？" :
-                    Repair.RepairedCount == 0 ? "把这一页拼回去。" : Repair.RepairedCount == 1 ? "还差两片。" : "还差一片。";
-                instruction.text = Repair.Ready ? "F · 继续" :
-                    Repair.RepairedCount == 3 ? "按住 E · 拿起　A D · 移到一侧　松开 E · 放下" :
-                    Repair.Holding ? "A D · 移动纸片　松开 E · 放进浅色轮廓" : "A D · 选纸片　按住 E · 拿起";
+                bridgePresentation.Draw(Bridge, Time.deltaTime, Time.time);
+                art = bridgePresentation.MomentArt;
+                status.text = bridgePresentation.Status;
+                instruction.text = bridgePresentation.Instruction;
             }
             illustration.sprite = Art(art);
             if (illustration.sprite != null && illustrationFit != null)
@@ -231,8 +164,7 @@ namespace LetGo
         private void OnDestroy()
         {
             if (ui != null) Destroy(ui.gameObject);
-            if (repairPaperSprite != null) Destroy(repairPaperSprite);
-            if (repairPaperTexture != null) Destroy(repairPaperTexture);
+            bridgePresentation?.Dispose();
         }
     }
 }

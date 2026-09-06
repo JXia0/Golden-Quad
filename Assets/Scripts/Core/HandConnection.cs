@@ -64,6 +64,7 @@ namespace LetGo
 
         private void Update()
         {
+            if (GameInput.IsPaused) return;
             if (!player.ControlsEnabled) { CancelConnection(); return; }
             stableRemaining = Mathf.Max(0f, stableRemaining - Time.deltaTime);
 

@@ -36,6 +36,7 @@ namespace LetGo
         private float entryStarted;
         private Vector3 entryStart;
         private Bounds doorBounds;
+        private SpriteRenderer onwardPlayer;
 
         public bool DoorEntryComplete { get; private set; }
         public SpriteRenderer CharacterRenderer => character;
@@ -46,6 +47,7 @@ namespace LetGo
             configured = true;
             target = recipient;
             doorway = door;
+            onwardPlayer = FindAnyObjectByType<PlayerController2D>()?.CharacterRenderer;
             originalPersonRenderers = recipient.GetComponentsInChildren<SpriteRenderer>(true);
             originalDoorRenderers = door.GetComponentsInChildren<SpriteRenderer>(true);
             var originalPerson = BestRenderer(originalPersonRenderers, "Grounded Visual");
@@ -123,6 +125,7 @@ namespace LetGo
             {
                 character.enabled = false;
                 UpdateDoor(1f);
+                RestoreDoorBehindPlayer();
                 return;
             }
             var progress = entering ? Mathf.Clamp01((Time.time - entryStarted) / EntrySeconds) : 0f;
@@ -132,7 +135,27 @@ namespace LetGo
             if (progress < 1f) return;
             DoorEntryComplete = true;
             character.enabled = false;
+            RestoreDoorBehindPlayer();
             SetAnimationSpeed(0f);
+        }
+
+        private void RestoreDoorBehindPlayer()
+        {
+            if (onwardPlayer == null) return;
+            // The child enters the doorway in depth; the adult's last step continues along
+            // the corridor in front of the closed door. Do not carry the entry occlusion forward.
+            var order = onwardPlayer.sortingOrder;
+            SetDoorDepth(doorInterior, order - 3);
+            SetDoorDepth(doorLeaf, order - 2);
+            SetDoorDepth(leftJamb, order - 1);
+            SetDoorDepth(rightJamb, order - 1);
+            SetDoorDepth(lintel, order - 1);
+        }
+
+        private void SetDoorDepth(SpriteRenderer part, int order)
+        {
+            part.sortingLayerID = onwardPlayer.sortingLayerID;
+            part.sortingOrder = order;
         }
 
         private void PlaceCharacter(float entryProgress)

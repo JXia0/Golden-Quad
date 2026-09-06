@@ -146,7 +146,8 @@ namespace LetGo
             helpControl.text = show ? "H 收起" : "H 提示";
             helpPanel.gameObject.SetActive(show);
             help.gameObject.SetActive(show);
-            var note = JourneyChoices.RepairedNoteDestination == "home" ? "回信上的图：开窗的风会让灯熄灭，关窗后灯会重新亮起来。" :
+            var note = JourneyChoices.PaperBridgeIndependent ? "你折出的桥留了下来。折叠板在工作台右边，可以拿去做落脚点。" :
+                JourneyChoices.RepairedNoteDestination == "home" ? "回信上的图：开窗的风会让灯熄灭，关窗后灯会重新亮起来。" :
                 JourneyChoices.RepairedNoteDestination == "notebook" ? "你留下的笔记：同一个箱子可以垫脚、压住机关，也可以搭落脚点。" : "左侧上层档案可以调查，那里有一块折叠板。";
             help.text = situation.text + "\n" + hint + "\n" + note;
         }

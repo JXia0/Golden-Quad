@@ -12,6 +12,13 @@ namespace LetGo
     {
         private const float GroundY = -2.72f;
         private const float ViewSize = 2.95f;
+        private static readonly string[] ResearchPrototypeLabels =
+            { "Current destination", "Nearby reusable object", "What is happening" };
+        private static readonly string[] ResearchPrototypeLines =
+        {
+            "Plate to shutter circuit", "Learner crossing gap", "Draft through the window",
+            "Workshop route sketch", "Portable lamp coverage", "Familiar toy sound range", "Nearest usable tool"
+        };
         private static Sprite radialGlow;
         private static Sprite memoryBlackSprite;
 
@@ -28,13 +35,19 @@ namespace LetGo
         private float playerFeetOffset;
         private bool playerFeetOffsetReady;
         private SpriteRenderer carriedReport;
+        private Sprite carriedReportSprite;
         private ResearchExpedition research;
         private SpriteRenderer researchLearnerVisual;
         private Sprite researchLearnerIdle;
         private Sprite researchLearnerWalk;
         private Sprite researchLearnerFear;
         private Sprite researchCrateSprite;
+        private Sprite researchReportSprite;
+        private Sprite researchWorkbenchSprite;
+        private Sprite stageAuditoriumSprite;
+        private Sprite stageLeftWingSprite;
         private Sprite stageLeftForegroundFold;
+        private Sprite stageRightWingSprite;
         private LearnerState? researchLearnerPose;
         private SpriteRenderer researchShutterSource;
         private SpriteRenderer researchShutterVisual;
@@ -77,7 +90,7 @@ namespace LetGo
                 InstallHandTetherPresentation();
             }
             carriedReport = GameObject.Find("Carried Research Report")?.GetComponentInChildren<SpriteRenderer>();
-            if (carriedReport != null) FitWorld(carriedReport, new Vector2(0.42f, 0.5f));
+            SetupCarriedReportPresentation();
             passageBlackout ??= transform.Find("Passage Blackout")?.GetComponent<SpriteRenderer>();
 
             yield return null;
@@ -87,12 +100,20 @@ namespace LetGo
             NormalizeSceneComposition();
             ReplaceCourageGlow();
 
+            var palette = Resources.Load<JourneyArtPalette>("JourneyArtPalette");
             foreach (var renderer in FindObjectsByType<SpriteRenderer>())
             {
                 if (renderer.name != "Grounded Visual") continue;
                 var source = renderer.transform.parent.GetComponent<SpriteRenderer>();
                 FitActor(renderer, ActorHeight(renderer.transform.parent.name));
                 actors.Add((source, renderer));
+                var parentTarget = source != null ? source.GetComponent<HoldTarget>() : null;
+                if (parentTarget != null && (parentTarget.TargetId == "parent" || parentTarget.TargetId == "stage-parent"))
+                {
+                    var presentation = source.GetComponent<ParentVisualPresentation>();
+                    if (presentation == null) presentation = source.gameObject.AddComponent<ParentVisualPresentation>();
+                    presentation.Configure(parentTarget, renderer, hand, player, playerArt, palette);
+                }
             }
 
             var bag = GameObject.Find("Bag from home")?.GetComponent<SpriteRenderer>();
@@ -131,6 +152,9 @@ namespace LetGo
             else if (scene == "03_Stage")
             {
                 SetupStageCurtains();
+                // Keep the exit trigger and collider, but hide its old translucent prototype tile.
+                HideRenderers("Back Curtain");
+                SetupStageMicrophone();
                 var platform = GameObject.Find("Forward Platform")?.transform;
                 HideRenderers("Riser Left Support");
                 HideRenderers("Riser Right Support");
@@ -142,7 +166,11 @@ namespace LetGo
                     chair.transform.position += Vector3.up * (GroundY - chair.bounds.min.y);
                 }
                 var stageVisual = GameObject.Find("Stage Background")?.transform.Find("Aligned Visual")?.GetComponent<SpriteRenderer>();
-                if (stageVisual != null) FitWorld(stageVisual, new Vector2(38f, 12.7f));
+                if (stageVisual != null)
+                {
+                    FitWorld(stageVisual, new Vector2(38f, 12.7f));
+                    SetupStageAuditoriumPresentation(stageVisual);
+                }
                 if (GetComponent<StageFeedbackPresentation>() == null)
                     gameObject.AddComponent<StageFeedbackPresentation>();
                 CacheStageFeedback();
@@ -207,6 +235,7 @@ namespace LetGo
         {
             var retiredDraft = GameObject.Find("Doubt Notes");
             if (retiredDraft != null) retiredDraft.SetActive(false);
+            HideResearchPrototypeGuides();
             // The frame itself already contains a readable latch and status light. The separate
             // full-canvas latch sheets looked like person-sized floating machines in play.
             HideRenderers("Inside Shutter Latch Locked");
@@ -214,6 +243,7 @@ namespace LetGo
 
             GroundVisual("Workshop Crate", new Vector2(1.1f, 1.3f));
             SetupResearchCratePresentation();
+            SetupResearchWorkbenchPresentation();
             GroundVisual("Portable Lamp", new Vector2(0.58f, 0.72f));
             GroundVisual("Workshop Learner", new Vector2(0.56f, 0.9f));
             SetupResearchLearnerPresentation();
@@ -251,44 +281,132 @@ namespace LetGo
             var right = StageCurtain("Curtain Right");
             if (left != null)
             {
+                KeepOnlyRenderer("Curtain Left", left);
+                stageLeftWingSprite = CreateStageWingSprite(left.sprite, true);
+                if (stageLeftWingSprite != null) left.sprite = stageLeftWingSprite;
                 left.enabled = true;
                 left.color = Color.white;
                 left.sortingOrder = -1;
-                FitWorld(left, new Vector2(17.5f, 5.8f));
+                var height = 6.2f;
+                var width = height * left.sprite.bounds.size.x / left.sprite.bounds.size.y;
+                FitWorldExact(left, new Vector2(width, height));
+                left.transform.position = new Vector3(-2f - left.bounds.extents.x,
+                    left.transform.position.y, left.transform.position.z);
                 left.transform.position += Vector3.up * (GroundY - left.bounds.min.y);
             }
             if (right != null)
             {
+                KeepOnlyRenderer("Curtain Right", right);
+                stageRightWingSprite = CreateStageWingSprite(right.sprite, false);
+                if (stageRightWingSprite != null) right.sprite = stageRightWingSprite;
                 right.enabled = true;
                 right.color = Color.white;
                 right.sortingOrder = -1;
-                FitWorld(right, new Vector2(17.5f, 5.8f));
+                var height = 6.2f;
+                var width = height * right.sprite.bounds.size.x / right.sprite.bounds.size.y;
+                FitWorldExact(right, new Vector2(width, height));
+                right.transform.position = new Vector3(12.2f + right.bounds.extents.x,
+                    right.transform.position.y, right.transform.position.z);
                 right.transform.position += Vector3.up * (GroundY - right.bounds.min.y);
             }
-            if (left == null || left.sprite == null || GameObject.Find("Stage Left Foreground Fold") != null) return;
+            SetupStageForegroundFold(left);
+        }
 
-            var texture = left.sprite.texture;
+        private static void KeepOnlyRenderer(string rootName, SpriteRenderer visible)
+        {
+            var root = GameObject.Find(rootName);
+            if (root == null || visible == null) return;
+            foreach (var renderer in root.GetComponentsInChildren<SpriteRenderer>(true))
+                renderer.enabled = renderer == visible;
+        }
+
+        private static Sprite CreateStageWingSprite(Sprite source, bool left)
+        {
+            if (source == null || source.texture == null) return null;
+            var texture = source.texture;
+            // Trim to the consistently painted alpha bounds. Unity's loose sprite rectangle still
+            // included transparent margins and a few isolated edge pixels, which made each wing
+            // look like a floating rectangular card when fitted to the camera.
             var scaleX = texture.width / 2172f;
             var scaleY = texture.height / 724f;
-            // The source has transparent padding below the painted hem. Start the runtime crop at
-            // the first consistently opaque row so a character passing behind the fold is covered
-            // all the way to the stage floor instead of leaving detached feet below the curtain.
-            var rect = new Rect(850f * scaleX, 90f * scaleY, 270f * scaleX, 634f * scaleY);
-            rect.width = Mathf.Min(rect.width, texture.width - rect.x);
-            rect.height = Mathf.Min(rect.height, texture.height - rect.y);
-            stageLeftForegroundFold = Sprite.Create(texture, rect, Vector2.one * 0.5f, 100f,
+            var rect = left
+                ? new Rect(20f * scaleX, 54f * scaleY, 1085f * scaleX, 670f * scaleY)
+                : new Rect(1081f * scaleX, 82f * scaleY, 1059f * scaleX, 642f * scaleY);
+            var sprite = Sprite.Create(texture, rect, Vector2.one * 0.5f, source.pixelsPerUnit,
                 0, SpriteMeshType.FullRect);
+            sprite.name = left ? "stage_left_wing" : "stage_right_wing";
+            return sprite;
+        }
+
+        private void SetupStageForegroundFold(SpriteRenderer left)
+        {
+            if (left == null || left.sprite == null || left.sprite.texture == null) return;
+            var mainRect = left.sprite.rect;
+            // Duplicate the real inner 270-pixel fold in exactly the same transform. Only its
+            // sorting order changes, so the player passes behind matching cloth with no seam,
+            // colour shift or second free-standing curtain.
+            var stripWidth = mainRect.width * (270f / 1085f);
+            var stripRect = new Rect(mainRect.xMax - stripWidth, mainRect.y,
+                stripWidth, mainRect.height);
+            stageLeftForegroundFold = Sprite.Create(left.sprite.texture, stripRect,
+                Vector2.one * 0.5f, left.sprite.pixelsPerUnit, 0, SpriteMeshType.FullRect);
             stageLeftForegroundFold.name = "stage_left_foreground_fold";
-            var fold = new GameObject("Stage Left Foreground Fold", typeof(SpriteRenderer)).GetComponent<SpriteRenderer>();
+
+            var existing = GameObject.Find("Stage Left Foreground Fold");
+            var fold = existing == null
+                ? new GameObject("Stage Left Foreground Fold", typeof(SpriteRenderer)).GetComponent<SpriteRenderer>()
+                : existing.GetComponent<SpriteRenderer>();
+            if (fold == null) return;
+            fold.transform.SetParent(left.transform, false);
             fold.sprite = stageLeftForegroundFold;
             fold.sharedMaterial = left.sharedMaterial;
-            fold.color = Color.white;
+            fold.color = left.color;
             fold.sortingLayerID = left.sortingLayerID;
             fold.sortingOrder = 20;
-            fold.transform.position = new Vector3(-3.45f, 0f, 0f);
-            FitWorld(fold, new Vector2(2.35f, 5.8f));
-            // Foreground cloth hangs slightly closer to camera than the actors' floor line.
-            fold.transform.position += Vector3.up * (GroundY - 0.12f - fold.bounds.min.y);
+            var pixelOffset = stripRect.center - mainRect.center;
+            fold.transform.localPosition = new Vector3(pixelOffset.x / left.sprite.pixelsPerUnit,
+                pixelOffset.y / left.sprite.pixelsPerUnit, 0f);
+            fold.transform.localRotation = Quaternion.identity;
+            fold.transform.localScale = Vector3.one;
+        }
+
+        private static void SetupStageMicrophone()
+        {
+            var microphone = GameObject.Find("Stage Microphone")?.GetComponent<SpriteRenderer>();
+            if (microphone == null || microphone.sprite == null) return;
+            microphone.enabled = true;
+            microphone.sortingOrder = 6;
+            FitWorldExact(microphone, new Vector2(0.45f, 1.55f));
+            microphone.transform.position = new Vector3(5.7f, microphone.transform.position.y,
+                microphone.transform.position.z);
+            microphone.transform.position += Vector3.up * (GroundY - microphone.bounds.min.y);
+        }
+
+        private void SetupStageAuditoriumPresentation(SpriteRenderer source)
+        {
+            if (source == null || source.sprite == null || source.sprite.texture == null ||
+                GameObject.Find("Visible Auditorium Balcony") != null) return;
+
+            var texture = source.sprite.texture;
+            // The authored stage spans a long horizontal walk. Scaling the entire 3:1 painting
+            // to that width pushed its lit balconies above the camera, so the curtain opening
+            // exposed only the near-black audience. Keep the original floor layer and place a
+            // crop of the readable balcony architecture above it.
+            var sourceRect = source.sprite.rect;
+            var cropY = sourceRect.y + sourceRect.height * 0.30f;
+            var crop = new Rect(sourceRect.x, cropY, sourceRect.width, sourceRect.height * 0.70f);
+            stageAuditoriumSprite = Sprite.Create(texture, crop, new Vector2(0.5f, 0f),
+                source.sprite.pixelsPerUnit, 0, SpriteMeshType.FullRect);
+            stageAuditoriumSprite.name = "bg_stage_auditorium_balcony";
+
+            var balcony = new GameObject("Visible Auditorium Balcony", typeof(SpriteRenderer)).GetComponent<SpriteRenderer>();
+            balcony.sprite = stageAuditoriumSprite;
+            balcony.sharedMaterial = source.sharedMaterial;
+            balcony.color = new Color(0.92f, 0.92f, 0.92f, 1f);
+            balcony.sortingLayerID = source.sortingLayerID;
+            balcony.sortingOrder = source.sortingOrder + 1;
+            balcony.transform.position = new Vector3(source.bounds.center.x, -0.92f, source.transform.position.z);
+            FitWorldExact(balcony, new Vector2(38f, 8.8f));
         }
 
         private static SpriteRenderer StageCurtain(string rootName)
@@ -344,6 +462,37 @@ namespace LetGo
             visual.sprite = researchCrateSprite;
             FitWorldExact(visual, new Vector2(1.1f, 1.3f));
             visual.transform.position += Vector3.up * (GroundY - visual.bounds.min.y);
+        }
+
+        private void SetupResearchWorkbenchPresentation()
+        {
+            var root = GameObject.Find("Return Workbench")?.transform;
+            var source = root?.GetComponent<SpriteRenderer>();
+            if (root == null || source == null || source.sprite == null) return;
+            var texture = source.sprite.texture;
+            if (texture == null || texture.name != "prop_research_desk") return;
+
+            var scaleX = texture.width / 1672f;
+            var scaleY = texture.height / 941f;
+            var rect = new Rect(101f * scaleX, 252f * scaleY, 1469f * scaleX, 430f * scaleY);
+            researchWorkbenchSprite = Sprite.Create(texture, rect, new Vector2(0.5f, 0f), 100f,
+                0, SpriteMeshType.FullRect);
+            researchWorkbenchSprite.name = "prop_research_desk_grounded";
+
+            var visual = root.Find("Workbench Grounded Visual")?.GetComponent<SpriteRenderer>();
+            if (visual == null)
+            {
+                visual = new GameObject("Workbench Grounded Visual", typeof(SpriteRenderer)).GetComponent<SpriteRenderer>();
+                visual.transform.SetParent(root, false);
+            }
+            visual.sprite = researchWorkbenchSprite;
+            visual.sharedMaterial = source.sharedMaterial;
+            visual.color = Color.white;
+            visual.sortingLayerID = source.sortingLayerID;
+            visual.sortingOrder = source.sortingOrder;
+            FitWorld(visual, new Vector2(2.4f, 1.1f));
+            visual.transform.position = new Vector3(root.position.x, GroundY, root.position.z);
+            source.enabled = false;
         }
 
         private void SetupResearchAtmosphereEffects()
@@ -574,6 +723,26 @@ namespace LetGo
             researchShutterSource.enabled = false;
         }
 
+        private static void HideResearchPrototypeGuides()
+        {
+            // The room communicates these relationships through the physical plate, door and
+            // carried props. Floating labels and diagram lines duplicate that information and
+            // read as debug UI against the painted background.
+            foreach (var name in ResearchPrototypeLabels)
+            {
+                var label = GameObject.Find(name);
+                if (label != null) label.SetActive(false);
+            }
+            foreach (var name in ResearchPrototypeLines)
+            {
+                var line = GameObject.Find(name)?.GetComponent<LineRenderer>();
+                if (line == null) continue;
+                line.enabled = false;
+                line.startWidth = 0f;
+                line.endWidth = 0f;
+            }
+        }
+
         private void UpdateResearchAtmosphereEffects(bool immediate = false)
         {
             if (research == null) return;
@@ -627,10 +796,30 @@ namespace LetGo
             if (carriedReport == null || playerArt == null || !carriedReport.enabled) return;
             var facing = Mathf.Sign(playerArt.transform.lossyScale.x);
             var position = playerArt.bounds.center;
-            position.x += facing * playerArt.bounds.extents.x * 0.72f;
-            position.y -= playerArt.bounds.extents.y * 0.04f;
+            // The idle pose keeps both hands near the pockets. Tuck the file partly behind the
+            // near arm so it reads as carried under the arm instead of floating beside the body.
+            position.x += facing * playerArt.bounds.extents.x * 0.38f;
+            position.y += playerArt.bounds.extents.y * 0.01f;
             position.z = carriedReport.transform.position.z;
             carriedReport.transform.position = position;
+            carriedReport.transform.rotation = Quaternion.Euler(0f, 0f, -7f * facing);
+        }
+
+        private void SetupCarriedReportPresentation()
+        {
+            if (carriedReport == null || carriedReport.sprite == null) return;
+            var texture = carriedReport.sprite.texture;
+            if (texture != null && texture.name == "prop_research_report")
+            {
+                var rect = new Rect(69f * texture.width / 730f, 71f * texture.height / 1210f,
+                    661f * texture.width / 730f, 1098f * texture.height / 1210f);
+                carriedReportSprite = Sprite.Create(texture, rect, new Vector2(0.5f, 0.5f), 100f,
+                    0, SpriteMeshType.FullRect);
+                carriedReportSprite.name = "prop_research_report_carried";
+                carriedReport.sprite = carriedReportSprite;
+            }
+            FitWorldExact(carriedReport, new Vector2(0.27f, 0.42f));
+            if (playerArt != null) carriedReport.sortingOrder = playerArt.sortingOrder - 1;
         }
 
         private void RestylePrompt()
@@ -709,10 +898,27 @@ namespace LetGo
 
         private void PrepareFinalMemoryGroups()
         {
-            CaptureEnabledRenderers(finalStageGroup, "Memory Spotlight",
-                "Remembered Steady Route", "Remembered Forward Route");
-            CaptureEnabledRenderers(finalResearchGroup, "Remembered Question",
-                "Remembered Photo Evidence", "Remembered Data Evidence", "Remembered Conclusion");
+            finalStageGroup.Clear();
+            finalResearchGroup.Clear();
+            finalUnknownGroup.Clear();
+            var palette = Resources.Load<JourneyArtPalette>("JourneyArtPalette");
+
+            // The old choice echoes were full-height abstract sprites. In the walking memory they
+            // covered the actual auditorium and left a hard black edge at the camera boundary.
+            HideRenderers("Remembered Steady Route");
+            HideRenderers("Remembered Forward Route");
+            HideRenderers("Memory Spotlight");
+            AddMemoryBackdrop(finalStageGroup, "Stage Memory");
+            AddStageMemoryLight();
+
+            // The question/evidence/conclusion cards belonged to the retired delivery prototype.
+            // Keep the player's result as a grounded still life made from objects they really used.
+            HideRenderers("Remembered Question");
+            HideRenderers("Remembered Photo Evidence");
+            HideRenderers("Remembered Data Evidence");
+            HideRenderers("Remembered Conclusion");
+            AddMemoryBackdrop(finalResearchGroup, "Research Memory");
+            AddResearchMemoryStillLife(palette);
             // The farewell owns the next person's animation and disappearance at the doorway.
             CaptureEnabledRenderers(finalUnknownGroup, "Unknown Door");
             RememberAuthoredAlpha(finalStageGroup);
@@ -721,6 +927,138 @@ namespace LetGo
             SetAuthoredOpacity(finalStageGroup, 0f);
             SetAuthoredOpacity(finalResearchGroup, 0f);
             SetAuthoredOpacity(finalUnknownGroup, 0f);
+        }
+
+        private static void AddMemoryBackdrop(List<SpriteRenderer> destination, string rootName)
+        {
+            var root = GameObject.Find(rootName);
+            if (root == null) return;
+            SpriteRenderer best = null;
+            var bestArea = 0f;
+            foreach (var renderer in root.GetComponentsInChildren<SpriteRenderer>(true))
+            {
+                if (renderer.sprite == null) continue;
+                var area = renderer.sprite.rect.width * renderer.sprite.rect.height;
+                if (renderer.enabled) area *= 1.1f;
+                if (area <= bestArea) continue;
+                best = renderer;
+                bestArea = area;
+            }
+            if (best == null) return;
+            foreach (var renderer in root.GetComponentsInChildren<SpriteRenderer>(true))
+                renderer.enabled = renderer == best;
+            // A scene root stores its world placement in localPosition. Resetting it would move
+            // an entire memory room back to x=0 after FinalPassageLayout spaced the rooms apart.
+            // Only centre an authored child layer inside its already-positioned root.
+            if (best.transform != root.transform) best.transform.localPosition = Vector3.zero;
+            best.color = Color.white;
+            best.sortingOrder = -10;
+            // Extend the memory painting underneath both neighbouring blackout passages. This
+            // removes the thin empty columns that appeared when the camera approached a passage.
+            FitWorldExact(best, new Vector2(16.4f, 5.9f));
+            destination.Add(best);
+        }
+
+        private void AddStageMemoryLight()
+        {
+            var root = GameObject.Find("Stage Memory");
+            if (root == null) return;
+            var renderer = new GameObject("Remembered Stage Footlight", typeof(SpriteRenderer)).GetComponent<SpriteRenderer>();
+            renderer.sprite = EnsureRadialGlow();
+            renderer.color = JourneyChoices.Get("stage").Contains("幕布")
+                ? new Color(0.5f, 0.7f, 0.9f, 0.42f)
+                : new Color(1f, 0.67f, 0.3f, 0.42f);
+            renderer.sortingOrder = 4;
+            renderer.transform.position = new Vector3(root.transform.position.x +
+                (JourneyChoices.Get("stage").Contains("幕布") ? -2f : 2f), GroundY + 0.08f, 0f);
+            FitWorldExact(renderer, new Vector2(1.9f, 0.18f));
+            finalStageGroup.Add(renderer);
+        }
+
+        private void AddResearchMemoryStillLife(JourneyArtPalette palette)
+        {
+            var root = GameObject.Find("Research Memory");
+            if (root == null || palette == null) return;
+            var center = root.transform.position.x;
+            var desk = FinalMemoryProp(palette, "Remembered Workbench", "workshop-desk",
+                new Vector3(center - 1.15f, GroundY, 0f), new Vector2(2.35f, 1.05f));
+            if (desk != null && desk.sprite != null && desk.sprite.texture.name == "prop_research_desk")
+            {
+                var texture = desk.sprite.texture;
+                var rect = new Rect(101f * texture.width / 1672f, 252f * texture.height / 941f,
+                    1469f * texture.width / 1672f, 430f * texture.height / 941f);
+                researchWorkbenchSprite = Sprite.Create(texture, rect, new Vector2(0.5f, 0f), 100f,
+                    0, SpriteMeshType.FullRect);
+                desk.sprite = researchWorkbenchSprite;
+                FitWorld(desk, new Vector2(2.35f, 1.05f));
+                desk.transform.position += Vector3.up * (GroundY - desk.bounds.min.y);
+            }
+
+            var report = FinalMemoryProp(palette, "Remembered Finished Report", "workshop-report",
+                new Vector3(center - 1.15f, GroundY, 0f), new Vector2(0.72f, 0.18f), false);
+            if (report != null && desk != null)
+            {
+                var texture = report.sprite.texture;
+                if (texture != null && texture.name == "prop_research_report")
+                {
+                    // The delivered binder is painted upright on a tall transparent canvas.
+                    // Trim that canvas, then foreshorten it into a closed file resting on the desk.
+                    var rect = new Rect(69f * texture.width / 730f, 71f * texture.height / 1210f,
+                        661f * texture.width / 730f, 1098f * texture.height / 1210f);
+                    researchReportSprite = Sprite.Create(texture, rect, new Vector2(0.5f, 0.5f), 100f,
+                        0, SpriteMeshType.FullRect);
+                    researchReportSprite.name = "prop_research_report_flat";
+                    report.sprite = researchReportSprite;
+                }
+                report.sortingOrder = 5;
+                report.transform.rotation = Quaternion.Euler(0f, 0f, -3.5f);
+                FitWorldExact(report, new Vector2(0.76f, 0.17f));
+                report.transform.position = new Vector3(center - 1.28f,
+                    desk.bounds.max.y + report.bounds.extents.y - 0.035f, 0f);
+            }
+
+            var toolSlot = JourneyChoices.CrossingTool == "plank" ? "prop_research_bridge" :
+                JourneyChoices.CrossingTool == "crate" ? "prop_research_crate" : string.Empty;
+            if (!string.IsNullOrEmpty(toolSlot))
+            {
+                var toolSize = toolSlot == "prop_research_crate" ? new Vector2(0.72f, 0.82f) : new Vector2(1.4f, 0.28f);
+                var tool = FinalMemoryProp(palette, "Remembered Crossing Tool", toolSlot,
+                    new Vector3(center + 1.25f, GroundY, 0f), toolSize);
+                if (tool != null && toolSlot == "prop_research_crate" && tool.sprite.texture.name == "prop_research_crate")
+                {
+                    var texture = tool.sprite.texture;
+                    var rect = new Rect(144f * texture.width / 1254f, 175f * texture.height / 1254f,
+                        962f * texture.width / 1254f, 919f * texture.height / 1254f);
+                    researchCrateSprite = Sprite.Create(texture, rect, new Vector2(0.5f, 0f), 100f,
+                        0, SpriteMeshType.FullRect);
+                    tool.sprite = researchCrateSprite;
+                    FitWorld(tool, toolSize);
+                    tool.transform.position += Vector3.up * (GroundY - tool.bounds.min.y);
+                }
+            }
+
+            if (JourneyChoices.TestedResearchModel == "lamp")
+                FinalMemoryProp(palette, "Remembered Lamp", "prop_researchlight",
+                    new Vector3(center + 2.25f, GroundY, 0f), new Vector2(0.46f, 0.62f));
+            else if (JourneyChoices.TestedResearchModel == "toy")
+                FinalMemoryProp(palette, "Remembered Toy", "prop_toy",
+                    new Vector3(center + 2.1f, GroundY, 0f), new Vector2(0.42f, 0.5f));
+        }
+
+        private SpriteRenderer FinalMemoryProp(JourneyArtPalette palette, string name, string slot,
+            Vector3 position, Vector2 size, bool ground = true)
+        {
+            var sprite = palette.Find(slot);
+            if (sprite == null) return null;
+            var renderer = new GameObject(name, typeof(SpriteRenderer)).GetComponent<SpriteRenderer>();
+            renderer.sprite = sprite;
+            renderer.color = Color.white;
+            renderer.sortingOrder = 4;
+            renderer.transform.position = position;
+            FitWorld(renderer, size);
+            if (ground) renderer.transform.position += Vector3.up * (GroundY - renderer.bounds.min.y);
+            finalResearchGroup.Add(renderer);
+            return renderer;
         }
 
         private static void CaptureEnabledRenderers(List<SpriteRenderer> destination, params string[] roots)
@@ -750,7 +1088,9 @@ namespace LetGo
             memoryBlackSprite ??= Sprite.Create(Texture2D.whiteTexture, new Rect(0, 0, 1, 1),
                 Vector2.one * 0.5f, 1f, 0, SpriteMeshType.FullRect);
             memoryBlackSprite.name = "memory_black_passage";
-            var width = 2f * view.orthographicSize * view.aspect + 2.8f;
+            // Keep a full-screen core plus 0.8 world units of safety on either side. The former
+            // 2.8-unit padding made each transition occupy too much of the walk.
+            var width = 2f * view.orthographicSize * view.aspect + 1.6f;
             var height = 2f * view.orthographicSize + 2f;
             var centers = FinalPassageLayout.Centers;
             for (var i = 0; i < centers.Length; i++)
@@ -814,8 +1154,14 @@ namespace LetGo
             if (researchLearnerIdle != null) Destroy(researchLearnerIdle);
             if (researchLearnerWalk != null) Destroy(researchLearnerWalk);
             if (researchLearnerFear != null) Destroy(researchLearnerFear);
+            if (carriedReportSprite != null) Destroy(carriedReportSprite);
             if (researchCrateSprite != null) Destroy(researchCrateSprite);
+            if (researchReportSprite != null) Destroy(researchReportSprite);
+            if (researchWorkbenchSprite != null) Destroy(researchWorkbenchSprite);
+            if (stageAuditoriumSprite != null) Destroy(stageAuditoriumSprite);
+            if (stageLeftWingSprite != null) Destroy(stageLeftWingSprite);
             if (stageLeftForegroundFold != null) Destroy(stageLeftForegroundFold);
+            if (stageRightWingSprite != null) Destroy(stageRightWingSprite);
         }
 
         private static float ActorHeight(string actorName)

@@ -71,6 +71,12 @@ public static class JourneyPlaythroughChecks
         RunBatch();
     }
 
+    public static void ValidateGrowthReleaseBatch()
+    {
+        SessionState.SetBool("LetGo.QA.GrowthRelease", true);
+        RunBatch();
+    }
+
     public static void ValidateWorkshopAndBuildWindowsBatch()
     {
         SessionState.SetBool(BuildAfterKey, true);
@@ -140,6 +146,33 @@ public static class JourneyPlaythroughChecks
         SessionState.SetBool(BuildAfterKey, true);
         SessionState.SetBool("LetGo.QA.FullAfterHabits", true);
         ValidateLearnedHabitsBatch();
+    }
+
+    public static void ValidateHabitsAndFullBatch()
+    {
+        SessionState.SetBool("LetGo.QA.FullAfterHabits", true);
+        ValidateLearnedHabitsBatch();
+    }
+
+    public static void ValidateDeliveredUIAndBuildWindowsBatch()
+    {
+        SessionState.SetBool(BuildAfterKey, true);
+        SessionState.SetBool("LetGo.QA.DeliveredUI", true);
+        RunBatch();
+    }
+
+    public static void ValidateStageSpatialAndBuildWindowsBatch()
+    {
+        SessionState.SetBool(BuildAfterKey, true);
+        SessionState.SetBool("LetGo.QA.StageSpatial", true);
+        RunBatch();
+    }
+
+    public static void ValidateFinalAssetsAndBuildWindowsBatch()
+    {
+        SessionState.SetBool(BuildAfterKey, true);
+        SessionState.SetBool("LetGo.QA.FinalAssets", true);
+        RunBatch();
     }
 
     public static void BuildWindowsBatch()

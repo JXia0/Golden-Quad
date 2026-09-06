@@ -17,8 +17,10 @@ namespace LetGo
         public AudioClip paperRustle;
         public AudioClip finalLight;
         public AudioClip ambience;
+        public AudioClip titleMusic;
         public AudioClip kindergartenMusic;
         public AudioClip journeyMusic;
+        public AudioClip flashbackVoice;
         public void Apply(SceneAudio target)
         {
             if (target == null) return;
@@ -26,7 +28,8 @@ namespace LetGo
                 handRelease, heartbeat, calmBreath, applause, paperRustle, finalLight);
             target.SetFallbackAmbience(ambience);
             var sceneName = target.gameObject.scene.name;
-            target.SetFallbackMusic(sceneName == "01_Kindergarten" ? kindergartenMusic : journeyMusic);
+            target.SetFallbackMusic(sceneName == "00_Prologue" ? titleMusic :
+                sceneName == "01_Kindergarten" ? kindergartenMusic : journeyMusic);
         }
     }
 }

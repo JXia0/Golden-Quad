@@ -86,10 +86,10 @@ TextureImporter:
   platformSettings:
   - serializedVersion: 4
     buildTarget: DefaultTexturePlatform
-    maxTextureSize: 2048
+    maxTextureSize: 4096
     resizeAlgorithm: 0
     textureFormat: -1
-    textureCompression: 1
+    textureCompression: 0
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
@@ -119,8 +119,8 @@ TextureImporter:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 683
-        height: 683
+        width: 724
+        height: 724
       alignment: 7
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -139,10 +139,10 @@ TextureImporter:
       name: char_adult_chest_01
       rect:
         serializedVersion: 2
-        x: 683
+        x: 724
         y: 0
-        width: 682
-        height: 683
+        width: 724
+        height: 724
       alignment: 7
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -161,10 +161,10 @@ TextureImporter:
       name: char_adult_chest_02
       rect:
         serializedVersion: 2
-        x: 1365
+        x: 1448
         y: 0
-        width: 683
-        height: 683
+        width: 724
+        height: 724
       alignment: 7
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}

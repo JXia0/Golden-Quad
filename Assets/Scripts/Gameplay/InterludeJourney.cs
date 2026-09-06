@@ -36,7 +36,11 @@ namespace LetGo
             else if (Phase == FirstsPhase.Walking)
             {
                 Position = Mathf.Clamp01(Position + move * dt * 0.2f);
-                if (Mathf.Abs(Position - Stops[1]) < 0.025f) Phase = FirstsPhase.RaisingHand;
+                if (Mathf.Abs(Position - Stops[1]) < 0.025f)
+                {
+                    Position = Stops[1];
+                    Phase = FirstsPhase.RaisingHand;
+                }
             }
             else if (Phase == FirstsPhase.RaisingHand)
             {
